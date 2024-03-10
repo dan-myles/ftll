@@ -1,0 +1,91 @@
+[
+  {
+    "addr": "160.242.74.172:27017",
+    "gameport": 2303,
+    "steamid": "90191278523486222",
+    "name": "CODE RED Vanilla |Plus|",
+    "appid": 221100,
+    "gamedir": "dayz",
+    "version": "1.24.157551",
+    "product": "dayz",
+    "region": -1,
+    "players": 0,
+    "max_players": 60,
+    "bots": 0,
+    "map": "alteria",
+    "secure": true,
+    "dedicated": true,
+    "os": "w",
+    "gametype": "battleye,external,privHive,shard,lqs0,etm5.000000,entm10.000000,mod,15:47",
+    "ModList": [
+      {
+        "WorkshopId": 1680019590,
+        "Name": "Server Information Panel Super Cool Mod Pack"
+      },
+      {
+        "WorkshopId": 3145143768,
+        "Name": "CaseBag"
+      },
+      {
+        "WorkshopId": 2040872847,
+        "Name": "UnlimitedRun"
+      },
+      {
+        "WorkshopId": 2789443787,
+        "Name": "MMG Base Storage"
+      },
+      {
+        "WorkshopId": 1646187754,
+        "Name": "CodeLock"
+      },
+      {
+        "WorkshopId": 1819514788,
+        "Name": "Ear Plugs"
+      },
+      {
+        "WorkshopId": 2789796979,
+        "Name": "PressvestColors"
+      },
+      {
+        "WorkshopId": 2074403068,
+        "Name": "Unknown Ghillie Mod"
+      },
+      {
+        "WorkshopId": 2546583347,
+        "Name": "BuildEverywhere"
+      },
+      {
+        "WorkshopId": 3039711272,
+        "Name": "TerjePartyMod"
+      },
+      {
+        "WorkshopId": 1830047561,
+        "Name": "Killfeed"
+      },
+      {
+        "WorkshopId": 3169887907,
+        "Name": "CODE RED Vanilla Server Pack 1"
+      },
+      {
+        "WorkshopId": 3154500253,
+        "Name": "GSC Gameworld Assets (JMC Edition)"
+      },
+      {
+        "WorkshopId": 2811630720,
+        "Name": "Alteria Official (Experimental - Dev Build)"
+      },
+      {
+        "WorkshopId": 1828439124,
+        "Name": "VPPAdminTools"
+      },
+      {
+        "WorkshopId": 2545327648,
+        "Name": "Dabs Framework"
+      },
+      {
+        "WorkshopId": 1559212036,
+        "Name": "Community Framework"
+      }
+    ]
+  }
+]
