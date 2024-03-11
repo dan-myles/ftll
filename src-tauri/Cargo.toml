@@ -24,3 +24,4 @@ tauri = { version = "2.0.0-beta.10", features = [] }
 steamworks = "0.11.0"
 tauri-plugin-shell = "2.0.0-beta.2"
 tauri-plugin-os = "2.0.0-beta.2"
+a2s = "0.5.2"

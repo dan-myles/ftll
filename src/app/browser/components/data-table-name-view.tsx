@@ -22,7 +22,7 @@ export function DataTableNameView<TData>({
   }
 
   return (
-    <div className="flex max-w-[450px] flex-col">
+    <div className="flex max-w-[400px] flex-col">
       <div className="truncate font-medium">{server.name}</div>
       <div className="truncate text-gray-500">
         {server.ModList.map((mod) => {
