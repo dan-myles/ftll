@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod"
 
 export const modListSchema = z.object({
   WorkshopId: z.number(),
@@ -29,5 +29,8 @@ export const serverSchema = z.object({
   Ping: z.number().or(z.undefined()),
 })
 
+export const serverListSchema = z.array(serverSchema)
+
 export type ModList = z.infer<typeof modListSchema>
 export type Server = z.infer<typeof serverSchema>
+export type ServerList = z.infer<typeof serverListSchema>

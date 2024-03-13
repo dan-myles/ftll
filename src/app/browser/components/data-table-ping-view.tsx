@@ -1,10 +1,11 @@
-'use client'
-import { IceCreamIcon, MinusIcon } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import { serverSchema } from '../data/schema'
-import { Row } from '@tanstack/react-table'
-import { Badge } from '@/components/ui/badge'
-import { invoke } from '@tauri-apps/api/core'
+"use client"
+import { IceCreamIcon, MinusIcon } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { serverSchema } from "../data/schema"
+import { Row, Table } from "@tanstack/react-table"
+import { Badge } from "@/components/ui/badge"
+import { invoke } from "@tauri-apps/api/core"
+import { useServerListStore } from "@/stores/server-list-store"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -14,37 +15,114 @@ export function DataTablePingView<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
   const server = serverSchema.parse(row.original)
-  const [ping, setPing] = useState('')
-
-  async function getPing() {
-    setPing('Loading')
-    const response: string = await invoke('ping_server', {
-      serverIp: server.addr,
-    })
-    setPing(response)
-  }
+  const updateServer = useServerListStore((state) => state.updateServer)
+  const [isLoading, setLoading] = useState(true)
 
   useEffect(() => {
-    getPing()
+    if (server.Ping !== 0) {
+      console.log("ping already exists")
+      setLoading(false)
+      return
+    }
+
+    const getPing = async () => {
+      const response: string = await invoke("ping_server", {
+        serverIp: server.addr,
+      })
+      return response
+    }
+
+    getPing().then((ping) => {
+      if (ping === "Offline") {
+        // make the ping some high number so it's at the bottom of the list
+        // the api also returns 99999 if the server is offline
+        const newPing = 99999
+        const newServer = { ...server, Ping: newPing }
+        setLoading(false)
+        updateServer(newServer)
+        return
+      }
+
+      const newPing = parseInt(ping)
+      const newServer = { ...server, Ping: newPing }
+      setLoading(false)
+      updateServer(newServer)
+    })
   }, [])
 
   return (
-    <div>
-      {ping === 'Offline' && (
-        <div className="flex flex-col">
-          <div className="max-w-fit text-red-500">Offline</div>
-        </div>
+    <div className="">
+      {isLoading && <Spinner />}
+
+      {!isLoading && row.getValue("Ping") !== 99999 && (
+        <PingColored ping={row.getValue("Ping")} />
       )}
 
-      {ping === 'Loading' && <Spinner />}
-
-      {ping !== 'Loading' && ping !== 'Offline' && (
-        <div className="flex flex-col">
-          <div className="max-w-fit truncate font-medium">{ping}ms</div>
+      {!isLoading && row.getValue("Ping") === 99999 && (
+        <div className="text-gray-500">
+          <span>Offline</span>
         </div>
       )}
     </div>
   )
+}
+
+function PingColored({ ping }: { ping: number }) {
+  if (ping <= 25) {
+    return (
+      <div className="text-green-400">
+        <span>{ping}ms</span>
+      </div>
+    )
+  }
+
+  if (25 <= ping && ping <= 50) {
+    return (
+      <div className="text-green-600">
+        <span>{ping}ms</span>
+      </div>
+    )
+  }
+
+  if (51 <= ping && ping <= 100) {
+    return (
+      <div className="text-yellow-300">
+        <span>{ping}ms</span>
+      </div>
+    )
+  }
+
+  if (101 <= ping && ping <= 150) {
+    return (
+      <div className="text-yellow-600">
+        <span>{ping}ms</span>
+      </div>
+    )
+  }
+
+  if (151 <= ping && ping <= 200) {
+    return (
+      <div className="text-red-300">
+        <span>{ping}ms</span>
+      </div>
+    )
+  }
+
+  if (201 <= ping && ping <= 250) {
+    return (
+      <div className="text-red-500">
+        <span>{ping}ms</span>
+      </div>
+    )
+  }
+
+  if (251 <= ping) {
+    return (
+      <div className="text-red-700">
+        <span>{ping}ms</span>
+      </div>
+    )
+  }
 }
 
 function Spinner() {

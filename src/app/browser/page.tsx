@@ -1,21 +1,28 @@
-import { z } from 'zod'
+"use client"
 
-import { columns } from './components/columns'
-import { DataTable } from './components/data-table'
-import { serverSchema } from './data/schema'
-import { Button } from '@/components/ui/button'
+import { z } from "zod"
 
-async function getServers() {
-  // const res = await fetch('http://localhost:8080/api/v1/GetServerList')
-  const res = await fetch('http://localhost:8080/api/v1/GetServerList', {
-    cache: 'no-cache',
-  })
-  const servers = await res.json()
-  return z.array(serverSchema).parse(servers)
-}
+import { columns } from "./components/columns"
+import { DataTable } from "./components/data-table"
+import { serverListSchema, ServerList } from "./data/schema"
+import { Button } from "@/components/ui/button"
+import { invoke } from "@tauri-apps/api/core"
+import { useEffect, useState } from "react"
+import { useServerListStore } from "@/stores/server-list-store"
 
-export default async function BrowserPage() {
-  const servers = await getServers()
+export default function BrowserPage() {
+  const servers = useServerListStore((state) => state.serverList)
+  const setServerList = useServerListStore((state) => state.setServerList)
+
+  useEffect(() => {
+    const getServerList = async () => {
+      const res = await invoke("get_server_list")
+      const servers = serverListSchema.parse(res)
+      setServerList(servers)
+    }
+
+    getServerList()
+  }, [])
 
   return (
     <div className="h-full flex-1 flex-col space-y-4 p-4 md:flex">

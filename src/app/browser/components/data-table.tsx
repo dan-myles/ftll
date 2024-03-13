@@ -1,11 +1,12 @@
-'use client'
+"use client"
 
-import * as React from 'react'
+import * as React from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
+  RowData,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -14,7 +15,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table'
+} from "@tanstack/react-table"
 
 import {
   Table,
@@ -23,11 +24,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from "@/components/ui/table"
 
-import { DataTablePagination } from '../components/data-table-pagination'
-import { DataTableToolbar } from '../components/data-table-toolbar'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { DataTablePagination } from "../components/data-table-pagination"
+import { DataTableToolbar } from "../components/data-table-toolbar"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { useServerListStore } from "@/stores/server-list-store"
+import { Server } from "../data/schema"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -41,9 +44,8 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
+  const [columnFilters, setColumnFilters] =
+    React.useState<ColumnFiltersState>([])
   const [sorting, setSorting] = React.useState<SortingState>([])
 
   const table = useReactTable({
@@ -96,7 +98,7 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
+                  data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
