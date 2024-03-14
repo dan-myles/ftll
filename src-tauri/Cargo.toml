@@ -24,8 +24,11 @@ tauri = { version = "2.0.0-beta.10", features = [] }
 steamworks = "0.11.0"
 tauri-plugin-shell = "2.0.0-beta.2"
 tauri-plugin-os = "2.0.0-beta.2"
-a2s = "0.5.2"
+a2s = { version = "0.5.2", features = ["async"] }
 reqwest = { version = "0.11.25", features = ["blocking"] }
 serde_derive = "1.0.197"
 lazy_static = "1.4.0"
 tokio = "1.36.0"
+tauri-plugin-fs = "2.0.0-beta.2"
+directories = "5.0.1"
+futures = "0.3.30"

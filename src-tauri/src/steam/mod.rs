@@ -3,19 +3,20 @@ use std::time::SystemTime;
 
 mod client;
 
-#[tauri::command(async)]
-pub fn ping_server(server_ip: String) -> String {
-    let a2s_client = A2SClient::new().unwrap();
-
-    let start = SystemTime::now();
-    let response = a2s_client.info(server_ip);
-    let end = SystemTime::now();
-    let duration = end.duration_since(start).unwrap();
-
-    match response {
-        Ok(_info) => duration.as_millis().to_string(),
-        Err(_e) => "Offline".to_string(),
-    }
+#[tauri::command]
+pub async fn ping_server(server_ip: String) -> String {
+    // let a2s_client = A2SClient::new().await.unwrap();
+    //
+    // let start = SystemTime::now();
+    // let response = a2s_client.info(server_ip).await;
+    // let end = SystemTime::now();
+    // let duration = end.duration_since(start).unwrap();
+    //
+    // match response {
+    //     Ok(_info) => duration.as_millis().to_string(),
+    //     Err(_e) => "Offline".to_string(),
+    // }
+    "hello".to_string()
 }
 
 pub fn init_steamworks() {

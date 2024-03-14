@@ -19,6 +19,10 @@
     "window:allow-start-dragging",
     "window:allow-toggle-maximize",
     "window:allow-minimize",
-    "window:allow-close"
+    "window:allow-close",
+    "fs:default",
+    "fs:allow-appdata-read",
+    "fs:allow-appdata-write",
+    { "identifier": "fs:allow-exists", "allow": [{ "path": "$APPDATA/*" }] }
   ]
 }
