@@ -61,6 +61,7 @@ pub async fn get_server_list() -> Vec<Server> {
                     .iter_mut()
                     .find(|s| s.steamid == remote_server.steamid)
                 {
+                    println!("Updating server: {}", remote_server.name);
                     // update local_server with remote_server info
                     local_server.addr = remote_server.addr.clone();
                     local_server.name = remote_server.name.clone();

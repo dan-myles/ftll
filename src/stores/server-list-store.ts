@@ -34,18 +34,12 @@ const useServerListStore = create<ServerListState & ServerListActions>()(
       },
       updateServer: (server) => {
         set((state) => {
-          const index = state.serverList.findIndex(
-            (s) => s.steamid === server.steamid
-          )
-
-          if (index === -1) {
-            return state
-          }
-
-          const newServerList = [...state.serverList]
-          newServerList[index] = server
-          return { serverList: newServerList }
-        })
+          const serverList = [...state.serverList]
+          serverList[
+            serverList.findIndex((s) => s.steamid === server.steamid)
+          ] = server
+          return { serverList }
+        }, true)
       },
     }),
     {
