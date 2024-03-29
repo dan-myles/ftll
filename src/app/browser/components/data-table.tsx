@@ -18,6 +18,17 @@ import {
 } from "@tanstack/react-table"
 
 import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
+
+import {
   Table,
   TableBody,
   TableCell,
@@ -31,6 +42,9 @@ import { DataTableToolbar } from "../components/data-table-toolbar"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useServerListStore } from "@/stores/server-list-store"
 import { Server } from "../data/schema"
+import { Button } from "@/components/ui/button"
+import DataTableMoreInfo from "./data-table-more-info"
+import StatefulTableRow from "@/components/ui/stateful-table-row"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -44,8 +58,9 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] =
-    React.useState<ColumnFiltersState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  )
   const [sorting, setSorting] = React.useState<SortingState>([])
 
   const table = useReactTable({
@@ -96,9 +111,10 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
+                <StatefulTableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  row={row}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -108,7 +124,7 @@ export function DataTable<TData, TValue>({
                       )}
                     </TableCell>
                   ))}
-                </TableRow>
+                </StatefulTableRow>
               ))
             ) : (
               <TableRow>

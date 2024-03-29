@@ -6,7 +6,7 @@ import "./globals.css"
 import { TitleBar } from "@/components/title-bar"
 import { cn } from "@/lib/utils"
 import { MainNav } from "@/components/main-nav"
-import ServerProvider from "@/components/server-provider"
+import FTLLContextProvider from "@/components/ftll-context-provider"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -22,9 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-screen overflow-clip bg-black">
-      <body className="scrollbar-none overflow-clip bg-transparent font-sans antialiased">
+      <body className="overflow-clip bg-transparent font-sans antialiased scrollbar-none">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <ServerProvider />
+          <FTLLContextProvider />
           <main className="h-screen overflow-clip">
             <TitleBar />
             <MainNav />
@@ -33,7 +33,7 @@ export default function RootLayout({
                 // This is the main content area
                 // It should take up the remaining space - 125px for header
                 "h-[calc(100vh-125px)] overflow-auto bg-background",
-                "scrollbar scrollbar-track-transparent scrollbar-thumb-accent scrollbar-thumb-rounded-md"
+                "scrollbar-thumb-rounded-md scrollbar scrollbar-track-transparent scrollbar-thumb-accent"
               )}
             >
               {children}

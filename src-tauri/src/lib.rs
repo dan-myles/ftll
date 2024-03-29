@@ -11,9 +11,9 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
-            steam::ping_server,
+            steam::was_steam_initialized,
+            query::get_server_info,
             query::get_server_list,
-            query::first_app_launch,
         ])
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_shell::init())

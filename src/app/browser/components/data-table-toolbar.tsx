@@ -1,14 +1,15 @@
-'use client'
+"use client"
 
-import { Cross2Icon } from '@radix-ui/react-icons'
-import { Table } from '@tanstack/react-table'
+import { Cross2Icon } from "@radix-ui/react-icons"
+import { Table } from "@tanstack/react-table"
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { DataTableViewOptions } from './data-table-view-options'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { DataTableViewOptions } from "./data-table-view-options"
 
-import { priorities, maps } from '../data/data'
-import { DataTableFacetedFilter } from './data-table-faceted-filter'
+import { maps } from "../data/data"
+import { DataTableFacetedFilter } from "./data-table-faceted-filter"
+import { DataTablePingFilter } from "./data-table-ping-filter"
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
@@ -24,16 +25,23 @@ export function DataTableToolbar<TData>({
       <div className="flex flex-1 items-center space-x-2">
         <Input
           placeholder="Search..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="h-10 w-[300px] lg:w-[400px]"
         />
-        {table.getColumn('map') && (
+        {table.getColumn("map") && (
           <DataTableFacetedFilter
-            column={table.getColumn('map')}
+            column={table.getColumn("map")}
             title="Map"
+            options={maps}
+          />
+        )}
+        {table.getColumn("ping") && (
+          <DataTablePingFilter
+            column={table.getColumn("ping")}
+            title="Ping"
             options={maps}
           />
         )}

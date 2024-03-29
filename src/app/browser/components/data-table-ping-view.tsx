@@ -15,50 +15,21 @@ export function DataTablePingView<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
   const server = serverSchema.parse(row.original)
-  const updateServer = useServerListStore((state) => state.updateServer)
   const [isLoading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (server.Ping !== 0) {
-      console.log("ping already exists")
-      setLoading(false)
-      return
-    }
-
-    const getPing = async () => {
-      const response: string = await invoke("ping_server", {
-        serverIp: server.addr,
-      })
-      return response
-    }
-
-    getPing().then((ping) => {
-      if (ping === "Offline") {
-        // make the ping some high number so it's at the bottom of the list
-        // the api also returns 99999 if the server is offline
-        const newPing = 99999
-        const newServer = { ...server, Ping: newPing }
-        setLoading(false)
-        updateServer(newServer)
-        return
-      }
-
-      const newPing = parseInt(ping)
-      const newServer = { ...server, Ping: newPing }
-      setLoading(false)
-      updateServer(newServer)
-    })
+    setLoading(false)
   }, [])
 
   return (
     <div className="">
       {isLoading && <Spinner />}
 
-      {!isLoading && row.getValue("Ping") !== 99999 && (
-        <PingColored ping={row.getValue("Ping")} />
+      {!isLoading && row.getValue("ping") !== 99999 && (
+        <PingColored ping={row.getValue("ping")} />
       )}
 
-      {!isLoading && row.getValue("Ping") === 99999 && (
+      {!isLoading && row.getValue("ping") === 99999 && (
         <div className="text-gray-500">
           <span>Offline</span>
         </div>

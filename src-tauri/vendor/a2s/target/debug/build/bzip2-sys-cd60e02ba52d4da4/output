@@ -1,0 +1,65 @@
+TARGET = Some("x86_64-pc-windows-msvc")
+OPT_LEVEL = Some("0")
+HOST = Some("x86_64-pc-windows-msvc")
+cargo:rerun-if-env-changed=CC_x86_64-pc-windows-msvc
+CC_x86_64-pc-windows-msvc = None
+cargo:rerun-if-env-changed=CC_x86_64_pc_windows_msvc
+CC_x86_64_pc_windows_msvc = None
+cargo:rerun-if-env-changed=HOST_CC
+HOST_CC = None
+cargo:rerun-if-env-changed=CC
+CC = None
+cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+CRATE_CC_NO_DEFAULTS = None
+CARGO_CFG_TARGET_FEATURE = Some("fxsr,sse,sse2")
+DEBUG = Some("true")
+cargo:rerun-if-env-changed=CFLAGS_x86_64-pc-windows-msvc
+CFLAGS_x86_64-pc-windows-msvc = None
+cargo:rerun-if-env-changed=CFLAGS_x86_64_pc_windows_msvc
+CFLAGS_x86_64_pc_windows_msvc = None
+cargo:rerun-if-env-changed=HOST_CFLAGS
+HOST_CFLAGS = None
+cargo:rerun-if-env-changed=CFLAGS
+CFLAGS = None
+cargo:rerun-if-env-changed=CC_ENABLE_DEBUG_OUTPUT
+blocksort.c
+C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-sys-0.1.11+1.0.8\bzip2-1.0.8\bzlib.h(70): warning C4005: 'BZ_EXPORT': macro redefinition
+C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-sys-0.1.11+1.0.8\bzip2-1.0.8\bzlib.h(70): note: 'BZ_EXPORT' previously declared on the command line
+huffman.c
+C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-sys-0.1.11+1.0.8\bzip2-1.0.8\bzlib.h(70): warning C4005: 'BZ_EXPORT': macro redefinition
+C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-sys-0.1.11+1.0.8\bzip2-1.0.8\bzlib.h(70): note: 'BZ_EXPORT' previously declared on the command line
+crctable.c
+C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-sys-0.1.11+1.0.8\bzip2-1.0.8\bzlib.h(70): warning C4005: 'BZ_EXPORT': macro redefinition
+C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-sys-0.1.11+1.0.8\bzip2-1.0.8\bzlib.h(70): note: 'BZ_EXPORT' previously declared on the command line
+randtable.c
+C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-sys-0.1.11+1.0.8\bzip2-1.0.8\bzlib.h(70): warning C4005: 'BZ_EXPORT': macro redefinition
+C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-sys-0.1.11+1.0.8\bzip2-1.0.8\bzlib.h(70): note: 'BZ_EXPORT' previously declared on the command line
+compress.c
+C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-sys-0.1.11+1.0.8\bzip2-1.0.8\bzlib.h(70): warning C4005: 'BZ_EXPORT': macro redefinition
+C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-sys-0.1.11+1.0.8\bzip2-1.0.8\bzlib.h(70): note: 'BZ_EXPORT' previously declared on the command line
+decompress.c
+C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-sys-0.1.11+1.0.8\bzip2-1.0.8\bzlib.h(70): warning C4005: 'BZ_EXPORT': macro redefinition
+C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-sys-0.1.11+1.0.8\bzip2-1.0.8\bzlib.h(70): note: 'BZ_EXPORT' previously declared on the command line
+bzlib.c
+C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-sys-0.1.11+1.0.8\bzip2-1.0.8\bzlib.h(70): warning C4005: 'BZ_EXPORT': macro redefinition
+C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-sys-0.1.11+1.0.8\bzip2-1.0.8\bzlib.h(70): note: 'BZ_EXPORT' previously declared on the command line
+cargo:rerun-if-env-changed=AR_x86_64-pc-windows-msvc
+AR_x86_64-pc-windows-msvc = None
+cargo:rerun-if-env-changed=AR_x86_64_pc_windows_msvc
+AR_x86_64_pc_windows_msvc = None
+cargo:rerun-if-env-changed=HOST_AR
+HOST_AR = None
+cargo:rerun-if-env-changed=AR
+AR = None
+cargo:rerun-if-env-changed=ARFLAGS_x86_64-pc-windows-msvc
+ARFLAGS_x86_64-pc-windows-msvc = None
+cargo:rerun-if-env-changed=ARFLAGS_x86_64_pc_windows_msvc
+ARFLAGS_x86_64_pc_windows_msvc = None
+cargo:rerun-if-env-changed=HOST_ARFLAGS
+HOST_ARFLAGS = None
+cargo:rerun-if-env-changed=ARFLAGS
+ARFLAGS = None
+cargo:rustc-link-lib=static=bz2
+cargo:rustc-link-search=native=C:\Users\Dan\Personal\ftl-launcher\src-tauri\a2s\target\debug\build\bzip2-sys-cd60e02ba52d4da4\out\lib
+cargo:root=C:\Users\Dan\Personal\ftl-launcher\src-tauri\a2s\target\debug\build\bzip2-sys-cd60e02ba52d4da4\out
+cargo:include=C:\Users\Dan\Personal\ftl-launcher\src-tauri\a2s\target\debug\build\bzip2-sys-cd60e02ba52d4da4\out\include

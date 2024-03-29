@@ -14,12 +14,15 @@ import { DataTableRowActions } from "./data-table-row-actions"
 import { DataTableNameView } from "./data-table-name-view"
 import { DataTableTimeView } from "./data-table-time-view"
 import { DataTablePingView } from "./data-table-ping-view"
+import { DataTableMapView } from "./data-table-map-view"
+import { DataTableIntervalUpdate } from "./data-table-interval-update"
 
+// i should really think about changing everything to match case on api
 export const columns: ColumnDef<Server>[] = [
   {
     id: "favorited",
-    header: ({ table }) => <HeartFilledIcon className="h-4 w-4" />,
-    cell: ({ row }) => <HeartIcon className="h-4 w-4" />,
+    header: ({ table }) => <HeartFilledIcon className="h-4 w-6" />,
+    cell: ({ row }) => <HeartIcon className="h-4 w-6" />,
     enableSorting: false,
     enableHiding: false,
   },
@@ -47,11 +50,7 @@ export const columns: ColumnDef<Server>[] = [
       <DataTableColumnHeader column={column} title="Map" />
     ),
     cell: ({ row }) => {
-      return (
-        <div className="flex items-center">
-          <span>{row.getValue("map")}</span>
-        </div>
-      )
+      return <DataTableMapView row={row} />
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
@@ -63,15 +62,6 @@ export const columns: ColumnDef<Server>[] = [
       <DataTableColumnHeader column={column} title="Players" />
     ),
     cell: ({ row }) => {
-      if (row.original.Ping === -1) {
-        return (
-          <div className="flex max-w-fit items-center">
-            <span>0/{row.original.max_players}</span>
-          </div>
-        )
-      }
-      row.original
-
       return (
         <div className="flex max-w-fit items-center">
           <span>
@@ -85,12 +75,16 @@ export const columns: ColumnDef<Server>[] = [
     },
   },
   {
-    accessorKey: "Ping",
+    accessorKey: "ping",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Ping" />
     ),
     cell: ({ row }) => {
       return <DataTablePingView row={row} />
+    },
+    filterFn: (row, id, value) => {
+      // TODO: fix the any type
+      return (row.getValue(id) as any) <= value
     },
   },
   {
@@ -102,6 +96,12 @@ export const columns: ColumnDef<Server>[] = [
           <DataTableRowActions row={row} />
         </div>
       )
+    },
+  },
+  {
+    id: "intervalUpdate",
+    cell: ({ row }) => {
+      return <DataTableIntervalUpdate row={row} />
     },
   },
 ]

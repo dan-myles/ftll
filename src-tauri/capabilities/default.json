@@ -8,6 +8,7 @@
     "event:default",
     "window:default",
     "webview:default",
+    "webview:allow-create-webview-window",
     "app:default",
     "resources:default",
     "image:default",

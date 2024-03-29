@@ -7,48 +7,127 @@ import {
   CrossCircledIcon,
   QuestionMarkCircledIcon,
   StopwatchIcon,
-} from '@radix-ui/react-icons'
-
-export const labels = [
-  {
-    value: 'bug',
-    label: 'Bug',
-  },
-  {
-    value: 'feature',
-    label: 'Feature',
-  },
-  {
-    value: 'documentation',
-    label: 'Documentation',
-  },
-]
+} from "@radix-ui/react-icons"
 
 export const maps = [
   {
-    value: 'alteria',
-    label: 'Alteria',
+    value: "Alteria",
+    label: "Alteria",
   },
   {
-    value: 'chernarusplus',
-    label: 'Chernarus+',
-  },
-]
-
-export const priorities = [
-  {
-    label: 'Low',
-    value: 'low',
-    icon: ArrowDownIcon,
+    value: "Arsteinen",
+    label: "Arsteinen",
   },
   {
-    label: 'Medium',
-    value: 'medium',
-    icon: ArrowRightIcon,
+    value: "Banov",
+    label: "Banov",
   },
   {
-    label: 'High',
-    value: 'high',
-    icon: ArrowUpIcon,
+    value: "Barrington",
+    label: "Barrington",
+  },
+  {
+    value: "Bearisland",
+    label: "Bear Island",
+  },
+  {
+    value: "Bitterroot",
+    label: "Bitter Root",
+  },
+  {
+    value: "Chernarusplus",
+    label: "Chernarus+",
+  },
+  {
+    value: "Chernarusplusgloom",
+    label: "Chernarus+ Gloom",
+  },
+  {
+    value: "Chiemsee",
+    label: "Chiemsee",
+  },
+  {
+    value: "Deerisle",
+    label: "Deer Isle",
+  },
+  {
+    value: "Eden",
+    label: "Eden",
+  },
+  {
+    value: "Enoch",
+    label: "Livonia",
+  },
+  {
+    value: "Esseker",
+    label: "Esseker",
+  },
+  {
+    value: "Exclusionzone",
+    label: "Exclusion Zone",
+  },
+  {
+    value: "Exclusionzoneplus",
+    label: "Exclusion Zone+",
+  },
+  {
+    value: "Iztek",
+    label: "Iztek",
+  },
+  {
+    value: "Lux",
+    label: "Lux",
+  },
+  {
+    value: "Melkart",
+    label: "Melkart",
+  },
+  {
+    value: "Namalsk",
+    label: "Namalsk",
+  },
+  {
+    value: "Nhchernobyl",
+    label: "NH Chernobyl",
+  },
+  {
+    value: "Nyheim",
+    label: "Nyheim",
+  },
+  {
+    value: "Pripyat",
+    label: "Pripyat",
+  },
+  {
+    value: "Rostow",
+    label: "Rostow",
+  },
+  {
+    value: "Sarov",
+    label: "Sarov",
+  },
+  {
+    value: "Stuartisland",
+    label: "Stuart Island",
+  },
+  {
+    value: "Takistanplus",
+    label: "Takistan+",
+  },
+  {
+    value: "Thezone",
+    label: "The Zone",
+  },
+  {
+    value: "Valning",
+    label: "Valning",
+  },
+  {
+    value: "Vela",
+    label: "Vela",
+  },
+  {
+    value: "Yiprit",
+    label: "Yiprit",
   },
 ]

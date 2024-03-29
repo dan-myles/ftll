@@ -1,8 +1,8 @@
 import { z } from "zod"
 
 export const modListSchema = z.object({
-  WorkshopId: z.number(),
-  Name: z.string(),
+  workshop_id: z.number(),
+  name: z.string(),
 })
 
 export const serverSchema = z.object({
@@ -23,10 +23,8 @@ export const serverSchema = z.object({
   dedicated: z.boolean(),
   os: z.string(),
   gametype: z.string(),
-  ModList: z.array(modListSchema).or(z.null()),
-  Time: z.number().or(z.undefined()),
-  Modded: z.boolean().or(z.undefined()),
-  Ping: z.number().or(z.undefined()),
+  mod_list: z.array(modListSchema).or(z.null()).or(z.undefined()),
+  ping: z.number().or(z.null()).or(z.undefined()),
 })
 
 export const serverListSchema = z.array(serverSchema)
