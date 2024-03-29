@@ -29,19 +29,13 @@ import { Dialog, DialogTrigger } from "./ui/dialog"
 import { WindowTitlebar } from "./tauri-controls"
 
 export function TitleBar() {
-  const path = usePathname()
-
   return (
     <WindowTitlebar controlsOrder="right" className="border-b">
       <Menubar className="h-10 rounded-none border-b border-none pl-2 lg:pl-3">
         <MenubarMenu>
           {/* App Logo */}
           <div className="inline-flex h-fit w-fit items-center text-cyan-500">
-            {path === "/" || path === "/examples/music" ? (
-              <Image src={logo} alt="logo" width={20} height={20} />
-            ) : (
-              <Sailboat className="h-5 w-5" />
-            )}
+            <Sailboat className="h-5 w-5" />
           </div>
         </MenubarMenu>
 
