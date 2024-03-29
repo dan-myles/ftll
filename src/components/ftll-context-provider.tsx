@@ -69,8 +69,9 @@ export default function FTLLContextProvider() {
           <AlertDialogHeader>
             <AlertDialogTitle>Give me a moment... 🔎</AlertDialogTitle>
             <AlertDialogDescription>
-              I'm importing some new servers for you! Hold on a second and I'll
-              be done before you can say "supercalafragilisticexpialidocious"!
+              I&apos;m importing some new servers for you! Hold on a second and
+              I&apos;ll be done before you can say
+              &ldquo;supercalafragilisticexpialidocious&ldquo;!
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="">
@@ -87,8 +88,8 @@ export default function FTLLContextProvider() {
           <AlertDialogHeader>
             <AlertDialogTitle>Uh oh... 😭</AlertDialogTitle>
             <AlertDialogDescription>
-              It looks like Steam isn't running! Please start Steam and try
-              again. I'm going to shut down now.
+              It looks like Steam isn&apos;t running! Please start Steam and
+              try again. I&apos;m going to shut down now.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="">

@@ -39,7 +39,7 @@ const useServerListStore = create<ServerListState & ServerListActions>()(
             serverList.findIndex((s) => s.steamid === server.steamid)
           ] = server
           return { serverList }
-        }, true)
+        })
       },
     }),
     {

@@ -31,7 +31,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 
-import { labels } from "../data/data"
 import { serverSchema } from "../data/schema"
 
 interface DataTableRowActionsProps<TData> {

@@ -1,10 +1,10 @@
-'use client'
+"use client"
 
-import { useCallback, useEffect, useState } from 'react'
-import Image from 'next/image'
-import { usePathname } from 'next/navigation'
-import logo from '@/assets/logo.png'
-import { Globe, Mic, Sailboat } from 'lucide-react'
+import { useCallback, useEffect, useState } from "react"
+import Image from "next/image"
+import { usePathname } from "next/navigation"
+import logo from "@/assets/logo.png"
+import { Globe, Mic, Sailboat } from "lucide-react"
 
 import {
   Menubar,
@@ -21,21 +21,23 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger,
-} from '@/components/ui/menubar'
+} from "@/components/ui/menubar"
 
-import { AboutDialog } from './about-dialog'
-import { ModeToggle } from './mode-toggle'
-import { Dialog, DialogTrigger } from './ui/dialog'
-import { WindowTitlebar } from './tauri-controls'
+import { AboutDialog } from "./about-dialog"
+import { ModeToggle } from "./mode-toggle"
+import { Dialog, DialogTrigger } from "./ui/dialog"
+import { WindowTitlebar } from "./tauri-controls"
 
 export function TitleBar() {
+  const path = usePathname()
+
   return (
     <WindowTitlebar controlsOrder="right" className="border-b">
       <Menubar className="h-10 rounded-none border-b border-none pl-2 lg:pl-3">
         <MenubarMenu>
           {/* App Logo */}
           <div className="inline-flex h-fit w-fit items-center text-cyan-500">
-            {usePathname() === '/' || usePathname() === '/examples/music' ? (
+            {path === "/" || path === "/examples/music" ? (
               <Image src={logo} alt="logo" width={20} height={20} />
             ) : (
               <Sailboat className="h-5 w-5" />
