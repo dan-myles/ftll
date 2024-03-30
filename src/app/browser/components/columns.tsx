@@ -98,10 +98,10 @@ export const columns: ColumnDef<Server>[] = [
       )
     },
   },
-  {
-    id: "intervalUpdate",
-    cell: ({ row }) => {
-      return <DataTableIntervalUpdate row={row} />
-    },
-  },
+  // {
+  //   id: "intervalUpdate",
+  //   cell: ({ row }) => {
+  //     return <DataTableIntervalUpdate row={row} />
+  //   },
+  // },
 ]

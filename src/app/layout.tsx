@@ -38,6 +38,7 @@ export default function RootLayout({
             >
               {children}
             </div>
+            fda
           </main>
         </ThemeProvider>
         <ScreenIndicator />

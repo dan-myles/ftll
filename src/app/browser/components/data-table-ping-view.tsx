@@ -16,20 +16,61 @@ export function DataTablePingView<TData>({
 }: DataTableRowActionsProps<TData>) {
   const server = serverSchema.parse(row.original)
   const [isLoading, setLoading] = useState(true)
+  const [ping, setPing] = useState(0)
 
   useEffect(() => {
     setLoading(false)
+
+    const updateServerPing = async () => {
+      const res = await invoke("get_server_info", { server: server })
+      const updatedServer = serverSchema.parse(res)
+      if (updatedServer.ping) {
+        setPing(updatedServer.ping)
+      }
+    }
+
+    let interval: NodeJS.Timeout
+    let timeout2: NodeJS.Timeout
+
+    // we wait 2.5 seconds before starting the interval
+    // so we can avoid spamming the server with requests
+    // on components that mounted and unmounted quickly
+    const timeout = setTimeout(() => {
+      // then we start the interval
+      interval = setInterval(() => {
+        // sleep random time between 0 and 5 seconds
+        timeout2 = setTimeout(
+          () => {
+            // finally we update the server ping
+            updateServerPing()
+          },
+          Math.floor(Math.random() * 15000)
+        )
+      }, 5000)
+    }, 2500)
+
+    return () => {
+      clearInterval(interval)
+      clearTimeout(timeout)
+      clearTimeout(timeout2)
+    }
   }, [])
 
   return (
     <div className="">
       {isLoading && <Spinner />}
 
-      {!isLoading && row.getValue("ping") !== 99999 && (
-        <PingColored ping={row.getValue("ping")} />
+      {!isLoading && row.getValue("ping") !== 99999 && ping !== 99999 && (
+        <PingColored ping={ping !== 0 ? ping : row.getValue("ping")} />
       )}
 
       {!isLoading && row.getValue("ping") === 99999 && (
+        <div className="text-gray-500">
+          <span>Offline</span>
+        </div>
+      )}
+
+      {!isLoading && ping === 99999 && row.getValue("ping") !== 99999 && (
         <div className="text-gray-500">
           <span>Offline</span>
         </div>

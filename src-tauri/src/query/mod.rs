@@ -152,7 +152,7 @@ pub async fn get_server_list() -> Vec<Server> {
 // Right now this is capped at 1, but if we figure out a way to
 // rerender the UI in a more efficient way, we can increase this
 lazy_static! {
-    static ref MAX_UPDATES_SEMAPHORE: Arc<Semaphore> = Arc::new(Semaphore::new(1));
+    static ref MAX_UPDATES_SEMAPHORE: Arc<Semaphore> = Arc::new(Semaphore::new(25));
 }
 
 #[tauri::command]

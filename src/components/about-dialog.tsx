@@ -1,42 +1,42 @@
-'use client'
+"use client"
 
-import { useCallback, useState } from 'react'
-import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { UpdateIcon } from '@radix-ui/react-icons'
-import { GithubIcon, HomeIcon, LucideArrowUpRight } from 'lucide-react'
+import { useCallback, useState } from "react"
+import * as DialogPrimitive from "@radix-ui/react-dialog"
+import { UpdateIcon } from "@radix-ui/react-icons"
+import { GithubIcon, HomeIcon, LucideArrowUpRight } from "lucide-react"
 
-import { Icons } from './icons'
-import { Button, buttonVariants } from './ui/button'
+import { Icons } from "./icons"
+import { Button, buttonVariants } from "./ui/button"
 import {
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from './ui/dialog'
+} from "./ui/dialog"
 
 export function AboutDialog() {
-  const [updateText, setUpdateText] = useState('')
-  const [version, setVersion] = useState('')
-  const [name, setName] = useState('')
-  const [tauriVersion, setTauriVersion] = useState('')
-  const [arc, setArc] = useState('')
+  const [updateText, setUpdateText] = useState("")
+  const [version, setVersion] = useState("")
+  const [name, setName] = useState("")
+  const [tauriVersion, setTauriVersion] = useState("")
+  const [arc, setArc] = useState("")
 
   const getInfo = useCallback(async () => {
     const { getName, getTauriVersion, getVersion } = await import(
-      '@tauri-apps/api/app'
+      "@tauri-apps/api/app"
     )
-    const { arch } = await import('@tauri-apps/plugin-os')
+    const { arch } = await import("@tauri-apps/plugin-os")
 
     getName && getName().then((x) => setName(x))
     getVersion && getVersion().then((x) => setVersion(x))
     arch && arch().then((x) => setArc(x))
   }, [])
 
-  if (typeof window !== 'undefined') getInfo()
+  if (typeof window !== "undefined") getInfo()
 
   const open = useCallback(async (url: string) => {
-    const { open } = await import('@tauri-apps/plugin-shell')
+    const { open } = await import("@tauri-apps/plugin-shell")
     open && open(url)
   }, [])
 
@@ -56,7 +56,9 @@ export function AboutDialog() {
               <span
                 className="cursor-pointer text-blue-500"
                 onClick={() =>
-                  open('https://github.com/agmmnn/tauri-ui/releases/tag/v0.2.0')
+                  open(
+                    "https://github.com/agmmnn/tauri-ui/releases/tag/v0.2.0"
+                  )
                 }
               >
                 release notes
@@ -78,11 +80,13 @@ export function AboutDialog() {
         <div className="mr-auto flex flex-row gap-2">
           <HomeIcon
             className="h-5 w-5 cursor-pointer transition hover:text-slate-300"
-            onClick={() => open('https://github.com/agmmnn/tauri-ui')}
+            onClick={() => open("https://ftl-launcher.com")}
           />
           <GithubIcon
             className="h-5 w-5 cursor-pointer transition hover:text-slate-300 "
-            onClick={() => open('https://github.com/agmmnn/tauri-ui')}
+            onClick={() =>
+              open("https://github.com/danlikestocode/ftl-launcher")
+            }
           />
         </div>
 
@@ -90,7 +94,7 @@ export function AboutDialog() {
           type="submit"
           variant="outline"
           className="h-7 gap-1"
-          onClick={() => setUpdateText('You have the latest version.')}
+          onClick={() => setUpdateText("You have the latest version.")}
         >
           <UpdateIcon /> Check for Updates
         </Button>
