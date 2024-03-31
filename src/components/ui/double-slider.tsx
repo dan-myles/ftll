@@ -1,6 +1,6 @@
-import { Fragment, useEffect, useState, forwardRef } from "react"
-import * as SliderPrimitive from "@radix-ui/react-slider"
 import { cn } from "@/lib/utils"
+import * as SliderPrimitive from "@radix-ui/react-slider"
+import { Fragment, forwardRef, useEffect, useState } from "react"
 
 export type DoubleSliderProps = {
   className?: string

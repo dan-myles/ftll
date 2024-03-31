@@ -1,3 +1,3 @@
-export { Windows } from "./windows"
-export { MacOS } from "./macos"
 export { Gnome } from "./linux"
+export { MacOS } from "./macos"
+export { Windows } from "./windows"

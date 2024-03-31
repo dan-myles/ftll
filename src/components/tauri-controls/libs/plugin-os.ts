@@ -1,10 +1,10 @@
-import type { OsType } from '@tauri-apps/plugin-os'
+import type { OsType } from "@tauri-apps/plugin-os"
 
 let osType: OsType | undefined = undefined
 let osTypePromise: Promise<OsType> | null = null
 
-if (typeof window !== 'undefined') {
-  osTypePromise = import('@tauri-apps/plugin-os').then((module) => {
+if (typeof window !== "undefined") {
+  osTypePromise = import("@tauri-apps/plugin-os").then((module) => {
     return module.type().then((x) => {
       osType = x // Assign the value of osType here
       return x // Return the value to the promise chain

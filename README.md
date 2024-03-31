@@ -12,3 +12,7 @@
 
 ## Description
 Coming soon :)
+
+### Notes
+- need to take care of server duplication, maybe a faster way to handle that
+- need to take care of updating server information on the fly without sorting

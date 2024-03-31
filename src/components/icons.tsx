@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import {
   AlertTriangle,
@@ -23,11 +23,10 @@ import {
   Settings,
   SunMedium,
   Trash,
-  Twitter,
   User,
   X,
   type XIcon as LucideIcon,
-} from 'lucide-react'
+} from "lucide-react"
 
 export type Icon = typeof LucideIcon
 
@@ -62,7 +61,6 @@ export const Icons = {
   arrowRight: ArrowRight,
   help: HelpCircle,
   pizza: Pizza,
-  twitter: Twitter,
   check: Check,
   copy: Copy,
   copyDone: ClipboardCheck,

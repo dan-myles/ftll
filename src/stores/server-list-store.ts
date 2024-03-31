@@ -1,7 +1,7 @@
+import type { Server, ServerList } from "@/app/browser/data/server-schema"
+import { del, get, set } from "idb-keyval"
 import { create } from "zustand"
-import { persist, createJSONStorage, StateStorage } from "zustand/middleware"
-import type { ServerList, Server } from "@/app/browser/data/schema"
-import { get, set, del } from "idb-keyval"
+import { StateStorage, createJSONStorage, persist } from "zustand/middleware"
 
 interface ServerListState {
   serverList: ServerList

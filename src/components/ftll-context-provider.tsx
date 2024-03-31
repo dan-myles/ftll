@@ -1,5 +1,6 @@
 "use client"
 
+import { ServerList, serverListSchema } from "@/app/browser/data/server-schema"
 import {
   AlertDialog,
   AlertDialogContent,
@@ -8,14 +9,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-
-import { useEffect, useState } from "react"
-import { invoke } from "@tauri-apps/api/core"
 import { useServerListStore } from "@/stores/server-list-store"
-import { ServerList, serverListSchema } from "@/app/browser/data/schema"
 import { window } from "@tauri-apps/api"
+import { invoke } from "@tauri-apps/api/core"
+import { useEffect, useState } from "react"
 
-export default function FTLLContextProvider() {
+export function FTLLContextProvider() {
   const [isLoadingServers, setLoadingServers] = useState(false)
   const [isSteamInitialized, setSteamInitialized] = useState(true)
   const setServerList = useServerListStore((state) => state.setServerList)
@@ -88,8 +87,8 @@ export default function FTLLContextProvider() {
           <AlertDialogHeader>
             <AlertDialogTitle>Uh oh... 😭</AlertDialogTitle>
             <AlertDialogDescription>
-              It looks like Steam isn&apos;t running! Please start Steam and
-              try again. I&apos;m going to shut down now.
+              It looks like Steam isn&apos;t running! Please start Steam and try
+              again. I&apos;m going to shut down now.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="">

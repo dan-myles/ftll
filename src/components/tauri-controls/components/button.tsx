@@ -1,5 +1,5 @@
-import type { ButtonHTMLAttributes } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils"
+import type { ButtonHTMLAttributes } from "react"
 
 export function Button({
   className,
@@ -9,7 +9,7 @@ export function Button({
   return (
     <button
       className={cn(
-        'inline-flex cursor-default items-center justify-center',
+        "inline-flex cursor-default items-center justify-center",
         className
       )}
       {...props}

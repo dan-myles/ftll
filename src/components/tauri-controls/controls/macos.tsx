@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState, type HTMLProps } from 'react'
-import { Icons } from '../components/icons'
-import { cn } from '@/lib/utils'
-import { Button } from '../components/button'
-import TauriAppWindowContext from '../contexts/plugin-window'
+import { cn } from "@/lib/utils"
+import { useContext, useEffect, useState, type HTMLProps } from "react"
+import { Button } from "../components/button"
+import { Icons } from "../components/icons"
+import TauriAppWindowContext from "../contexts/plugin-window"
 
 export function MacOS({ className, ...props }: HTMLProps<HTMLDivElement>) {
   const { minimizeWindow, maximizeWindow, fullscreenWindow, closeWindow } =
@@ -12,7 +12,7 @@ export function MacOS({ className, ...props }: HTMLProps<HTMLDivElement>) {
   const [isHovering, setIsHovering] = useState(false)
 
   const last = isAltKeyPressed ? <Icons.plusMac /> : <Icons.fullMac />
-  const key = 'Alt'
+  const key = "Alt"
 
   const handleMouseEnter = () => {
     setIsHovering(true)
@@ -33,14 +33,14 @@ export function MacOS({ className, ...props }: HTMLProps<HTMLDivElement>) {
   }
   useEffect(() => {
     // Attach event listeners when the component mounts
-    window.addEventListener('keydown', handleAltKeyDown)
-    window.addEventListener('keyup', handleAltKeyUp)
+    window.addEventListener("keydown", handleAltKeyDown)
+    window.addEventListener("keyup", handleAltKeyUp)
   }, [])
 
   return (
     <div
       className={cn(
-        'space-x-2 px-3 text-black active:text-black dark:text-black',
+        "space-x-2 px-3 text-black active:text-black dark:text-black",
         className
       )}
       onMouseEnter={handleMouseEnter}

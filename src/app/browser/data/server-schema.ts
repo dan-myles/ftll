@@ -1,5 +1,6 @@
 import { z } from "zod"
 
+// Runtime Validation of API Responses
 export const modListSchema = z.object({
   workshop_id: z.number(),
   name: z.string(),
@@ -29,6 +30,7 @@ export const serverSchema = z.object({
 
 export const serverListSchema = z.array(serverSchema)
 
+// Type Definitions
 export type ModList = z.infer<typeof modListSchema>
 export type Server = z.infer<typeof serverSchema>
 export type ServerList = z.infer<typeof serverListSchema>

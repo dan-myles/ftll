@@ -1,8 +1,8 @@
-import React, { useContext, type HTMLProps } from 'react'
-import { Button } from '../../components/button'
-import { Icons } from '../../components/icons'
-import TauriAppWindowContext from '../../contexts/plugin-window'
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils"
+import { useContext, type HTMLProps } from "react"
+import { Button } from "../../components/button"
+import { Icons } from "../../components/icons"
+import TauriAppWindowContext from "../../contexts/plugin-window"
 
 export function Gnome({ className, ...props }: HTMLProps<HTMLDivElement>) {
   const { isWindowMaximized, minimizeWindow, maximizeWindow, closeWindow } =
@@ -10,7 +10,7 @@ export function Gnome({ className, ...props }: HTMLProps<HTMLDivElement>) {
 
   return (
     <div
-      className={cn('mr-[10px] h-auto items-center space-x-[13px]', className)}
+      className={cn("mr-[10px] h-auto items-center space-x-[13px]", className)}
       {...props}
     >
       <Button

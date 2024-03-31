@@ -1,21 +1,11 @@
-"use client"
-
-import { DotsHorizontalIcon, DotsVerticalIcon } from "@radix-ui/react-icons"
+import { DotsHorizontalIcon } from "@radix-ui/react-icons"
 import { Row } from "@tanstack/react-table"
 import {
   CopyIcon,
   FolderSyncIcon,
   HeartIcon,
   InfoIcon,
-  Loader2Icon,
-  LoaderIcon,
-  LocateFixedIcon,
-  PlayIcon,
-  RefreshCcw,
-  RefreshCcwDotIcon,
   RefreshCcwIcon,
-  RefreshCwIcon,
-  RefreshCwOffIcon,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -23,18 +13,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { serverSchema } from "../data/schema"
 import { useState } from "react"
+import { serverSchema } from "../data/server-schema"
 import DataTableMoreInfo from "./data-table-more-info"
 
 interface DataTableRowActionsProps<TData> {

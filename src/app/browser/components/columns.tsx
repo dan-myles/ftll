@@ -1,21 +1,14 @@
-"use client"
-
 import { HeartFilledIcon } from "@radix-ui/react-icons"
 import { ColumnDef } from "@tanstack/react-table"
-import { HeartIcon, HeartOffIcon } from "lucide-react"
-
-import { Checkbox } from "@/components/ui/checkbox"
-
-import { Server } from "../data/schema"
+import { HeartIcon } from "lucide-react"
+import { Server } from "../data/server-schema"
 import { DataTableColumnHeader } from "./data-table-column-header"
-import { DataTableModView } from "./data-table-mod-view"
+import { DataTableMapView } from "./data-table-map-view"
+import { DataTableNameView } from "./data-table-name-view"
+import { DataTablePingView } from "./data-table-ping-view"
 import { DataTablePlayDialog } from "./data-table-play-dialog"
 import { DataTableRowActions } from "./data-table-row-actions"
-import { DataTableNameView } from "./data-table-name-view"
 import { DataTableTimeView } from "./data-table-time-view"
-import { DataTablePingView } from "./data-table-ping-view"
-import { DataTableMapView } from "./data-table-map-view"
-import { DataTableIntervalUpdate } from "./data-table-interval-update"
 
 // i should really think about changing everything to match case on api
 export const columns: ColumnDef<Server>[] = [
@@ -98,10 +91,4 @@ export const columns: ColumnDef<Server>[] = [
       )
     },
   },
-  // {
-  //   id: "intervalUpdate",
-  //   cell: ({ row }) => {
-  //     return <DataTableIntervalUpdate row={row} />
-  //   },
-  // },
 ]

@@ -1,15 +1,15 @@
-import { useContext, type HTMLProps } from 'react'
-import { Icons } from '../components/icons'
-import TauriAppWindowContext from '../contexts/plugin-window'
-import { cn } from '@/lib/utils'
-import { Button } from '../components/button'
+import { cn } from "@/lib/utils"
+import { useContext, type HTMLProps } from "react"
+import { Button } from "../components/button"
+import { Icons } from "../components/icons"
+import TauriAppWindowContext from "../contexts/plugin-window"
 
 export function Windows({ className, ...props }: HTMLProps<HTMLDivElement>) {
   const { isWindowMaximized, minimizeWindow, maximizeWindow, closeWindow } =
     useContext(TauriAppWindowContext)
 
   return (
-    <div className={cn('h-10', className)} {...props}>
+    <div className={cn("h-10", className)} {...props}>
       <Button
         onClick={minimizeWindow}
         className="max-h-10 w-[46px] cursor-default rounded-none bg-transparent text-black/90 hover:bg-black/[.05] active:bg-black/[.03]  dark:text-white dark:hover:bg-white/[.06] dark:active:bg-white/[.04]"
@@ -19,8 +19,8 @@ export function Windows({ className, ...props }: HTMLProps<HTMLDivElement>) {
       <Button
         onClick={maximizeWindow}
         className={cn(
-          'max-h-10 w-[46px] cursor-default rounded-none bg-transparent',
-          'text-black/90 hover:bg-black/[.05] active:bg-black/[.03] dark:text-white dark:hover:bg-white/[.06] dark:active:bg-white/[.04]'
+          "max-h-10 w-[46px] cursor-default rounded-none bg-transparent",
+          "text-black/90 hover:bg-black/[.05] active:bg-black/[.03] dark:text-white dark:hover:bg-white/[.06] dark:active:bg-white/[.04]"
           // !isMaximizable && "text-white/[.36]",
         )}
       >

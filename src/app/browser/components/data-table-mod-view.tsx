@@ -1,21 +1,13 @@
-"use client"
-
-import { useEffect, useRef, useState } from "react"
-import { DotsHorizontalIcon } from "@radix-ui/react-icons"
+import { Badge } from "@/components/ui/badge"
 import { Row } from "@tanstack/react-table"
 import { IceCreamIcon } from "lucide-react"
-
-import { Badge } from "@/components/ui/badge"
-
-import { ModList, serverSchema } from "../data/schema"
+import { serverSchema } from "../data/server-schema"
 
 interface DataTableModViewProps<TData> {
   row: Row<TData>
 }
 
-export function DataTableModView<TData>({
-  row,
-}: DataTableModViewProps<TData>) {
+export function DataTableModView<TData>({ row }: DataTableModViewProps<TData>) {
   const server = serverSchema.parse(row.original)
   const rows = []
 
@@ -55,13 +47,11 @@ export function DataTableModView<TData>({
   }
 
   return (
-    <div className="inline-block flex min-w-[200px] overflow-hidden sm:flex-col lg:flex-row">
+    <div className="flex min-w-[200px] overflow-hidden sm:flex-col lg:flex-row">
       {rows}
       {server.mod_list.length >= 4 && (
         <button className="text-xs text-gray-500 sm:mt-1">
-          <Badge className="sm:float-left">
-            +{server.mod_list.length - 2}
-          </Badge>
+          <Badge className="sm:float-left">+{server.mod_list.length - 2}</Badge>
         </button>
       )}
     </div>

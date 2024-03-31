@@ -1,19 +1,10 @@
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { FTLLContextProvider } from "@/components/ftll-context-provider"
+import { MainNav } from "@/components/main-nav"
 import { ScreenIndicator } from "@/components/screen-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
-import "./globals.css"
 import { TitleBar } from "@/components/title-bar"
 import { cn } from "@/lib/utils"
-import { MainNav } from "@/components/main-nav"
-import FTLLContextProvider from "@/components/ftll-context-provider"
-
-const inter = Inter({ subsets: ["latin"] })
-
-export const metadata: Metadata = {
-  title: "FTLL",
-  description: "A FTL Mod Launcher for DayZ",
-}
+import "./globals.css"
 
 export default function RootLayout({
   children,

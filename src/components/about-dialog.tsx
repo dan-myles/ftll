@@ -1,12 +1,10 @@
 "use client"
 
-import { useCallback, useState } from "react"
-import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { UpdateIcon } from "@radix-ui/react-icons"
-import { GithubIcon, HomeIcon, LucideArrowUpRight } from "lucide-react"
-
+import { GithubIcon, HomeIcon } from "lucide-react"
+import { useCallback, useState } from "react"
 import { Icons } from "./icons"
-import { Button, buttonVariants } from "./ui/button"
+import { Button } from "./ui/button"
 import {
   DialogContent,
   DialogDescription,
@@ -56,9 +54,7 @@ export function AboutDialog() {
               <span
                 className="cursor-pointer text-blue-500"
                 onClick={() =>
-                  open(
-                    "https://github.com/agmmnn/tauri-ui/releases/tag/v0.2.0"
-                  )
+                  open("https://github.com/agmmnn/tauri-ui/releases/tag/v0.2.0")
                 }
               >
                 release notes

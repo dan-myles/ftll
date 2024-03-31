@@ -1,13 +1,13 @@
-import type { OsType } from '@tauri-apps/plugin-os'
-import { useEffect, useState } from 'react'
-import { cn } from './libs/utils'
-import { getOsType } from './libs/plugin-os'
-import type { WindowTitlebarProps } from './types'
-import { WindowControls } from './window-controls'
+import type { OsType } from "@tauri-apps/plugin-os"
+import { useEffect, useState } from "react"
+import { getOsType } from "./libs/plugin-os"
+import { cn } from "./libs/utils"
+import type { WindowTitlebarProps } from "./types"
+import { WindowControls } from "./window-controls"
 
 export function WindowTitlebar({
   children,
-  controlsOrder = 'system',
+  controlsOrder = "system",
   className,
   windowControlsProps,
   ...props
@@ -21,10 +21,10 @@ export function WindowTitlebar({
   }, [])
 
   const left =
-    controlsOrder === 'left' ||
-    (controlsOrder === 'platform' &&
-      windowControlsProps?.platform === 'macos') ||
-    (controlsOrder === 'system' && osType === 'macos')
+    controlsOrder === "left" ||
+    (controlsOrder === "platform" &&
+      windowControlsProps?.platform === "macos") ||
+    (controlsOrder === "system" && osType === "macos")
 
   const customProps = (ml: string) => {
     if (windowControlsProps?.justify !== undefined) return windowControlsProps
@@ -44,7 +44,7 @@ export function WindowTitlebar({
   return (
     <div
       className={cn(
-        'flex select-none flex-row overflow-hidden bg-background',
+        "flex select-none flex-row overflow-hidden bg-background",
         className
       )}
       data-tauri-drag-region
@@ -52,13 +52,13 @@ export function WindowTitlebar({
     >
       {left ? (
         <>
-          <WindowControls {...customProps('ml-0')} />
+          <WindowControls {...customProps("ml-0")} />
           {children}
         </>
       ) : (
         <>
           {children}
-          <WindowControls {...customProps('ml-auto')} />
+          <WindowControls {...customProps("ml-auto")} />
         </>
       )}
     </div>

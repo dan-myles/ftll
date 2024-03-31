@@ -1,21 +1,5 @@
-"use client"
-
-import * as React from "react"
-import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons"
-import { Column } from "@tanstack/react-table"
-
-import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "@/components/ui/command"
 import {
   Popover,
   PopoverContent,
@@ -23,25 +7,21 @@ import {
 } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
 import { Slider } from "@/components/ui/slider"
+import { PlusCircledIcon } from "@radix-ui/react-icons"
+import { Column } from "@tanstack/react-table"
+import { useState } from "react"
 
 interface DataTablePingFilter<TData, TValue> {
   column?: Column<TData, TValue>
   title?: string
-  options: {
-    label: string
-    value: string
-    icon?: React.ComponentType<{ className?: string }>
-  }[]
 }
 
 export function DataTablePingFilter<TData, TValue>({
   column,
   title,
-  options,
 }: DataTablePingFilter<TData, TValue>) {
-  const facets = column?.getFacetedUniqueValues()
   const selectedValues = new Set(column?.getFilterValue() as number[])
-  const [value, setValue] = React.useState([250])
+  const [value, setValue] = useState([250])
 
   const handleValueChange = (value: number[]) => {
     setValue(value)

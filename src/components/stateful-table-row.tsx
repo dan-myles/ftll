@@ -1,19 +1,8 @@
 "use client"
 
+import DataTableMoreInfo from "@/app/browser/components/data-table-more-info"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
-
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
-import DataTableMoreInfo from "@/app/browser/components/data-table-more-info"
 
 export default function StatefulTableRow({
   className,

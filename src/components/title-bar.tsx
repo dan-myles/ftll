@@ -1,32 +1,19 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
-import Image from "next/image"
-import { usePathname } from "next/navigation"
-import logo from "@/assets/logo.png"
-import { Globe, Mic, Sailboat } from "lucide-react"
-
 import {
   Menubar,
-  MenubarCheckboxItem,
   MenubarContent,
   MenubarItem,
-  MenubarLabel,
   MenubarMenu,
-  MenubarRadioGroup,
-  MenubarRadioItem,
   MenubarSeparator,
   MenubarShortcut,
-  MenubarSub,
-  MenubarSubContent,
-  MenubarSubTrigger,
   MenubarTrigger,
 } from "@/components/ui/menubar"
-
+import { Sailboat } from "lucide-react"
 import { AboutDialog } from "./about-dialog"
 import { ModeToggle } from "./mode-toggle"
-import { Dialog, DialogTrigger } from "./ui/dialog"
 import { WindowTitlebar } from "./tauri-controls"
+import { Dialog, DialogTrigger } from "./ui/dialog"
 
 export function TitleBar() {
   return (

@@ -1,8 +1,8 @@
 "use client"
 
+import { useServerListStore } from "@/stores/server-list-store"
 import { columns } from "./components/columns"
 import { DataTable } from "./components/data-table"
-import { useServerListStore } from "@/stores/server-list-store"
 
 export default function BrowserPage() {
   const servers = useServerListStore((state) => state.serverList)

@@ -1,23 +1,3 @@
-"use client"
-
-import { DotsHorizontalIcon, DotsVerticalIcon } from "@radix-ui/react-icons"
-import { Row } from "@tanstack/react-table"
-import {
-  CopyIcon,
-  FolderSyncIcon,
-  HeartIcon,
-  InfoIcon,
-  Loader2Icon,
-  LoaderIcon,
-  LocateFixedIcon,
-  PlayIcon,
-  RefreshCcw,
-  RefreshCcwDotIcon,
-  RefreshCcwIcon,
-  RefreshCwIcon,
-  RefreshCwOffIcon,
-} from "lucide-react"
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,9 +9,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-
-import { serverSchema } from "../data/schema"
+import { Row } from "@tanstack/react-table"
+import { PlayIcon } from "lucide-react"
+import { serverSchema } from "../data/server-schema"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>

@@ -1,8 +1,5 @@
-"use client"
 import { Row } from "@tanstack/react-table"
-import { serverSchema } from "../data/schema"
-import { MinusIcon } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { serverSchema } from "../data/server-schema"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>

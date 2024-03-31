@@ -1,20 +1,14 @@
 import { Button } from "@/components/ui/button"
-import Spinner from "@/components/ui/spinner"
-import { invoke } from "@tauri-apps/api/core"
-import Image from "next/image"
-import { useEffect, useState } from "react"
-import { Row } from "@tanstack/react-table"
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer"
-import { serverSchema } from "../data/schema"
+import { Row } from "@tanstack/react-table"
+import { serverSchema } from "../data/server-schema"
 
 interface DataTableMoreInfoProps<TData> {
   open: boolean

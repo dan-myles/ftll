@@ -1,12 +1,18 @@
-"use client"
-
-import * as React from "react"
+import StatefulTableRow from "@/components/stateful-table-row"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
-  RowData,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -16,35 +22,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-
+import * as React from "react"
 import { DataTablePagination } from "../components/data-table-pagination"
 import { DataTableToolbar } from "../components/data-table-toolbar"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { useServerListStore } from "@/stores/server-list-store"
-import { Server } from "../data/schema"
-import { Button } from "@/components/ui/button"
-import DataTableMoreInfo from "./data-table-more-info"
-import StatefulTableRow from "@/components/ui/stateful-table-row"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]

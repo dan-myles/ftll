@@ -1,10 +1,9 @@
-'use client'
+"use client"
 
-import Link from 'next/link'
-
-import { cn } from '@/lib/utils'
-import { UserNav } from './user-nav'
-import { usePathname } from 'next/navigation'
+import { cn } from "@/lib/utils"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { UserNav } from "./user-nav"
 
 export function MainNav({
   className,
@@ -20,12 +19,12 @@ export function MainNav({
           <div className="pl-4" />
           <nav
             className={cn(
-              'flex items-center space-x-4 lg:space-x-6',
+              "flex items-center space-x-4 lg:space-x-6",
               className
             )}
             {...props}
           >
-            {path === '/' ? (
+            {path === "/" ? (
               <Link
                 href="/"
                 className="text-sm font-medium transition-colors hover:text-primary"
@@ -40,7 +39,7 @@ export function MainNav({
                 Home
               </Link>
             )}
-            {path === '/browser' ? (
+            {path === "/browser" ? (
               <Link
                 href="/browser"
                 className="text-sm font-medium transition-colors hover:text-primary"
@@ -55,7 +54,7 @@ export function MainNav({
                 Server Browser
               </Link>
             )}
-            {path === '/settings' ? (
+            {path === "/settings" ? (
               <Link
                 href="/settings"
                 className="text-sm font-medium transition-colors hover:text-primary"

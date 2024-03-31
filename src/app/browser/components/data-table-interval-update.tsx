@@ -1,15 +1,8 @@
-"use client"
-
-import { useEffect, useRef, useState } from "react"
-import { DotsHorizontalIcon } from "@radix-ui/react-icons"
-import { Row } from "@tanstack/react-table"
-import { IceCreamIcon } from "lucide-react"
-
-import { Badge } from "@/components/ui/badge"
-
-import { ModList, Server, ServerList, serverSchema } from "../data/schema"
-import { invoke } from "@tauri-apps/api/core"
 import { useServerListStore } from "@/stores/server-list-store"
+import { Row } from "@tanstack/react-table"
+import { invoke } from "@tauri-apps/api/core"
+import { useEffect } from "react"
+import { serverSchema } from "../data/server-schema"
 
 interface DataTableIntervalUpdateProps<TData> {
   row: Row<TData>
