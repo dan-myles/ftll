@@ -50,6 +50,9 @@ export function DataTableTimeView<TData>({
     let interval: NodeJS.Timeout
     let timeout2: NodeJS.Timeout
 
+    // this is a hacky way to avoid spamming the server
+    // much better if we could cancel waiting requests if the component unmounts
+    // but idk rust thaaaaaaaaaaaaat well
     // we wait 2.5 seconds before starting the interval
     // so we can avoid spamming the server with requests
     // on components that mounted and unmounted quickly
@@ -66,6 +69,12 @@ export function DataTableTimeView<TData>({
         )
       }, 5000)
     }, 2500)
+
+    return () => {
+      clearTimeout(timeout)
+      clearInterval(interval)
+      clearTimeout(timeout2)
+    }
   }, [])
 
   return (
