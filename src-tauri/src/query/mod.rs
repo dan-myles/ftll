@@ -143,8 +143,9 @@ pub async fn refresh_server_cache() {
                     match response {
                         Ok(info) => {
                             println!("Updating server: {}", server.name);
-                            server.players = info.players as i64;
-                            server.max_players = info.max_players as i64;
+                            // @see https://github.com/danlikestocode/ftl-launcher/issues/1
+                            // server.players = info.players as i64;
+                            // server.max_players = info.max_players as i64;
                             server.map = info.map;
                             server.ping = Some(duration.as_millis() as i64);
 
@@ -223,9 +224,12 @@ pub async fn init_server_cache() {
                     match response {
                         Ok(info) => {
                             println!("Updating server: {}", server.name);
-                            server.players = info.players as i64;
-                            server.max_players = info.max_players as i64;
+                            // @see https://github.com/danlikestocode/ftl-launcher/issues/1
+                            // server.players = info.players as i64;
+                            // server.max_players = info.max_players as i64;
                             server.ping = Some(duration.as_millis() as i64);
+                            server.map = info.map;
+
                             if let Some(keywords) = info.extended_server_info.keywords {
                                 println!("Keywords: {}", keywords);
                                 server.game_type = keywords;
