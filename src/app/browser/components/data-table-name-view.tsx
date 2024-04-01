@@ -11,7 +11,7 @@ export function DataTableNameView<TData>({
   const server = serverSchema.parse(row.original)
 
   // Theres gotta be a better way to do this 💀
-  if (!server.mod_list) {
+  if (!server.modList) {
     return (
       <div className="flex flex-col">
         <div className="truncate font-medium md:max-w-[400px] lg:max-w-[600px] xl:max-w-[850px]">
@@ -21,7 +21,7 @@ export function DataTableNameView<TData>({
     )
   }
 
-  if (server.mod_list.at(0)?.workshop_id === 0) {
+  if (server.modList.at(0)?.workshopId === 0) {
     return (
       <div className="flex flex-col">
         <div className="truncate font-medium md:max-w-[400px] lg:max-w-[600px] xl:max-w-[850px]">
@@ -37,9 +37,9 @@ export function DataTableNameView<TData>({
         {server.name}
       </div>
       <div className="truncate text-gray-500">
-        {server.mod_list.map((mod) => {
+        {server.modList.map((mod) => {
           return (
-            <span key={mod.workshop_id} className="text-gray-500">
+            <span key={mod.workshopId} className="text-gray-500">
               {mod.name} |{" "}
             </span>
           )

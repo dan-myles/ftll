@@ -12,7 +12,6 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
             steam::was_steam_initialized,
-            query::get_server_info,
             query::get_server_list,
         ])
         .plugin(tauri_plugin_os::init())

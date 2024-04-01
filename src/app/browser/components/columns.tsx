@@ -29,7 +29,7 @@ export const columns: ColumnDef<Server>[] = [
     },
   },
   {
-    accessorKey: "Time",
+    accessorKey: "gameType",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Time" />
     ),
@@ -58,7 +58,7 @@ export const columns: ColumnDef<Server>[] = [
       return (
         <div className="flex max-w-fit items-center">
           <span>
-            {row.getValue("players")}/{row.original.max_players}
+            {row.getValue("players")}/{row.original.maxPlayers}
           </span>
         </div>
       )

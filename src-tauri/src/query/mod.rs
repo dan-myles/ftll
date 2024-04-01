@@ -1,316 +1,297 @@
-use crate::steam;
-
 use a2s::A2SClient;
+use directories::BaseDirs;
 use futures::stream::{self, StreamExt};
 use lazy_static::lazy_static;
 use reqwest;
 use serde_derive::Deserialize;
 use serde_derive::Serialize;
+use std::collections::HashMap;
 use std::fs;
 use std::sync::Arc;
-use std::time::Duration;
 use std::time::Instant;
-use std::time::SystemTime;
-use tokio::sync::{Mutex, Semaphore};
+use tokio::sync::Mutex;
+use tokio::sync::Semaphore;
 
-extern crate directories;
-use directories::BaseDirs;
+/*
+* Global static SERVER_MAP
+* Used to store the server list in memory.
+* IIRC we cannot have statics that must be initalized at runtime.
+*/
+lazy_static! {
+    static ref SERVER_MAP: Arc<Mutex<HashMap<String, Server>>> =
+        Arc::new(Mutex::new(HashMap::new()));
+}
 
-// TODO: Add error handling to unwrap
+/**
+* function: get_server_list
+* --------------------------
+* This function is the only function that is exposed to the Tauri frontend.
+* Takes care of checking for cache, and refreshing that cache. Or if it
+* doesn't exist, we download a new server_map, and query each server in the map.
+* This function will only ever be called once, every application launch.
+* During runtime, the frontend will cache the server list via IndexedDB.
+* --------------------------
+* TODO: Handle errors here in this top level function.
+* We can either return them as a Result (not sure if tauri supports this)
+* or we can emit an event to the frontend indicating some cache error.
+*/
 #[tauri::command]
 pub async fn get_server_list() -> Vec<Server> {
-    // Find appdata/FTLL/server_list.json
-    let base_dirs = BaseDirs::new().unwrap();
-    let appdata_dir = base_dirs.data_dir();
-    let ftll_dir = appdata_dir.join("FTLL");
-    let server_list_path = ftll_dir.join("server_list.json");
+    let server_list_path = BaseDirs::new()
+        .unwrap()
+        .data_dir()
+        .join("FTLL")
+        .join("server_map.json");
 
-    // if it doesn't exist, run first_app_launch
-    // This is the function to query ALL servers
     if !server_list_path.exists() {
-        let res = first_app_launch().await;
-        return res;
+        println!("Server list does not exist, fetching server list...");
+        init_server_cache().await;
+    } else {
+        println!("Server list exists, refreshing server list...");
+        refresh_server_cache().await;
     }
 
-    // Below is the path we take if we already have a server list cache
-    // we just need to add new servers and refresh old ones with new data
-    // read server_list.json as Vec<Server>
-    let server_list_json_local = fs::read_to_string(server_list_path.clone()).unwrap();
-    let mut server_list_local: Vec<Server> = serde_json::from_str(&server_list_json_local).unwrap();
+    let server_map_locked = SERVER_MAP.clone().lock_owned().await;
+    let server_list: Vec<Server> = server_map_locked.values().cloned().collect();
+    println!("get_server_list(): Returning server list...");
+    return server_list;
+}
 
-    // grab remote server_list
-    let server_list_remote = fetch_server_list().await.unwrap().servers;
-    let server_list_local_arc = Arc::new(Mutex::new(server_list_local));
+/**
+* Function: refresh_server_cache()
+* --------------------------
+* This function is called to refresh the server cache.
+* We skip all servers with marked as Some in the ping field, this means
+**/
+pub async fn refresh_server_cache() {
+    let server_map_path = BaseDirs::new()
+        .unwrap()
+        .data_dir()
+        .join("FTLL")
+        .join("server_map.json");
+
+    // Grab local server_map
+    let server_map_json_local = fs::read_to_string(server_map_path.clone()).unwrap();
+    let mut server_map_local: HashMap<String, Server> =
+        serde_json::from_str(&server_map_json_local).unwrap();
+
+    // Grab remote server_map
+    fetch_server_map().await.unwrap();
+    let server_map_remote = SERVER_MAP.clone().lock_owned().await.clone();
+
+    // Merge remote map into local map, overwriting any existing keys
+    for (key, value) in server_map_remote.iter() {
+        if !server_map_local.contains_key(key) {
+            // If the remote server is not in the local map, add it
+            server_map_local.insert(key.clone(), value.clone());
+        } else {
+            // Otherwise, update the local map with the remote map values
+            let new_server = server_map_local.get_mut(key).unwrap();
+            new_server.addr = value.addr.clone();
+            new_server.game_port = value.game_port.clone();
+            new_server.steam_id = value.steam_id.clone();
+            new_server.name = value.name.clone();
+            new_server.app_id = value.app_id.clone();
+            new_server.game_dir = value.game_dir.clone();
+            new_server.version = value.version.clone();
+            new_server.players = value.players.clone();
+            new_server.max_players = value.max_players.clone();
+            new_server.bots = value.bots.clone();
+            new_server.map = value.map.clone();
+            new_server.secure = value.secure.clone();
+            new_server.os = value.os.clone();
+            new_server.game_type = value.game_type.clone();
+            new_server.mod_list = value.mod_list.clone();
+        }
+    }
+
+    // Update the global SERVER_MAP with the new local map
+    let mut server_map = SERVER_MAP.clone().lock_owned().await;
+    *server_map = server_map_local;
+
+    // Now we just loop over SERVER_MAP and query each server
+    // That has missing or outdated information, ping, players, etc.
+    let servers_stream = stream::iter(server_map.clone());
+    drop(server_map);
     let a2s_client = Arc::new(A2SClient::new().await.unwrap());
-
-    // Semaphore to limit concurrent tasks
     let semaphore = Arc::new(Semaphore::new(1000));
-    let servers_to_query = server_list_remote.clone();
-    let servers_stream = stream::iter(servers_to_query);
 
-    // this is very messy lmao but it works
     servers_stream
-        .for_each_concurrent(20000, |remote_server| {
+        .for_each_concurrent(20000, |server| {
             let a2s_client_cloned = a2s_client.clone();
-            let server_list_local_arc_cloned = server_list_local_arc.clone();
-            let semaphore = semaphore.clone();
+            let semaphore_cloned = semaphore.clone();
 
             async move {
-                let mut local_servers = server_list_local_arc_cloned.lock().await;
-                if let Some(local_server) = local_servers
-                    .iter_mut()
-                    .find(|s| s.steamid == remote_server.steamid)
-                {
-                    println!("Updating server: {}", remote_server.name);
-                    // update local_server with remote_server info
-                    local_server.addr = remote_server.addr.clone();
-                    local_server.name = remote_server.name.clone();
-                    local_server.players = remote_server.players.clone();
-                    local_server.max_players = remote_server.max_players.clone();
-                    local_server.appid = remote_server.appid.clone();
-                    local_server.gamedir = remote_server.gamedir.clone();
-                    local_server.version = remote_server.version.clone();
-                    local_server.product = remote_server.product.clone();
-                    local_server.region = remote_server.region.clone();
-                    local_server.bots = remote_server.bots.clone();
-                    local_server.map = remote_server.map.clone();
-                    local_server.secure = remote_server.secure.clone();
-                    local_server.dedicated = remote_server.dedicated.clone();
-                    local_server.os = remote_server.os.clone();
-                    local_server.gametype = remote_server.gametype.clone();
-                    local_server.mod_list = remote_server.mod_list.clone();
-                    drop(local_servers);
-                } else {
-                    // add remote_server to local_server
-                    drop(local_servers);
-                    let _permit = semaphore.clone().acquire_owned();
-                    println!("Adding server: {}", remote_server.name);
+                if server.1.ping.is_some() {
+                    println!("Querying server: {}", server.1.name);
+                    println!("Ping: {}", server.1.ping.unwrap());
+                }
 
-                    let mut new_server = Server {
-                        addr: remote_server.addr.clone(),
-                        name: remote_server.name.clone(),
-                        gameport: remote_server.gameport.clone(),
-                        players: remote_server.players.clone(),
-                        max_players: remote_server.max_players.clone(),
-                        ping: Some(99999),
-                        steamid: remote_server.steamid.clone(),
-                        appid: remote_server.appid.clone(),
-                        gamedir: remote_server.gamedir.clone(),
-                        version: remote_server.version.clone(),
-                        product: remote_server.product.clone(),
-                        region: remote_server.region.clone(),
-                        bots: remote_server.bots.clone(),
-                        map: remote_server.map.clone(),
-                        secure: remote_server.secure.clone(),
-                        dedicated: remote_server.dedicated.clone(),
-                        os: remote_server.os.clone(),
-                        gametype: remote_server.gametype.clone(),
-                        mod_list: remote_server.mod_list.clone(),
-                    };
+                if server.1.ping.is_none() {
+                    println!("Skipping server: {}", server.1.name);
+                    return;
+                }
 
-                    // Get ping
-                    let start = Instant::now();
-                    let response = a2s_client_cloned.info(remote_server.addr).await;
-                    let duration = start.elapsed();
+                let _permit = semaphore_cloned.acquire().await.unwrap();
 
+                let start = Instant::now();
+                let response = a2s_client_cloned.info(server.1.addr).await;
+                let duration = start.elapsed();
+
+                let mut server_map = SERVER_MAP.clone().lock_owned().await;
+                if let Some(server) = server_map.get_mut(&server.0) {
                     match response {
                         Ok(info) => {
-                            new_server.players = info.players as i64;
-                            new_server.max_players = info.max_players as i64;
-                            new_server.ping = Some(duration.as_millis() as i64);
+                            println!("Updating server: {}", server.name);
+                            server.players = info.players as i64;
+                            server.max_players = info.max_players as i64;
+                            server.map = info.map;
+                            server.ping = Some(duration.as_millis() as i64);
+
+                            // For some reason the author of Rust A2S
+                            // decided to rename gametype to keywords ?????
+                            if let Some(keywords) = info.extended_server_info.keywords {
+                                println!("Keywords: {}", keywords);
+                                server.game_type = keywords;
+                            }
                         }
                         Err(e) => {
-                            println!("Error getting server info: {}", e);
-                            new_server.players = 0;
-                            new_server.ping = Some(99999);
+                            println!("Error querying server: {}", server.name);
+                            println!("Error: {}", e);
+                            server.players = 0;
+                            server.ping = Some(99999);
                         }
                     }
-
-                    let mut local_servers = server_list_local_arc_cloned.lock().await;
-                    local_servers.push(new_server);
-                    drop(local_servers);
                 }
             }
         })
         .await;
 
-    // collec the json
-    let server_list_local_locked = server_list_local_arc.lock().await;
-    let server_list_local_json = serde_json::to_string(&*server_list_local_locked).unwrap();
-    println!("Finished querying and updating servers!");
+    // Collect JSON
+    let server_map_locked = SERVER_MAP.clone().lock_owned().await;
+    let server_map_json = serde_json::to_string(&*server_map_locked).unwrap();
+    drop(server_map_locked);
+    println!("refresh_server_cache(): Finished querying!");
 
-    // delete server_list.json
-    if server_list_path.exists() {
-        fs::remove_file(server_list_path.clone()).unwrap();
-    }
+    // Find appdata/FTLL/server_list.json
+    let server_map_path = BaseDirs::new()
+        .unwrap()
+        .data_dir()
+        .join("FTLL")
+        .join("server_map.json");
 
-    fs::write(server_list_path, server_list_local_json).unwrap();
-    return server_list_local_locked.clone();
+    // Delete and write server_map to cache
+    fs::remove_file(server_map_path.clone()).unwrap();
+    fs::write(server_map_path, server_map_json).unwrap();
 }
 
-// Cap the number of concurrent tasks for querying server info
-// Right now this is capped at 1, but if we figure out a way to
-// rerender the UI in a more efficient way, we can increase this
-lazy_static! {
-    static ref MAX_UPDATES_SEMAPHORE: Arc<Semaphore> = Arc::new(Semaphore::new(25));
-}
+/**
+* Function: first_app_launch
+* --------------------------
+* This function is called on the first launch of the application.
+* Here we are fetching the server_map and querying each server in the map.
+* We do this to update ping and other server information.
+* This function will trigger anytime the FTLL local cache is deleted.
+* --------------------------
+* TODO: Add error handling to unwraps
+*/
+pub async fn init_server_cache() {
+    fetch_server_map().await.unwrap();
 
-#[tauri::command]
-pub async fn get_server_info(server: Server) -> Server {
-    let semaphore = MAX_UPDATES_SEMAPHORE.clone();
-    println!("Waiting for permit");
-    let _permit = semaphore.acquire_owned().await;
-    println!("Permit acquired");
-
-    // sleep for 1s to prevent spamming ui rerenders
-    tokio::time::sleep(Duration::from_millis(1000)).await;
-
-    let a2s_client = A2SClient::new().await.unwrap();
-
-    let start = SystemTime::now();
-    let response = a2s_client.info(server.addr.clone()).await;
-    let end = SystemTime::now();
-    let duration = end.duration_since(start).unwrap();
-
-    match response {
-        Ok(info) => {
-            return Server {
-                addr: server.addr,
-                name: server.name,
-                gameport: server.gameport,
-                players: info.players as i64,
-                max_players: info.max_players as i64,
-                ping: Some(duration.as_millis() as i64),
-                steamid: server.steamid,
-                appid: server.appid,
-                gamedir: server.gamedir,
-                version: server.version,
-                product: server.product,
-                region: server.region,
-                bots: server.bots,
-                map: server.map,
-                secure: server.secure,
-                dedicated: server.dedicated,
-                os: server.os,
-                gametype: server.gametype,
-                mod_list: server.mod_list,
-            };
-        }
-        Err(e) => {
-            println!("Error getting server info: {}", e);
-            return Server {
-                addr: server.addr,
-                name: server.name,
-                gameport: server.gameport,
-                players: 0,
-                max_players: server.max_players,
-                ping: Some(99999),
-                steamid: server.steamid,
-                appid: server.appid,
-                gamedir: server.gamedir,
-                version: server.version,
-                product: server.product,
-                region: server.region,
-                bots: server.bots,
-                map: server.map,
-                secure: server.secure,
-                dedicated: server.dedicated,
-                os: server.os,
-                gametype: server.gametype,
-                mod_list: server.mod_list,
-            };
-        }
-    }
-}
-
-// This can error if we hit rate limit, fix that! lol XD
-async fn fetch_server_list() -> Result<FTLAPIResponse, reqwest::Error> {
-    let res = reqwest::get("http://localhost:8080/api/v1/GetMasterServerList").await?;
-    let server_list = res.json::<FTLAPIResponse>().await?;
-    Ok(server_list)
-}
-
-// TODO: Fix unwraps
-// also we can find some sort of hard limit for concurrent tasks
-// based on computer and when port exhaustion occurs ?? not sure how tho
-pub async fn first_app_launch() -> Vec<Server> {
-    // Assuming fetch_server_list and A2SClient::new() are async and return results.
-    let server_list = fetch_server_list().await.unwrap().servers;
+    // Create A2SClient, Semaphore, and Stream
+    // Semaphore is to prevent port exhaustion
     let a2s_client = Arc::new(A2SClient::new().await.unwrap());
-    let server_list_arc = Arc::new(Mutex::new(server_list));
-
-    // Semaphore to limit concurrent tasks
-    // It seems going over 1000ish tasks will cause some servers
-    // To have invalid results and we may run into port exhaustion
     let semaphore = Arc::new(Semaphore::new(1000));
 
-    // Clone server_list for iteration to avoid locking issues.
-    let servers_to_query = server_list_arc.lock().await.clone();
+    let servers_to_query = SERVER_MAP.clone().lock_owned().await.clone();
     let servers_stream = stream::iter(servers_to_query);
+
     servers_stream
         .for_each_concurrent(20000, |server| {
             let a2s_client_cloned = a2s_client.clone();
-            let server_list_arc_cloned = server_list_arc.clone();
             let semaphore_cloned = semaphore.clone();
 
             async move {
-                // Grab a permit from the semaphore until max concurrent tasks
                 let _permit = semaphore_cloned.acquire().await.unwrap();
 
-                // Capture time task takes to complete
                 let start = Instant::now();
-                let response = a2s_client_cloned.info(server.addr).await;
+                let response = a2s_client_cloned.info(server.1.addr).await;
                 let duration = start.elapsed();
-                // Process response, update server_list_arc_cloned accordingly.
 
-                // Since we're using steamid for matching
-                let mut servers = server_list_arc_cloned.lock().await;
-                if let Some(server) = servers.iter_mut().find(|s| s.steamid == server.steamid) {
+                let mut server_map = SERVER_MAP.clone().lock_owned().await;
+                if let Some(server) = server_map.get_mut(&server.0) {
                     match response {
                         Ok(info) => {
                             println!("Updating server: {}", server.name);
                             server.players = info.players as i64;
                             server.max_players = info.max_players as i64;
                             server.ping = Some(duration.as_millis() as i64);
+                            if let Some(keywords) = info.extended_server_info.keywords {
+                                println!("Keywords: {}", keywords);
+                                server.game_type = keywords;
+                            }
                         }
-                        Err(e) => {
-                            println!("Error querying server: {}", e);
+                        Err(_) => {
+                            println!("Error querying server: {}", server.name);
                             server.players = 0;
                             server.ping = Some(99999);
                         }
                     }
-                    // Update other fields as necessary.
                 }
             }
         })
         .await;
 
-    // And collect the json
-    let server_list_locked = server_list_arc.lock().await;
-    let server_list_json = serde_json::to_string(&*server_list_locked).unwrap();
-    println!("Finished querying!");
+    // Collect JSON
+    let server_map_locked = SERVER_MAP.clone().lock_owned().await;
+    let server_map_json = serde_json::to_string(&*server_map_locked).unwrap();
+    drop(server_map_locked);
+    println!("init_server_cache(): Finished querying!");
 
     // Find appdata/FTLL/server_list.json
-    let base_dirs = BaseDirs::new().unwrap();
-    let appdata_dir = base_dirs.data_dir();
-    let ftll_dir = appdata_dir.join("FTLL");
-    let server_list_path = ftll_dir.join("server_list.json");
+    let server_map_path = BaseDirs::new()
+        .unwrap()
+        .data_dir()
+        .join("FTLL")
+        .join("server_map.json");
 
-    // delete server_list.json if it exists
-    // This is mainly for debugging, as the json will not exist
-    // on first launch.
-    if server_list_path.exists() {
-        fs::remove_file(server_list_path.clone()).unwrap();
+    // Delete server_map.json if it exists
+    // This is mainly for debugging, as the json will not exist on first launch.
+    if server_map_path.exists() {
+        fs::remove_file(server_map_path.clone()).unwrap();
     }
 
-    //write server_list to server_list.json
-    fs::write(server_list_path, server_list_json).unwrap();
-
-    // return server_list
-    server_list_locked.clone()
+    // Write server_map to server_map.json
+    fs::write(server_map_path, server_map_json).unwrap();
 }
 
-// TODO: Add error handling to unwrap
+/**
+* Function: fetch_server_map
+* --------------------------
+* This function is called to fetch the server_map from the FTL API.
+* The server_map is a HashMap<String, Server> where the key is the server's steamid.
+* Set to a static atomic reference, thread safe.
+*/
+async fn fetch_server_map() -> Result<(), reqwest::Error> {
+    let data = reqwest::get("http://localhost:8080/api/v1/GetMasterServerList")
+        .await?
+        .json::<FTLAPIResponse>()
+        .await?;
+
+    let mut server_map = SERVER_MAP.clone().lock_owned().await;
+    *server_map = data.server_map;
+    Ok(())
+}
+
+/**
+* Function: init_appdata
+* --------------------------
+* This function is called on the first launch of the application.
+* Here we are creating the FTLL folder in the appdata directory.
+* This is where we will store the server_map.json and other application data.
+* --------------------------
+* TODO: Add error handling to unwraps
+*/
 pub fn init_appdata() {
     let base_dirs = BaseDirs::new().unwrap();
     let appdata_dir = base_dirs.data_dir();
@@ -336,35 +317,35 @@ pub fn init_appdata() {
     fs::remove_dir_all(idb).unwrap();
 }
 
-/* Types for FTLAPIResponse */
+/**
+* Data Structure Definitions for FTLAPIResponse
+*/
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FTLAPIResponse {
-    pub servers: Vec<Server>,
+    pub server_map: HashMap<String, Server>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Server {
     pub addr: String,
-    pub gameport: i64,
-    pub steamid: String,
+    pub game_port: i64,
+    pub steam_id: String,
     pub name: String,
-    pub appid: i64,
-    pub gamedir: String,
+    pub app_id: i64,
+    pub game_dir: String,
     pub version: String,
     pub product: String,
     pub region: i64,
     pub players: i64,
-    #[serde(rename = "max_players")]
     pub max_players: i64,
     pub bots: i64,
     pub map: String,
     pub secure: bool,
     pub dedicated: bool,
     pub os: String,
-    pub gametype: String,
-    #[serde(rename = "mod_list")]
+    pub game_type: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mod_list: Option<Vec<ModList>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -374,7 +355,6 @@ pub struct Server {
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ModList {
-    #[serde(rename = "workshop_id")]
     pub workshop_id: i64,
     pub name: String,
 }

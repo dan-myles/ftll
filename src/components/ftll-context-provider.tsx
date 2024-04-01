@@ -23,7 +23,6 @@ export function FTLLContextProvider() {
     // Make sure Steam is running
     const checkSteam = async () => {
       const steamRunning = await invoke<boolean>("was_steam_initialized")
-      console.log("Steam running: ", steamRunning)
       if (!steamRunning) {
         setSteamInitialized(false)
         setTimeout(() => {
@@ -41,8 +40,12 @@ export function FTLLContextProvider() {
 
       if (useServerListStore.persist.hasHydrated()) {
         if (useServerListStore.getState().serverList.length === 0) {
-          const serverList = await invoke<ServerList>("get_server_list")
-          serverListSchema.parse(serverList)
+          const res = await invoke<ServerList>("get_server_list").catch((e) => {
+            console.error(e)
+            setLoadingServers(false)
+          })
+          console.log(res)
+          const serverList = serverListSchema.parse(res)
           setServerList(serverList)
           setLoadingServers(false)
         } else {
