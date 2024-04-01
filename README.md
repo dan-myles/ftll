@@ -19,6 +19,9 @@ Coming soon :)
 - [ ] transiently update zustand store with response from server
 - [ ] merge zustand store with local cache on exit? (afraid of data loss)
 in general storing data on client ON EXIT does not seem like the most stable solution.
+- [ ] resolve accurate server player count, many servers do not report accurate
+player counts, the only way AFAIK to get player counts is to query the server's
+query port. So yeah idk, battlemetrics has accurate player counts!
 
 
 

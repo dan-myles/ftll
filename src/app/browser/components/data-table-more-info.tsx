@@ -56,17 +56,17 @@ export default function DataTableMoreInfo<TData>({
     <>
       <Drawer open={open} onClose={onClose}>
         <DrawerContent
-          className="min-h-[500px] select-all"
+          className="min-h-[65vh] select-all"
           onInteractOutside={onClose}
         >
           <DrawerHeader>
             <DrawerTitle>{server.name}</DrawerTitle>
             <DrawerDescription>
-              {server.addr}:{server.gameport}
+              {server.addr}:{server.gamePort}
             </DrawerDescription>
           </DrawerHeader>
           <Button onClick={sendRequest}>send request</Button>
-          <DrawerFooter>{server.steamid}</DrawerFooter>
+          <DrawerFooter>{server.steamId}</DrawerFooter>
         </DrawerContent>
       </Drawer>
     </>
