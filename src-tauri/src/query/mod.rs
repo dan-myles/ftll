@@ -9,6 +9,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::sync::Arc;
 use std::time::Instant;
+use tauri::dev;
 use tokio::sync::Mutex;
 use tokio::sync::Semaphore;
 
@@ -76,16 +77,14 @@ pub async fn refresh_server_cache() {
         serde_json::from_str(&server_map_json_local).unwrap();
 
     // Grab remote server_map
-    fetch_server_map().await.unwrap();
+    fetch_master_server_map().await.unwrap();
     let server_map_remote = SERVER_MAP.clone().lock_owned().await.clone();
 
     // Merge remote map into local map, overwriting any existing keys
     for (key, value) in server_map_remote.iter() {
         if !server_map_local.contains_key(key) {
-            // If the remote server is not in the local map, add it
             server_map_local.insert(key.clone(), value.clone());
         } else {
-            // Otherwise, update the local map with the remote map values
             let new_server = server_map_local.get_mut(key).unwrap();
             new_server.addr = value.addr.clone();
             new_server.game_port = value.game_port.clone();
@@ -106,13 +105,14 @@ pub async fn refresh_server_cache() {
     }
 
     // Update the global SERVER_MAP with the new local map
+    // Then create a stream from the SERVER_MAP
     let mut server_map = SERVER_MAP.clone().lock_owned().await;
     *server_map = server_map_local;
+    let servers_stream = stream::iter(server_map.clone());
+    drop(server_map);
 
     // Now we just loop over SERVER_MAP and query each server
     // That has missing or outdated information, ping, players, etc.
-    let servers_stream = stream::iter(server_map.clone());
-    drop(server_map);
     let a2s_client = Arc::new(A2SClient::new().await.unwrap());
     let semaphore = Arc::new(Semaphore::new(1000));
 
@@ -123,15 +123,11 @@ pub async fn refresh_server_cache() {
 
             async move {
                 if server.1.ping.is_some() {
-                    println!("Querying server: {}", server.1.name);
-                    println!("Ping: {}", server.1.ping.unwrap());
-                }
-
-                if server.1.ping.is_none() {
                     println!("Skipping server: {}", server.1.name);
                     return;
                 }
 
+                println!("Querying server: {}", server.1.name);
                 let _permit = semaphore_cloned.acquire().await.unwrap();
 
                 let start = Instant::now();
@@ -143,7 +139,7 @@ pub async fn refresh_server_cache() {
                     match response {
                         Ok(info) => {
                             println!("Updating server: {}", server.name);
-                            // @see https://github.com/danlikestocode/ftl-launcher/issues/1
+                            // NOTE: @see https://github.com/danlikestocode/ftl-launcher/issues/1
                             // server.players = info.players as i64;
                             // server.max_players = info.max_players as i64;
                             server.map = info.map;
@@ -152,7 +148,6 @@ pub async fn refresh_server_cache() {
                             // For some reason the author of Rust A2S
                             // decided to rename gametype to keywords ?????
                             if let Some(keywords) = info.extended_server_info.keywords {
-                                println!("Keywords: {}", keywords);
                                 server.game_type = keywords;
                             }
                         }
@@ -197,7 +192,7 @@ pub async fn refresh_server_cache() {
 * TODO: Add error handling to unwraps
 */
 pub async fn init_server_cache() {
-    fetch_server_map().await.unwrap();
+    fetch_master_server_map().await.unwrap();
 
     // Create A2SClient, Semaphore, and Stream
     // Semaphore is to prevent port exhaustion
@@ -224,14 +219,13 @@ pub async fn init_server_cache() {
                     match response {
                         Ok(info) => {
                             println!("Updating server: {}", server.name);
-                            // @see https://github.com/danlikestocode/ftl-launcher/issues/1
+                            // NOTE: @see https://github.com/danlikestocode/ftl-launcher/issues/1
                             // server.players = info.players as i64;
                             // server.max_players = info.max_players as i64;
                             server.ping = Some(duration.as_millis() as i64);
                             server.map = info.map;
 
                             if let Some(keywords) = info.extended_server_info.keywords {
-                                println!("Keywords: {}", keywords);
                                 server.game_type = keywords;
                             }
                         }
@@ -270,21 +264,44 @@ pub async fn init_server_cache() {
 }
 
 /**
-* Function: fetch_server_map
+* Function: fetch_master_server_map
 * --------------------------
 * This function is called to fetch the server_map from the FTL API.
 * The server_map is a HashMap<String, Server> where the key is the server's steamid.
 * Set to a static atomic reference, thread safe.
 */
-async fn fetch_server_map() -> Result<(), reqwest::Error> {
-    let data = reqwest::get("http://localhost:8080/api/v1/GetMasterServerList")
-        .await?
-        .json::<FTLAPIResponse>()
-        .await?;
+async fn fetch_master_server_map() -> Result<(), reqwest::Error> {
+    // Check if we are in dev mode
+    let is_dev = dev();
 
-    let mut server_map = SERVER_MAP.clone().lock_owned().await;
-    *server_map = data.server_map;
-    Ok(())
+    // Set dev and prod URIs
+    // This may be better in a config file
+    let dev_uri = "http://localhost:8080";
+    let prod_uri = "https://api.ftl-launcher.com";
+    let endpoint = "/api/v1/GetMasterServerMap";
+
+    match is_dev {
+        true => {
+            let data = reqwest::get(dev_uri.to_owned() + endpoint)
+                .await?
+                .json::<FTLAPIResponse>()
+                .await?;
+
+            let mut server_map = SERVER_MAP.clone().lock_owned().await;
+            *server_map = data.server_map;
+            Ok(())
+        }
+        false => {
+            let data = reqwest::get(prod_uri.to_owned() + endpoint)
+                .await?
+                .json::<FTLAPIResponse>()
+                .await?;
+
+            let mut server_map = SERVER_MAP.clone().lock_owned().await;
+            *server_map = data.server_map;
+            Ok(())
+        }
+    }
 }
 
 /**
