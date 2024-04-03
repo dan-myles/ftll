@@ -21,7 +21,7 @@ tauri-build = { version = "2.0.0-beta.8", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "2.0.0-beta.10", features = [] }
-steamworks = "0.11.0"
+steamworks = { path = "../../steamworks-rs" }
 tauri-plugin-shell = "2.0.0-beta.2"
 tauri-plugin-os = "2.0.0-beta.2"
 a2s = { path = "./vendor/a2s", features = ["async"] }

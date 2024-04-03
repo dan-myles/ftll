@@ -8,6 +8,25 @@ pub async fn was_steam_initialized() -> bool {
     client::has_client()
 }
 
+#[tauri::command]
+pub async fn get_user_display_name() -> String {
+    client::get_client().friends().name()
+}
+
+#[tauri::command]
+pub async fn get_user_steam_id() -> String {
+    client::get_client().user().steam_id().raw().to_string()
+}
+
+#[tauri::command]
+pub async fn get_user_avi_rgba() -> Vec<u8> {
+    let avi = client::get_client().friends().medium_avatar();
+    match avi {
+        Some(avi) => avi,
+        None => vec![0, 0, 0, 0],
+    }
+}
+
 pub fn init_steamworks() {
     if client::has_client() {
         client::drop_client();

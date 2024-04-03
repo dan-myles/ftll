@@ -35,9 +35,8 @@ const useServerListStore = create<ServerListState & ServerListActions>()(
       updateServer: (server) => {
         set((state) => {
           const serverList = [...state.serverList]
-          serverList[
-            serverList.findIndex((s) => s.steamid === server.steamid)
-          ] = server
+          serverList[serverList.findIndex((s) => s.addr === server.addr)] =
+            server
           return { serverList }
         })
       },

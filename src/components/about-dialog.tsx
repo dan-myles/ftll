@@ -46,7 +46,7 @@ export function AboutDialog() {
         </div>
 
         <DialogTitle className="flex flex-col items-center gap-2 pt-2">
-          FTL Launcher
+          FTLL
           <span className="flex gap-1 font-mono text-xs font-medium">
             Version {version} ({arc})
             <span className="font-sans font-medium text-gray-400">

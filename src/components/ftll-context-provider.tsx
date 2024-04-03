@@ -10,6 +10,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { useServerListStore } from "@/stores/server-list-store"
+import { useUserInfoStore } from "@/stores/user-info-store"
 import { window } from "@tauri-apps/api"
 import { invoke } from "@tauri-apps/api/core"
 import { useEffect, useState } from "react"
@@ -17,6 +18,7 @@ import { useEffect, useState } from "react"
 export function FTLLContextProvider() {
   const [isLoadingServers, setLoadingServers] = useState(false)
   const [isSteamInitialized, setSteamInitialized] = useState(true)
+  const { setUserName, setSteamId, setAvi } = useUserInfoStore((state) => state)
   const setServerList = useServerListStore((state) => state.setServerList)
 
   useEffect(() => {
@@ -54,10 +56,20 @@ export function FTLLContextProvider() {
       }
     }
 
+    const getUserInfo = async () => {
+      const userName = await invoke<string>("get_user_display_name")
+      const steamId = await invoke<string>("get_user_steam_id")
+      const avi = await invoke<Uint8Array>("get_user_avi_rgba")
+      setUserName(userName)
+      setSteamId(steamId)
+      setAvi(avi)
+    }
+
     const init = async () => {
       const steamRunning = await checkSteam()
       if (!steamRunning) return
 
+      await getUserInfo()
       await loadServers()
     }
 

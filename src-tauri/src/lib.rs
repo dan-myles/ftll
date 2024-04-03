@@ -11,6 +11,9 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
+            steam::get_user_display_name,
+            steam::get_user_steam_id,
+            steam::get_user_avi_rgba,
             steam::was_steam_initialized,
             query::get_server_list,
         ])
