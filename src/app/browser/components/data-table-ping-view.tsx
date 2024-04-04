@@ -9,7 +9,7 @@ export function DataTablePingView<TData>({
 }: DataTableRowActionsProps<TData>) {
   return (
     <div className="">
-      <PingColored ping={row.getValue("ping")} />
+      <PingColored ping={row.getValue("Ping")} />
     </div>
   )
 }

@@ -12,11 +12,14 @@ export function MainNav({
   const path = usePathname()
 
   return (
-    <div className="flex-1 flex-col space-y-8 bg-background pl-4 pr-4 pt-4 md:flex">
+    <div
+      className="
+      flex-1 flex-col space-y-8 rounded-t-3xl bg-background pl-4 pr-4 pt-4 
+      shadow-2xl shadow-black md:flex"
+    >
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
           <UserNav />
-          <div className="pl-4" />
           <nav
             className={cn(
               "flex items-center space-x-4 lg:space-x-6",
@@ -34,7 +37,8 @@ export function MainNav({
             ) : (
               <Link
                 href="/"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                className="text-sm font-medium text-muted-foreground 
+                  transition-colors hover:text-primary"
               >
                 Home
               </Link>
@@ -49,24 +53,26 @@ export function MainNav({
             ) : (
               <Link
                 href="/browser"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                className="text-sm font-medium text-muted-foreground 
+                  transition-colors hover:text-primary"
               >
                 Server Browser
               </Link>
             )}
-            {path === "/settings" ? (
+            {path === "/mod-manager" ? (
               <Link
                 href="/settings"
                 className="text-sm font-medium transition-colors hover:text-primary"
               >
-                Settings
+                Mods
               </Link>
             ) : (
               <Link
-                href="/settings"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                href="/mod-manager"
+                className="text-sm font-medium text-muted-foreground 
+                  transition-colors hover:text-primary"
               >
-                Settings
+                Mods
               </Link>
             )}
           </nav>

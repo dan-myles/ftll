@@ -36,7 +36,9 @@ export function DataTableViewOptions<TData>({
           .getAllColumns()
           .filter(
             (column) =>
-              typeof column.accessorFn !== "undefined" && column.getCanHide()
+              column.id !== "Mods" &&
+              column.id !== "Actions" &&
+              column.id !== "Favorited"
           )
           .map((column) => {
             return (

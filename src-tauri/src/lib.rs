@@ -26,7 +26,7 @@ pub fn run() {
             let window = app.get_webview_window("main").unwrap();
 
             #[cfg(target_os = "windows")]
-            apply_acrylic(&window, Some((18, 18, 18, 125)))
+            apply_acrylic(&window, Some((18, 18, 18, 85)))
                 .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
 
             Ok(())

@@ -4,6 +4,7 @@ import { Cross2Icon } from "@radix-ui/react-icons"
 import { Table } from "@tanstack/react-table"
 import { maps } from "../data/filter-data"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
+import { DataTableModFilter } from "./data-table-mod-filter"
 import { DataTablePingFilter } from "./data-table-ping-filter"
 import { DataTableViewOptions } from "./data-table-view-options"
 
@@ -21,21 +22,24 @@ export function DataTableToolbar<TData>({
       <div className="flex flex-1 items-center space-x-2">
         <Input
           placeholder="Search..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("Name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn("Name")?.setFilterValue(event.target.value)
           }
           className="h-10 w-[300px] lg:w-[400px]"
         />
-        {table.getColumn("map") && (
+        {table.getColumn("Map") && (
           <DataTableFacetedFilter
-            column={table.getColumn("map")}
+            column={table.getColumn("Map")}
             title="Map"
             options={maps}
           />
         )}
-        {table.getColumn("ping") && (
-          <DataTablePingFilter column={table.getColumn("ping")} title="Ping" />
+        {table.getColumn("Mods") && (
+          <DataTableModFilter column={table.getColumn("Mods")} title="Mods" />
+        )}
+        {table.getColumn("Ping") && (
+          <DataTablePingFilter column={table.getColumn("Ping")} title="Ping" />
         )}
         {isFiltered && (
           <Button

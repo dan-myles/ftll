@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en" className="h-screen overflow-clip" suppressHydrationWarning>
       <body className="overflow-clip font-sans antialiased scrollbar-none">
         <ThemeProvider
-          themes={["light", "dark", "system", "glass"]}
+          themes={["light", "dark", "system"]}
           attribute="class"
           defaultTheme="system"
           enableSystem
@@ -35,7 +35,7 @@ export default function RootLayout({
                 className={cn(
                   // This is the main content area
                   // It should take up the remaining space - 125px for header
-                  "h-[calc(100vh-125px)] overflow-auto bg-background",
+                  "h-[calc(100vh-125px)] overflow-auto",
                   "scrollbar-thumb-rounded-md scrollbar scrollbar-track-transparent scrollbar-thumb-accent"
                 )}
               >

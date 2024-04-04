@@ -23,7 +23,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="flex h-full w-full lg:flex-col"></div>
+      <div className="flex h-full w-full bg-background lg:flex-col"></div>
     </>
   )
 }

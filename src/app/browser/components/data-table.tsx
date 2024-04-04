@@ -22,7 +22,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import * as React from "react"
+import { useState } from "react"
 import { DataTablePagination } from "../components/data-table-pagination"
 import { DataTableToolbar } from "../components/data-table-toolbar"
 
@@ -35,13 +35,12 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [rowSelection, setRowSelection] = React.useState({})
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [rowSelection, setRowSelection] = useState({})
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    Mods: false,
+  })
 
   const table = useReactTable({
     data,
@@ -53,7 +52,7 @@ export function DataTable<TData, TValue>({
       columnFilters,
     },
     enableRowSelection: true,
-    autoResetPageIndex: false,
+    autoResetPageIndex: true,
     autoResetExpanded: false,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,

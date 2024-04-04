@@ -11,7 +11,7 @@ import { PlusCircledIcon } from "@radix-ui/react-icons"
 import { Column } from "@tanstack/react-table"
 import { useState } from "react"
 
-interface DataTablePingFilter<TData, TValue> {
+interface DataTablePingFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
   title?: string
 }
@@ -19,7 +19,7 @@ interface DataTablePingFilter<TData, TValue> {
 export function DataTablePingFilter<TData, TValue>({
   column,
   title,
-}: DataTablePingFilter<TData, TValue>) {
+}: DataTablePingFilterProps<TData, TValue>) {
   const selectedValues = new Set(column?.getFilterValue() as number[])
   const [value, setValue] = useState([250])
 

@@ -11,7 +11,7 @@ export function DataTableMapView<TData>({ row }: DataTableMapViewProps<TData>) {
     otherwise render the value as a string. We do this to
     ensure that we can have neat labels for the maps when possible.
   */
-  const map = row.getValue("map")
+  const map = row.getValue("Map")
   const mapData = maps.find((m) => m.value === map)
 
   return <div>{mapData ? mapData.label : (map as string)}</div>

@@ -10,16 +10,17 @@ import { DataTablePlayDialog } from "./data-table-play-dialog"
 import { DataTableRowActions } from "./data-table-row-actions"
 import { DataTableTimeView } from "./data-table-time-view"
 
-// i should really think about changing everything to match case on api
+// I should really think about changing everything to match case on api
 export const columns: ColumnDef<Server>[] = [
   {
-    id: "favorited",
+    id: "Favorited",
     header: ({ table }) => <HeartFilledIcon className="h-4 w-6" />,
     cell: ({ row }) => <HeartIcon className="h-4 w-6" />,
     enableSorting: false,
     enableHiding: false,
   },
   {
+    id: "Name",
     accessorKey: "name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
@@ -29,6 +30,7 @@ export const columns: ColumnDef<Server>[] = [
     },
   },
   {
+    id: "Time",
     accessorKey: "gameType",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Time" />
@@ -38,6 +40,7 @@ export const columns: ColumnDef<Server>[] = [
     },
   },
   {
+    id: "Map",
     accessorKey: "map",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Map" />
@@ -50,6 +53,7 @@ export const columns: ColumnDef<Server>[] = [
     },
   },
   {
+    id: "Players",
     accessorKey: "players",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Players" />
@@ -58,7 +62,7 @@ export const columns: ColumnDef<Server>[] = [
       return (
         <div className="flex max-w-fit items-center">
           <span>
-            {row.getValue("players")}/{row.original.maxPlayers}
+            {row.getValue("Players")}/{row.original.maxPlayers}
           </span>
         </div>
       )
@@ -68,6 +72,7 @@ export const columns: ColumnDef<Server>[] = [
     },
   },
   {
+    id: "Ping",
     accessorKey: "ping",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Ping" />
@@ -81,7 +86,28 @@ export const columns: ColumnDef<Server>[] = [
     },
   },
   {
-    id: "actions",
+    id: "Mods",
+    accessorKey: "modList",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Mods" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex max-w-fit items-center">
+          <span>test</span>
+        </div>
+      )
+    },
+    filterFn: (row, id, value) => {
+      return (
+        row.original.modList
+          ?.map((mod) => mod.name.includes(value) ?? false)
+          .includes(true) ?? false
+      )
+    },
+  },
+  {
+    id: "Actions",
     cell: ({ row }) => {
       return (
         <div className="flex">

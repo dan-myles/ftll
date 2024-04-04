@@ -8,7 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { GlassWaterIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 
@@ -28,7 +27,6 @@ export function ModeToggle() {
         <Button variant="ghost" size="xs" className="h-full w-9 px-0">
           {clientTheme === "dark" && <Icons.moon className="" />}
           {clientTheme === "light" && <Icons.sun className="" />}
-          {clientTheme === "glass" && <GlassWaterIcon className="" />}
           {clientTheme === "system" && <Icons.laptop className="" />}
           <span className="sr-only">Toggle theme</span>
         </Button>
@@ -41,10 +39,6 @@ export function ModeToggle() {
         <DropdownMenuItem onClick={() => setTheme("dark")}>
           <Icons.moon className="mr-2 h-4 w-4" />
           <span>Dark</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("glass")}>
-          <GlassWaterIcon className="mr-2 h-4 w-4" />
-          <span>Glass</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("system")}>
           <Icons.laptop className="mr-2 h-4 w-4" />

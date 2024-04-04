@@ -8,7 +8,7 @@ export default function BrowserPage() {
   const servers = useServerListStore((state) => state.serverList)
 
   return (
-    <div className="h-full flex-1 flex-col space-y-4 p-4 md:flex">
+    <div className="h-full flex-1 flex-col space-y-4 bg-background p-4 md:flex">
       <DataTable data={servers} columns={columns} />
     </div>
   )
