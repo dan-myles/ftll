@@ -1,3 +1,5 @@
+"use client"
+
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -25,11 +27,16 @@ export function UserNav() {
     const canvas = canvasRef.current
     const context = canvas?.getContext("2d")
 
-    if (user.avi) {
+    const loadAvi = () => {
+      if (!user.avi) {
+        return
+      }
       const imageData = new ImageData(new Uint8ClampedArray(user.avi), 64, 64)
       context?.putImageData(imageData, 0, 0)
     }
-  }, [])
+
+    loadAvi()
+  })
 
   return (
     <DropdownMenu>

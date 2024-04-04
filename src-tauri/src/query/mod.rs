@@ -59,6 +59,26 @@ pub async fn get_server_list() -> Vec<Server> {
 }
 
 /**
+* function: fetch
+* --------------------------
+* This function is used to fetch data from a URI.
+* We do this here to avoid CORS issues.
+*/
+#[tauri::command]
+pub async fn fetch(uri: String) -> String {
+    let response = reqwest::get(&uri).await;
+    match response {
+        Ok(response) => {
+            let json = response.text().await.unwrap();
+            return json;
+        }
+        Err(e) => {
+            return "".to_string();
+        }
+    }
+}
+
+/**
 * Function: refresh_server_cache()
 * --------------------------
 * This function is called to refresh the server cache.

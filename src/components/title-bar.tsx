@@ -21,7 +21,7 @@ export function TitleBar() {
       <Menubar className="h-10 rounded-none border-b border-none pl-2 lg:pl-3">
         <MenubarMenu>
           {/* App Logo */}
-          <div className="inline-flex h-fit w-fit items-center text-indigo-500">
+          <div className="inline-flex h-fit w-fit items-center text-black dark:text-indigo-500">
             <Rocket className="h-5 w-5" />
           </div>
         </MenubarMenu>

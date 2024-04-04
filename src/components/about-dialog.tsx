@@ -31,7 +31,9 @@ export function AboutDialog() {
     arch && arch().then((x) => setArc(x))
   }, [])
 
-  if (typeof window !== "undefined") getInfo()
+  if (typeof window !== "undefined") {
+    getInfo()
+  }
 
   const open = useCallback(async (url: string) => {
     const { open } = await import("@tauri-apps/plugin-shell")

@@ -8,17 +8,28 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { GlassWaterIcon } from "lucide-react"
 import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
 
 export function ModeToggle() {
-  const { setTheme } = useTheme()
+  const { setTheme, theme } = useTheme()
+  const [clientTheme, setClientTheme] = useState("")
+
+  useEffect(() => {
+    if (theme) {
+      setClientTheme(theme)
+    }
+  }, [theme])
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="xs" className="h-full w-9 px-0">
-          <Icons.sun className="rotate-0 scale-90 transition-all dark:-rotate-90 dark:scale-0" />
-          <Icons.moon className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-90" />
+          {clientTheme === "dark" && <Icons.moon className="" />}
+          {clientTheme === "light" && <Icons.sun className="" />}
+          {clientTheme === "glass" && <GlassWaterIcon className="" />}
+          {clientTheme === "system" && <Icons.laptop className="" />}
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
@@ -30,6 +41,10 @@ export function ModeToggle() {
         <DropdownMenuItem onClick={() => setTheme("dark")}>
           <Icons.moon className="mr-2 h-4 w-4" />
           <span>Dark</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("glass")}>
+          <GlassWaterIcon className="mr-2 h-4 w-4" />
+          <span>Glass</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("system")}>
           <Icons.laptop className="mr-2 h-4 w-4" />

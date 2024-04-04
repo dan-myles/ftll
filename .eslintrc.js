@@ -5,6 +5,7 @@ var OFF = 0,
 module.exports = exports = {
   root: true,
   extends: "next/core-web-vitals",
+  plugins: ["@tanstack/eslint-plugin-query"],
   rules: {
     eqeqeq: [WARN, "smart"],
     curly: [WARN, "all"],

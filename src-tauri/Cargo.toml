@@ -20,12 +20,12 @@ tauri-build = { version = "2.0.0-beta.8", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "2.0.0-beta.10", features = [] }
+tauri = { version = "2.0.0-beta.10", features = ["unstable"] }
 steamworks = { path = "../../steamworks-rs" }
 tauri-plugin-shell = "2.0.0-beta.2"
 tauri-plugin-os = "2.0.0-beta.2"
 a2s = { path = "./vendor/a2s", features = ["async"] }
-reqwest = { version = "0.11.25", features = ["blocking"] }
+reqwest = { version = "0.11.25", features = ["blocking", "json"] }
 serde_derive = "1.0.197"
 lazy_static = "1.4.0"
 tokio = "1.36.0"
@@ -33,4 +33,5 @@ tauri-plugin-fs = "2.0.0-beta.2"
 directories = "5.0.1"
 futures = "0.3.30"
 serde_with = "3.7.0"
+window-vibrancy = "0.5.0"
 

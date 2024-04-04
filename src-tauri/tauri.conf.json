@@ -11,14 +11,15 @@
   "app": {
     "windows": [
       {
-        "title": "ftl-launcher",
+        "title": "ftll",
         "width": 920,
         "minWidth": 920,
         "height": 600,
         "minHeight": 700,
         "resizable": true,
         "decorations": false,
-        "fullscreen": false
+        "fullscreen": false,
+        "transparent": true
       }
     ],
     "security": {
