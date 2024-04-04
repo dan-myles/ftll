@@ -27,7 +27,9 @@ export function WindowTitlebar({
     (controlsOrder === "system" && osType === "macos")
 
   const customProps = (ml: string) => {
-    if (windowControlsProps?.justify !== undefined) return windowControlsProps
+    if (windowControlsProps?.justify !== undefined) {
+      return windowControlsProps
+    }
 
     const {
       justify: windowControlsJustify,
@@ -44,7 +46,7 @@ export function WindowTitlebar({
   return (
     <div
       className={cn(
-        "flex select-none flex-row overflow-hidden bg-background",
+        "flex select-none flex-row overflow-hidden bg-transparent",
         className
       )}
       data-tauri-drag-region

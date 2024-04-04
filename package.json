@@ -40,7 +40,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@tanstack/react-query": "^5.28.14",
     "@tanstack/react-table": "^8.13.2",
-    "@tauri-apps/api": "2.0.0-beta.4",
+    "@tauri-apps/api": "2.0.0-beta.7",
     "@tauri-apps/plugin-fs": "2.0.0-beta.2",
     "@tauri-apps/plugin-os": "2.0.0-beta.2",
     "@tauri-apps/plugin-shell": "2.0.0-beta.2",
@@ -70,7 +70,7 @@
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.1.4",
     "@tanstack/eslint-plugin-query": "^5.28.11",
-    "@tauri-apps/cli": "2.0.0-beta.8",
+    "@tauri-apps/cli": "2.0.0-beta.12",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
