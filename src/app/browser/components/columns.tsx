@@ -7,6 +7,7 @@ import { DataTableMapView } from "./data-table-map-view"
 import { DataTableNameView } from "./data-table-name-view"
 import { DataTablePingView } from "./data-table-ping-view"
 import { DataTablePlayDialog } from "./data-table-play-dialog"
+import { DataTablePlayersView } from "./data-table-players-view"
 import { DataTableRowActions } from "./data-table-row-actions"
 import { DataTableTimeView } from "./data-table-time-view"
 
@@ -25,9 +26,7 @@ export const columns: ColumnDef<Server>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
     ),
-    cell: ({ row }) => {
-      return <DataTableNameView row={row} />
-    },
+    cell: ({ row }) => <DataTableNameView row={row} />,
   },
   {
     id: "Time",
@@ -35,9 +34,7 @@ export const columns: ColumnDef<Server>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Time" />
     ),
-    cell: ({ row }) => {
-      return <DataTableTimeView row={row} />
-    },
+    cell: ({ row }) => <DataTableTimeView row={row} />,
   },
   {
     id: "Map",
@@ -45,9 +42,7 @@ export const columns: ColumnDef<Server>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Map" />
     ),
-    cell: ({ row }) => {
-      return <DataTableMapView row={row} />
-    },
+    cell: ({ row }) => <DataTableMapView row={row} />,
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
     },
@@ -58,18 +53,8 @@ export const columns: ColumnDef<Server>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Players" />
     ),
-    cell: ({ row }) => {
-      return (
-        <div className="flex max-w-fit items-center">
-          <span>
-            {row.getValue("Players")}/{row.original.maxPlayers}
-          </span>
-        </div>
-      )
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
+    cell: ({ row }) => <DataTablePlayersView row={row} />,
+    filterFn: (row, id, value) => value.includes(row.getValue(id)),
   },
   {
     id: "Ping",
@@ -77,9 +62,7 @@ export const columns: ColumnDef<Server>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Ping" />
     ),
-    cell: ({ row }) => {
-      return <DataTablePingView row={row} />
-    },
+    cell: ({ row }) => <DataTablePingView row={row} />,
     filterFn: (row, id, value) => {
       // TODO: fix the any type
       return (row.getValue(id) as any) <= value
@@ -88,16 +71,6 @@ export const columns: ColumnDef<Server>[] = [
   {
     id: "Mods",
     accessorKey: "modList",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Mods" />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="flex max-w-fit items-center">
-          <span>test</span>
-        </div>
-      )
-    },
     filterFn: (row, id, value) => {
       return (
         row.original.modList

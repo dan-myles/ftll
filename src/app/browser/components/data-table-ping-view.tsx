@@ -1,4 +1,6 @@
+import { UpdatedServerContext } from "@/components/stateful-table-row"
 import { Row } from "@tanstack/react-table"
+import { useContext } from "react"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -7,9 +9,21 @@ interface DataTableRowActionsProps<TData> {
 export function DataTablePingView<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
+  const updatedServer = useContext(UpdatedServerContext)
+
   return (
     <div className="">
-      <PingColored ping={row.getValue("Ping")} />
+      {updatedServer ? (
+        updatedServer.ping === 99999 ? (
+          <div className="text-gray-700">Offline</div>
+        ) : (
+          <PingColored ping={updatedServer.ping as number} />
+        )
+      ) : row.getValue("Ping") === 99999 ? (
+        <div className="text-gray-700">Offline</div>
+      ) : (
+        <PingColored ping={row.getValue("Ping") as number} />
+      )}
     </div>
   )
 }

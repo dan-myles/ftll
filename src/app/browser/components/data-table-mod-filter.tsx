@@ -51,8 +51,8 @@ export function DataTableModFilter<TData, TValue>({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[225px] border-none p-0" align="start">
-        <div>
+      <PopoverContent className="w-[225px] p-0" align="start">
+        <div className="">
           <div
             className="flex items-center border-b px-3"
             cmdk-input-wrapper=""

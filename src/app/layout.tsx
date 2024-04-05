@@ -28,8 +28,8 @@ export default function RootLayout({
         >
           <FTLLContextProvider />
           <QueryClientProvider client={queryClient}>
-            <main className="h-screen overflow-clip">
-              <TitleBar />
+            <TitleBar />
+            <main className="h-screen overflow-clip rounded-t-3xl bg-background">
               <MainNav />
               <div
                 className={cn(

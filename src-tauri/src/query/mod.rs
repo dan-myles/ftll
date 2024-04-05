@@ -8,20 +8,30 @@ use serde_derive::Serialize;
 use std::collections::HashMap;
 use std::fs;
 use std::sync::Arc;
+use std::time::Duration;
 use std::time::Instant;
+use std::time::SystemTime;
 use tauri::dev;
 use tokio::sync::Mutex;
+use tokio::sync::RwLock;
 use tokio::sync::Semaphore;
 
 /*
-* Global static SERVER_MAP
-* Used to store the server list in memory.
-* IIRC we cannot have statics that must be initalized at runtime.
+* Global Variables
+* --------------------------
+* SERVER_MAP: where we store response from FTL API
+* MAX_UPDATES_SEMAPHORE: semaphore to limit concurrent server queries from frontend
+* We wrap this semaphore in a RwLock to allow destruction of the semaphore
+* and re-creation of the semaphore with a different limit. Or just to clear
+* the waiting list of permits.
 */
 lazy_static! {
     static ref SERVER_MAP: Arc<Mutex<HashMap<String, Server>>> =
         Arc::new(Mutex::new(HashMap::new()));
+    static ref MAX_UPDATES_SEMAPHORE: Arc<RwLock<Semaphore>> =
+        Arc::new(RwLock::new(Semaphore::new(MAX_UPDATES)));
 }
+const MAX_UPDATES: usize = 2;
 
 /**
 * function: get_server_list
@@ -72,18 +82,121 @@ pub async fn fetch(uri: String) -> String {
             let json = response.text().await.unwrap();
             return json;
         }
-        Err(e) => {
+        Err(_) => {
             return "".to_string();
         }
     }
 }
 
 /**
-* Function: refresh_server_cache()
+* function: destroy_server_info_semaphore
+* --------------------------
+* This function is called to destroy the server info semaphore.
+* We do this to clear the waiting list of permits, or to change the limit.
+* --------------------------
+* NOTE: Eventually we will want to let users pick how many servers to query at once.
+*/
+#[tauri::command]
+pub async fn destroy_server_info_semaphore() {
+    let semaphore = MAX_UPDATES_SEMAPHORE.clone();
+    let semaphore = semaphore.read().await;
+    semaphore.close();
+    drop(semaphore);
+
+    let new_semaphore = MAX_UPDATES_SEMAPHORE.clone();
+    let mut new_semaphore = new_semaphore.write().await;
+    *new_semaphore = Semaphore::new(MAX_UPDATES);
+}
+
+/**
+* function: get_server_info
+* --------------------------
+* This function is called to get server information.
+* We query the server and return the server information.
+* This may return an error if the server is unreachable.
+* --------------------------
+* TODO : Add error handling to unwraps, what if we cant get a new client?
+*/
+#[tauri::command]
+pub async fn get_server_info(server: Server) -> Server {
+    let semaphore = MAX_UPDATES_SEMAPHORE.clone();
+    let semaphore = semaphore.read().await;
+    println!("Waiting for permit: {}", server.name);
+    let permit = semaphore.acquire().await;
+
+    if permit.is_err() {
+        println!("!!Failed to acquire permit!!");
+        return server;
+    }
+
+    println!("Permit acquired: {}", server.name);
+    tokio::time::sleep(Duration::from_millis(1000)).await;
+
+    let a2s_client = A2SClient::new().await.unwrap();
+
+    let start = SystemTime::now();
+    let response = a2s_client.info(server.addr.clone()).await;
+    let end = SystemTime::now();
+    let duration = end.duration_since(start).unwrap();
+
+    match response {
+        Ok(info) => {
+            println!("Returning server info: {}", server.name);
+            return Server {
+                addr: server.addr,
+                name: server.name,
+                game_port: server.game_port,
+                players: info.players as i64,
+                max_players: info.max_players as i64,
+                ping: Some(duration.as_millis() as i64),
+                steam_id: server.steam_id,
+                app_id: server.app_id,
+                game_dir: server.game_dir,
+                version: server.version,
+                product: server.product,
+                region: server.region,
+                bots: server.bots,
+                map: server.map,
+                secure: server.secure,
+                dedicated: server.dedicated,
+                os: server.os,
+                game_type: server.game_type,
+                mod_list: server.mod_list,
+            };
+        }
+        Err(e) => {
+            println!("Error getting server info: {}", e);
+            return Server {
+                addr: server.addr,
+                name: server.name,
+                game_port: server.game_port,
+                players: 0,
+                max_players: server.max_players,
+                ping: Some(99999),
+                steam_id: server.steam_id,
+                app_id: server.app_id,
+                game_dir: server.game_dir,
+                version: server.version,
+                product: server.product,
+                region: server.region,
+                bots: server.bots,
+                map: server.map,
+                secure: server.secure,
+                dedicated: server.dedicated,
+                os: server.os,
+                game_type: server.game_type,
+                mod_list: server.mod_list,
+            };
+        }
+    }
+}
+
+/**
+* function: refresh_server_cache()
 * --------------------------
 * This function is called to refresh the server cache.
 * We skip all servers with marked as Some in the ping field, this means
-**/
+*/
 pub async fn refresh_server_cache() {
     let server_map_path = BaseDirs::new()
         .unwrap()
@@ -202,7 +315,7 @@ pub async fn refresh_server_cache() {
 }
 
 /**
-* Function: first_app_launch
+* function: first_app_launch
 * --------------------------
 * This function is called on the first launch of the application.
 * Here we are fetching the server_map and querying each server in the map.
@@ -284,7 +397,7 @@ pub async fn init_server_cache() {
 }
 
 /**
-* Function: fetch_master_server_map
+* function: fetch_master_server_map
 * --------------------------
 * This function is called to fetch the server_map from the FTL API.
 * The server_map is a HashMap<String, Server> where the key is the server's steamid.
@@ -325,7 +438,7 @@ async fn fetch_master_server_map() -> Result<(), reqwest::Error> {
 }
 
 /**
-* Function: init_appdata
+* function: init_appdata
 * --------------------------
 * This function is called on the first launch of the application.
 * Here we are creating the FTLL folder in the appdata directory.

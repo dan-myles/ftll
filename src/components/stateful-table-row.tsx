@@ -1,33 +1,67 @@
 "use client"
 
 import DataTableMoreInfo from "@/app/browser/components/data-table-more-info"
+import { Server } from "@/app/browser/data/server-schema"
 import { cn } from "@/lib/utils"
-import { useState } from "react"
+import { invoke } from "@tauri-apps/api/core"
+import { createContext, useEffect, useState } from "react"
 
-export default function StatefulTableRow({
+export const UpdatedServerContext = createContext<Server | undefined>(undefined)
+
+export function StatefulTableRow({
   className,
   row,
   ...props
 }: React.HTMLAttributes<HTMLTableRowElement> & { row?: any }) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const [server, setServer] = useState<Server>()
   const handleOpenDrawer = () => setDrawerOpen(true)
   const handleCloseDrawer = () => setDrawerOpen(false)
 
+  useEffect(() => {
+    const update = async () => {
+      const updatedServer = await invoke<Server>("get_server_info", {
+        server: row.original,
+      })
+      setServer(updatedServer)
+    }
+
+    let delayBeforeUpdate: NodeJS.Timeout
+    let intervalToUpdate: NodeJS.Timeout
+
+    delayBeforeUpdate = setTimeout(
+      () => {
+        intervalToUpdate = setInterval(() => {
+          update()
+        }, 3750)
+      },
+      Math.random() * 5000 + 3000
+    )
+
+    return () => {
+      invoke("destroy_server_info_semaphore")
+      clearTimeout(delayBeforeUpdate)
+      clearInterval(intervalToUpdate)
+    }
+  }, [row.original])
+
   return (
     <>
-      <tr
-        className={cn(
-          "select-none border-b transition-colors data-[state=selected]:bg-muted hover:bg-muted/50",
-          className
-        )}
-        onDoubleClickCapture={() => handleOpenDrawer()}
-        {...props}
-      />
-      <DataTableMoreInfo
-        row={row}
-        open={isDrawerOpen}
-        onClose={handleCloseDrawer}
-      />
+      <UpdatedServerContext.Provider value={server}>
+        <tr
+          className={cn(
+            "select-none border-b transition-colors data-[state=selected]:bg-muted hover:bg-muted/50",
+            className
+          )}
+          onDoubleClickCapture={() => handleOpenDrawer()}
+          {...props}
+        />
+        <DataTableMoreInfo
+          row={row}
+          open={isDrawerOpen}
+          onClose={handleCloseDrawer}
+        />
+      </UpdatedServerContext.Provider>
     </>
   )
 }

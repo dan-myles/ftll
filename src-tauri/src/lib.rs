@@ -1,8 +1,7 @@
-use tauri::Manager;
-use tauri_plugin_fs::FsExt;
-
 mod query;
 mod steam;
+
+use tauri::Manager;
 use window_vibrancy::apply_acrylic;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -11,17 +10,19 @@ pub fn run() {
     query::init_appdata();
 
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![
-            steam::get_user_display_name,
-            steam::get_user_steam_id,
-            steam::get_user_avi_rgba,
-            steam::was_steam_initialized,
-            query::get_server_list,
-            query::fetch,
-        ])
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_shell::init())
+        .invoke_handler(tauri::generate_handler![
+            steam::was_steam_initialized,
+            steam::get_user_display_name,
+            steam::get_user_steam_id,
+            steam::get_user_avi_rgba,
+            query::get_server_info,
+            query::get_server_list,
+            query::destroy_server_info_semaphore,
+            query::fetch,
+        ])
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
 
@@ -32,5 +33,5 @@ pub fn run() {
             Ok(())
         })
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .expect("error while running tauri application")
 }

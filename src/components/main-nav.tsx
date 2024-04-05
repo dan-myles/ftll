@@ -14,7 +14,7 @@ export function MainNav({
   return (
     <div
       className="
-      flex-1 flex-col space-y-8 rounded-t-3xl bg-background pl-4 pr-4 pt-4 
+      flex-1 flex-col space-y-8 bg-background pl-4 pr-4 pt-4 
       shadow-2xl shadow-black md:flex"
     >
       <div className="border-b">

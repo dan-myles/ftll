@@ -1,4 +1,4 @@
-import StatefulTableRow from "@/components/stateful-table-row"
+import { StatefulTableRow } from "@/components/stateful-table-row"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Table,
