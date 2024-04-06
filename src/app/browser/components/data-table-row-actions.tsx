@@ -13,12 +13,7 @@ import {
   HeartIcon,
 } from "@radix-ui/react-icons"
 import { Row } from "@tanstack/react-table"
-import {
-  CopyIcon,
-  FolderSyncIcon,
-  InfoIcon,
-  RefreshCcwIcon,
-} from "lucide-react"
+import { CopyIcon, InfoIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Server } from "../data/server-schema"
 import DataTableMoreInfo from "./data-table-more-info"
@@ -73,15 +68,6 @@ export function DataTableRowActions<TData>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
-          <DropdownMenuItem>
-            <RefreshCcwIcon className="mr-2 h-4 w-4" />
-            Refresh
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <FolderSyncIcon className="mr-2 h-4 w-4" />
-            Reload Mods
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleFavorited}>
             {isFavorite && (
               <>
