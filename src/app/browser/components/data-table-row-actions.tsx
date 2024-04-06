@@ -1,13 +1,3 @@
-import { DotsHorizontalIcon } from "@radix-ui/react-icons"
-import { Row } from "@tanstack/react-table"
-import {
-  CopyIcon,
-  FolderSyncIcon,
-  HeartIcon,
-  InfoIcon,
-  RefreshCcwIcon,
-} from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -16,9 +6,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
-import { useState } from "react"
-import { serverSchema } from "../data/server-schema"
+import { useFavoriteServerStore } from "@/stores/favorite-server-store"
+import {
+  DotsHorizontalIcon,
+  HeartFilledIcon,
+  HeartIcon,
+} from "@radix-ui/react-icons"
+import { Row } from "@tanstack/react-table"
+import {
+  CopyIcon,
+  FolderSyncIcon,
+  InfoIcon,
+  RefreshCcwIcon,
+} from "lucide-react"
+import { useEffect, useState } from "react"
+import { Server } from "../data/server-schema"
 import DataTableMoreInfo from "./data-table-more-info"
 
 interface DataTableRowActionsProps<TData> {
@@ -28,10 +30,35 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const server = serverSchema.parse(row.original)
+  const { addServer, removeServer, serverList } = useFavoriteServerStore()
+  const [isFavorite, setFavorite] = useState(false)
   const [open, setOpen] = useState(false)
+
   const handleClose = () => setOpen(false)
   const handleOpen = () => setOpen(true)
+
+  const handleCopy = () => {
+    const server = row.original as Server
+    const addr = server.addr.split(":")[0]
+    navigator.clipboard.writeText(addr + ":" + server.gamePort)
+  }
+
+  const handleFavorited = () => {
+    const server = row.original as Server
+    if (isFavorite) {
+      setFavorite(false)
+      removeServer(server)
+    } else {
+      setFavorite(true)
+      addServer(server)
+    }
+  }
+
+  useEffect(() => {
+    const server = row.original as Server
+    const isFavorited = serverList.some((s) => s.addr === server.addr)
+    setFavorite(isFavorited)
+  }, [serverList, row])
 
   return (
     <>
@@ -55,11 +82,21 @@ export function DataTableRowActions<TData>({
             Reload Mods
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <HeartIcon className="mr-2 h-4 w-4" />
-            Favorite
+          <DropdownMenuItem onClick={handleFavorited}>
+            {isFavorite && (
+              <>
+                <HeartFilledIcon className="mr-2 h-4 w-4 text-red-500" />
+                Unfavorite
+              </>
+            )}
+            {!isFavorite && (
+              <>
+                <HeartIcon className="mr-2 h-4 w-4" />
+                Favorite
+              </>
+            )}
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={handleCopy}>
             <CopyIcon className="mr-2 h-4 w-4" />
             Copy
           </DropdownMenuItem>
