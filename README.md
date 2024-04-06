@@ -11,19 +11,19 @@
 </div>
 
 ## Description
-Coming soon :)
+This project is still in development, and I am working on it in my free time. 
+A lot of features are currently working, but theres a bit left to do. If you want
+to catchup on the progress, you can visit the [project board](https://github.com/users/danlikestocode/projects/1).
 
-### Todo List
-- [x] prevent server duplication, maybe a faster way to handle that (hashmap)
-- [x] resolve accurate server player count, many servers do not report accurate
-player counts, the only way AFAIK to get player counts is to query the server's
-query port. So yeah idk, battlemetrics has accurate player counts!
-- [ ] need to take care of updating server information on the fly without sorting
-- [ ] transiently update zustand store with response from server
-- [ ] merge zustand store with local cache on exit? (afraid of data loss)
-in general storing data on client ON EXIT does not seem like the most stable solution.
-- [ ] add a way to launch steam if its not open, instead of closing :P
-this is entirely possible, as we can reINIT the steam client API on the fly
+> This project was built with Linux compatibility *in mind*, but it should be noted
+that all of the development was done on Windows. I don't have a Linux machine
+and turning off secure boot to dual boot Linux is a no-go for me. The dependencies
+are cross-platform, and we don't bundle chromium, so it should be possible. Local
+caching is done using browser API's. If anyone wants to contribute to Linux compatibility,
+I would be more than happy to accept PR's.
+
+
+
 
 
 
