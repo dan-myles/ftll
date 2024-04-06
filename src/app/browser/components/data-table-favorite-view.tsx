@@ -58,7 +58,6 @@ export function DataTableFavoriteView<TData>({
           <HeartFilledIcon className="h-4 w-4 text-red-500" />
         </Button>
       )}
-      <Button onClick={() => console.log(serverList)}>log</Button>
     </div>
   )
 }
