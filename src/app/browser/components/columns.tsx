@@ -1,8 +1,8 @@
 import { HeartFilledIcon } from "@radix-ui/react-icons"
 import { ColumnDef } from "@tanstack/react-table"
-import { HeartIcon } from "lucide-react"
 import { Server } from "../data/server-schema"
 import { DataTableColumnHeader } from "./data-table-column-header"
+import { DataTableFavoriteView } from "./data-table-favorite-view"
 import { DataTableMapView } from "./data-table-map-view"
 import { DataTableNameView } from "./data-table-name-view"
 import { DataTablePingView } from "./data-table-ping-view"
@@ -15,8 +15,8 @@ import { DataTableTimeView } from "./data-table-time-view"
 export const columns: ColumnDef<Server>[] = [
   {
     id: "Favorited",
-    header: ({ table }) => <HeartFilledIcon className="h-4 w-6" />,
-    cell: ({ row }) => <HeartIcon className="h-4 w-6" />,
+    header: () => <HeartFilledIcon className="ml-4 h-4 w-4" />,
+    cell: ({ row }) => <DataTableFavoriteView row={row} />,
     enableSorting: false,
     enableHiding: false,
   },
@@ -71,7 +71,7 @@ export const columns: ColumnDef<Server>[] = [
   {
     id: "Mods",
     accessorKey: "modList",
-    filterFn: (row, id, value) => {
+    filterFn: (row, _id, value) => {
       return (
         row.original.modList
           ?.map((mod) => mod.name.includes(value) ?? false)

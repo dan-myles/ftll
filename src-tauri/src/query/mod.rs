@@ -109,6 +109,26 @@ pub async fn destroy_server_info_semaphore() {
 }
 
 /**
+* function: update_server_info_semaphore
+* --------------------------
+* This function is called to destroy the server info semaphore.
+* We do this to clear the waiting list of permits, or to change the limit.
+* --------------------------
+* NOTE: Eventually we will want to let users pick how many servers to query at once.
+*/
+#[tauri::command]
+pub async fn update_server_info_semaphore(max_updates: usize) {
+    let semaphore = MAX_UPDATES_SEMAPHORE.clone();
+    let semaphore = semaphore.read().await;
+    semaphore.close();
+    drop(semaphore);
+
+    let new_semaphore = MAX_UPDATES_SEMAPHORE.clone();
+    let mut new_semaphore = new_semaphore.write().await;
+    *new_semaphore = Semaphore::new(max_updates);
+}
+
+/**
 * function: get_server_info
 * --------------------------
 * This function is called to get server information.

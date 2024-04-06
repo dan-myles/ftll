@@ -21,6 +21,7 @@ pub fn run() {
             query::get_server_info,
             query::get_server_list,
             query::destroy_server_info_semaphore,
+            query::update_server_info_semaphore,
             query::fetch,
         ])
         .setup(|app| {

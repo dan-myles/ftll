@@ -25,7 +25,7 @@ const serverStorage: StateStorage = {
   },
 }
 
-const useServerListStore = create<ServerListState & ServerListActions>()(
+export const useServerListStore = create<ServerListState & ServerListActions>()(
   persist(
     (set) => ({
       serverList: [],
@@ -35,8 +35,10 @@ const useServerListStore = create<ServerListState & ServerListActions>()(
       updateServer: (server) => {
         set((state) => {
           const serverList = [...state.serverList]
-          serverList[serverList.findIndex((s) => s.addr === server.addr)] =
-            server
+          const index = serverList.findIndex((s) => s.addr === server.addr)
+          if (index !== -1) {
+            serverList[index] = server
+          }
           return { serverList }
         })
       },
@@ -48,5 +50,3 @@ const useServerListStore = create<ServerListState & ServerListActions>()(
     }
   )
 )
-
-export { useServerListStore }

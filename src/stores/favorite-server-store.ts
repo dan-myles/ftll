@@ -1,33 +1,20 @@
 import type { Server, ServerList } from "@/app/browser/data/server-schema"
-import { del, get, set } from "idb-keyval"
 import { create } from "zustand"
-import { StateStorage, createJSONStorage, persist } from "zustand/middleware"
+import { createJSONStorage, persist } from "zustand/middleware"
 
-interface ServerFavoritesState {
+interface FavoriteServerState {
   serverList: ServerList
 }
 
-interface ServerFavoritesActions {
+interface FavoriteServerActions {
   setServerList: (serverList: ServerList) => void
   updateServer: (server: Server) => void
   removeServer: (server: Server) => void
+  addServer: (server: Server) => void
 }
 
-const serverStorage: StateStorage = {
-  getItem: async (name) => {
-    const value = await get(name)
-    return value || null
-  },
-  setItem: async (name, value) => {
-    await set(name, value)
-  },
-  removeItem: async (name) => {
-    await del(name)
-  },
-}
-
-const useServerListStore = create<
-  ServerFavoritesState & ServerFavoritesActions
+export const useFavoriteServerStore = create<
+  FavoriteServerState & FavoriteServerActions
 >()(
   persist(
     (set) => ({
@@ -38,8 +25,10 @@ const useServerListStore = create<
       updateServer: (server) => {
         set((state) => {
           const serverList = [...state.serverList]
-          serverList[serverList.findIndex((s) => s.addr === server.addr)] =
-            server
+          const index = serverList.findIndex((s) => s.addr === server.addr)
+          if (index !== -1) {
+            serverList[index] = server
+          }
           return { serverList }
         })
       },
@@ -51,13 +40,16 @@ const useServerListStore = create<
           return { serverList }
         })
       },
+      addServer: (server) => {
+        set((state) => {
+          const serverList = [...state.serverList, server]
+          return { serverList }
+        })
+      },
     }),
     {
       name: "favorites-storage",
-      storage: createJSONStorage(() => serverStorage),
-      skipHydration: true,
+      storage: createJSONStorage(() => localStorage),
     }
   )
 )
-
-export { useServerListStore }

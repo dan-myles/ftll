@@ -15,6 +15,7 @@ export function StatefulTableRow({
 }: React.HTMLAttributes<HTMLTableRowElement> & { row?: any }) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [server, setServer] = useState<Server>()
+  const [hasUpdated, setHasUpdated] = useState(false)
   const handleOpenDrawer = () => setDrawerOpen(true)
   const handleCloseDrawer = () => setDrawerOpen(false)
 
@@ -55,7 +56,7 @@ export function StatefulTableRow({
           )}
           onDoubleClickCapture={() => handleOpenDrawer()}
           {...props}
-        />
+        ></tr>
         <DataTableMoreInfo
           row={row}
           open={isDrawerOpen}

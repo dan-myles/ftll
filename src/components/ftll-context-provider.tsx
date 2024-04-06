@@ -46,7 +46,6 @@ export function FTLLContextProvider() {
             console.error(e)
             setLoadingServers(false)
           })
-          console.log(res)
           const serverList = serverListSchema.parse(res)
           setServerList(serverList)
           setLoadingServers(false)
@@ -67,7 +66,7 @@ export function FTLLContextProvider() {
 
     const init = async () => {
       const steamRunning = await checkSteam()
-      if (!steamRunning) return
+      if (!steamRunning) {return}
 
       await getUserInfo()
       await loadServers()
