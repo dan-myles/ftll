@@ -1,6 +1,5 @@
 "use client"
 
-import { ServerList, serverListSchema } from "@/app/browser/data/server-schema"
 import {
   AlertDialog,
   AlertDialogContent,
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useServerListStore } from "@/stores/server-list-store"
 import { useUserInfoStore } from "@/stores/user-info-store"
+import { ServerList, serverListSchema } from "@/validators/ftla/server-schema"
 import { window } from "@tauri-apps/api"
 import { invoke } from "@tauri-apps/api/core"
 import { useEffect, useState } from "react"
@@ -66,7 +66,9 @@ export function FTLLContextProvider() {
 
     const init = async () => {
       const steamRunning = await checkSteam()
-      if (!steamRunning) {return}
+      if (!steamRunning) {
+        return
+      }
 
       await getUserInfo()
       await loadServers()

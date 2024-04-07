@@ -13,7 +13,7 @@ export function RankChart({ data }: RankChartProps) {
   const { theme } = useTheme()
 
   if (!data) {
-    return <div>oops!</div>
+    return <div>oops! there was an error loading your data!</div>
   }
 
   // Push all attributes to an array

@@ -1,10 +1,10 @@
 import { UpdatedServerContext } from "@/components/stateful-table-row"
 import { Button } from "@/components/ui/button"
 import { useFavoriteServerStore } from "@/stores/favorite-server-store"
+import { Server } from "@/validators/ftla/server-schema"
 import { HeartFilledIcon, HeartIcon } from "@radix-ui/react-icons"
 import { Row } from "@tanstack/react-table"
 import { useContext, useEffect, useState } from "react"
-import { Server } from "../data/server-schema"
 
 interface DataTableFavoriteView<TData> {
   row: Row<TData>
@@ -42,7 +42,7 @@ export function DataTableFavoriteView<TData>({
 
   useEffect(() => {
     const server = row.original as Server
-    const isFavorited = serverList.some((s) => s.addr === server.addr)
+    const isFavorited = serverList.some((s: Server) => s.addr === server.addr)
     setFavorite(isFavorited)
   }, [serverList, row])
 

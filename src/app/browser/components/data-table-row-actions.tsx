@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useFavoriteServerStore } from "@/stores/favorite-server-store"
+import { Server } from "@/validators/ftla/server-schema"
 import {
   DotsHorizontalIcon,
   HeartFilledIcon,
@@ -15,7 +16,6 @@ import {
 import { Row } from "@tanstack/react-table"
 import { CopyIcon, InfoIcon } from "lucide-react"
 import { useEffect, useState } from "react"
-import { Server } from "../data/server-schema"
 import DataTableMoreInfo from "./data-table-more-info"
 
 interface DataTableRowActionsProps<TData> {

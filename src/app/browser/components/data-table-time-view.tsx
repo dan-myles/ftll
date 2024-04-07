@@ -1,8 +1,8 @@
 import { UpdatedServerContext } from "@/components/stateful-table-row"
 import { toTwelveHourTime } from "@/lib/convert-time"
+import { Server, serverSchema } from "@/validators/ftla/server-schema"
 import { Row } from "@tanstack/react-table"
 import { useContext } from "react"
-import { Server, serverSchema } from "../data/server-schema"
 
 interface DataTableTimeViewProps<TData> {
   row: Row<TData>

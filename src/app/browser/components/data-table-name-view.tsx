@@ -1,5 +1,5 @@
+import { serverSchema } from "@/validators/ftla/server-schema"
 import { Row } from "@tanstack/react-table"
-import { serverSchema } from "../data/server-schema"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>

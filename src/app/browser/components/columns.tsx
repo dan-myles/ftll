@@ -1,6 +1,6 @@
+import { Server } from "@/validators/ftla/server-schema"
 import { HeartFilledIcon } from "@radix-ui/react-icons"
 import { ColumnDef } from "@tanstack/react-table"
-import { Server } from "../data/server-schema"
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { DataTableFavoriteView } from "./data-table-favorite-view"
 import { DataTableMapView } from "./data-table-map-view"

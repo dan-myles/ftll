@@ -7,8 +7,8 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer"
 import { useServerRankGraphData } from "@/hooks/useServerRankGraphData"
+import { serverSchema } from "@/validators/ftla/server-schema"
 import { Row } from "@tanstack/react-table"
-import { serverSchema } from "../data/server-schema"
 import { RankChart } from "./more-info-server-rank-chart"
 
 interface DataTableMoreInfoProps<TData> {

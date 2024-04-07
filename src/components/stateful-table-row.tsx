@@ -1,9 +1,9 @@
 "use client"
 
 import DataTableMoreInfo from "@/app/browser/components/data-table-more-info"
-import { Server, serverSchema } from "@/app/browser/data/server-schema"
 import { useUpdateServer } from "@/hooks/useUpdateServer"
 import { cn } from "@/lib/utils"
+import { Server, serverSchema } from "@/validators/ftla/server-schema"
 import { createContext, useState } from "react"
 
 export const UpdatedServerContext = createContext<Server | undefined>(undefined)

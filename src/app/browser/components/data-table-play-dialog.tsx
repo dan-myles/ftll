@@ -9,9 +9,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { serverSchema } from "@/validators/ftla/server-schema"
 import { Row } from "@tanstack/react-table"
 import { PlayIcon } from "lucide-react"
-import { serverSchema } from "../data/server-schema"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>

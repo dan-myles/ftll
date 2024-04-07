@@ -1,7 +1,7 @@
 import { UpdatedServerContext } from "@/components/stateful-table-row"
+import { serverSchema } from "@/validators/ftla/server-schema"
 import { Row } from "@tanstack/react-table"
 import { useContext } from "react"
-import { serverSchema } from "../data/server-schema"
 
 interface DataTablePlayersViewProps<TData> {
   row: Row<TData>
