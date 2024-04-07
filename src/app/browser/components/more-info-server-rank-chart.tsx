@@ -2,50 +2,19 @@ import { useTheme } from "next-themes"
 import { Line, LineChart, ResponsiveContainer, Tooltip, YAxis } from "recharts"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BMGraphRes } from "@/validators/bm-graph-res-schema"
-
-// const data = [
-//   {
-//     revenue: 10400,
-//     subscription: 240,
-//   },
-//   {
-//     revenue: 14405,
-//     subscription: 300,
-//   },
-//   {
-//     revenue: 9400,
-//     subscription: 200,
-//   },
-//   {
-//     revenue: 8200,
-//     subscription: 278,
-//   },
-//   {
-//     revenue: 7000,
-//     subscription: 189,
-//   },
-//   {
-//     revenue: 9600,
-//     subscription: 239,
-//   },
-//   {
-//     revenue: 11244,
-//     subscription: 278,
-//   },
-//   {
-//     revenue: 26475,
-//     subscription: 189,
-//   },
-// ]
+import { RankGraphRes } from "@/validators/battlemetrics/rank-graph"
 
 interface RankChartProps {
-  data: BMGraphRes
+  data: RankGraphRes | undefined
 }
 
 export function RankChart({ data }: RankChartProps) {
   const { theme: mode } = useTheme()
   const { theme } = useTheme()
+
+  if (!data) {
+    return <div>oops!</div>
+  }
 
   // Push all attributes to an array
   const attributes = data.data.map((item) => {
