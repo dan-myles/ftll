@@ -9,7 +9,6 @@ module.exports = exports = {
   rules: {
     eqeqeq: [WARN, "smart"],
     curly: [WARN, "all"],
-    "capitalized-comments": [WARN, "always"],
     "no-else-return": [ERROR, { allowElseIf: false }],
     "no-lonely-if": [WARN],
     "no-unneeded-ternary": [ERROR, { defaultAssignment: false }],

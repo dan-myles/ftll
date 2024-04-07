@@ -1,11 +1,10 @@
 "use client"
 
 import { SteamPlayerCountRes } from "@/validators/steam-player-count-res-schema"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/core"
 
 export default function Home() {
-  const queryClient = useQueryClient()
   const { data, isSuccess } = useQuery({
     queryKey: ["dayz-player-count"],
     queryFn: async () => {
