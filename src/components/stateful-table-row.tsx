@@ -15,10 +15,14 @@ export function StatefulTableRow({
 }: React.HTMLAttributes<HTMLTableRowElement> & { row?: any }) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [server, setServer] = useState<Server>()
-  const [hasUpdated, setHasUpdated] = useState(false)
   const handleOpenDrawer = () => setDrawerOpen(true)
   const handleCloseDrawer = () => setDrawerOpen(false)
 
+  /*
+   * Normally we would use react-query here, but the ping changes so often
+   * that we can't take advantage of the caching feature. The cache is stored
+   * in localStorage, so we have a limit of 5MB. This is not enough for our use.
+   */
   useEffect(() => {
     const update = async () => {
       const updatedServer = await invoke<Server>("get_server_info", {

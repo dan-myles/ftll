@@ -6,8 +6,10 @@ import { ScreenIndicator } from "@/components/screen-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TitleBar } from "@/components/title-bar"
 import { cn } from "@/lib/utils"
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { useState } from "react"
+import { persistQueryClient } from "@tanstack/react-query-persist-client"
+import { useEffect } from "react"
 import "./globals.css"
 
 export default function RootLayout({
@@ -15,7 +17,26 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const [queryClient] = useState<QueryClient>(() => new QueryClient())
+  const client = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        gcTime: 1000 * 60 * 60 * 24, // 24 hours
+      },
+    },
+  })
+
+  useEffect(() => {
+    const localStoragePersister = createSyncStoragePersister({
+      storage: window.localStorage,
+    })
+
+    persistQueryClient({
+      queryClient: client,
+      persister: localStoragePersister,
+    })
+  })
 
   return (
     <html lang="en" className="h-screen overflow-clip" suppressHydrationWarning>
@@ -27,7 +48,7 @@ export default function RootLayout({
           enableSystem
         >
           <FTLLContextProvider />
-          <QueryClientProvider client={queryClient}>
+          <QueryClientProvider client={client}>
             <TitleBar />
             <main className="h-screen overflow-clip rounded-t-3xl bg-background">
               <MainNav />

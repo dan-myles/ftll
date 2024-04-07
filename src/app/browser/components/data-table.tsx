@@ -37,7 +37,12 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [sorting, setSorting] = useState<SortingState>([])
+  const [sorting, setSorting] = useState<SortingState>([
+    {
+      id: "Players",
+      desc: true,
+    },
+  ])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     Mods: false,
   })

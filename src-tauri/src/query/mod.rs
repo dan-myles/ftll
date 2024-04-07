@@ -28,10 +28,10 @@ use tokio::sync::Semaphore;
 lazy_static! {
     static ref SERVER_MAP: Arc<Mutex<HashMap<String, Server>>> =
         Arc::new(Mutex::new(HashMap::new()));
+    static ref MAX_UPDATES: Arc<RwLock<usize>> = Arc::new(RwLock::new(10));
     static ref MAX_UPDATES_SEMAPHORE: Arc<RwLock<Semaphore>> =
-        Arc::new(RwLock::new(Semaphore::new(MAX_UPDATES)));
+        Arc::new(RwLock::new(Semaphore::new(10)));
 }
-const MAX_UPDATES: usize = 2;
 
 /**
 * function: get_server_list
@@ -105,7 +105,8 @@ pub async fn destroy_server_info_semaphore() {
 
     let new_semaphore = MAX_UPDATES_SEMAPHORE.clone();
     let mut new_semaphore = new_semaphore.write().await;
-    *new_semaphore = Semaphore::new(MAX_UPDATES);
+    let max_updates = MAX_UPDATES.clone().read().await.clone();
+    *new_semaphore = Semaphore::new(max_updates);
 }
 
 /**
@@ -125,6 +126,9 @@ pub async fn update_server_info_semaphore(max_updates: usize) {
 
     let new_semaphore = MAX_UPDATES_SEMAPHORE.clone();
     let mut new_semaphore = new_semaphore.write().await;
+    let mut _m = MAX_UPDATES.clone().write().await.clone();
+    _m = max_updates;
+
     *new_semaphore = Semaphore::new(max_updates);
 }
 
