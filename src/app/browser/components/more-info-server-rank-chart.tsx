@@ -12,7 +12,7 @@ export function RankChart({ data }: RankChartProps) {
   const { theme: mode } = useTheme()
   const { theme } = useTheme()
 
-  if (!data) {
+  if (!data || data.data[0].attributes.value === 0) {
     return <div>oops! there was an error loading your data!</div>
   }
 
@@ -75,10 +75,10 @@ export function RankChart({ data }: RankChartProps) {
                   strokeWidth={2}
                   dataKey="rank"
                   activeDot={{
-                    r: 6,
+                    r: 2,
                     style: {
-                      stroke: mode === "dark" ? "#1F2937" : "#fff",
-                      strokeWidth: 2,
+                      stroke: mode === "dark" ? "#eef2ff" : "black",
+                      strokeWidth: 8,
                     },
                   }}
                   style={

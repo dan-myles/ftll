@@ -1,10 +1,8 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { useFavoriteServerStore } from "@/stores/favorite-server-store"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Button } from "./uia/moving-border"
 import { UserNav } from "./user-nav"
 
 export function MainNav({
@@ -12,7 +10,6 @@ export function MainNav({
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
   const path = usePathname()
-  const { serverList } = useFavoriteServerStore()
 
   return (
     <div
@@ -78,7 +75,6 @@ export function MainNav({
                 Mods
               </Link>
             )}
-            <Button onClick={() => console.log(serverList)}>Settings</Button>
           </nav>
         </div>
       </div>
