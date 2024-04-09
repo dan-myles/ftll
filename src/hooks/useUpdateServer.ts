@@ -1,4 +1,4 @@
-import { Server } from "@/app/browser/data/server-schema"
+import { Server } from "@/validators/ftla/server-schema"
 import { invoke } from "@tauri-apps/api/core"
 import { useEffect, useState } from "react"
 

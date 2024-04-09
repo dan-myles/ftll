@@ -1,23 +1,74 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useServerRankGraphData } from "@/hooks/useServerRankGraphData"
 import { useTheme } from "next-themes"
 import { Line, LineChart, ResponsiveContainer, Tooltip, YAxis } from "recharts"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { RankGraphRes } from "@/validators/battlemetrics/rank-graph"
-
 interface RankChartProps {
-  data: RankGraphRes | undefined
+  name: string
 }
 
-export function RankChart({ data }: RankChartProps) {
+export function RankChart({ name }: RankChartProps) {
   const { theme: mode } = useTheme()
   const { theme } = useTheme()
+  const { data, isLoading, error } = useServerRankGraphData(name)
 
-  if (!data || data.data[0].attributes.value === 0) {
-    return <div>oops! there was an error loading your data!</div>
+  if (isLoading) {
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-base font-normal">
+              Rank History
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex h-[30vh] justify-center">
+            <div className="mb-auto mt-auto text-gray-500">Loading...</div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-base font-normal">
+              Rank History
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex h-[30vh] justify-center">
+            <div className="mb-auto mt-auto text-red-400">
+              There was an error loading rank information!
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (data?.data[0].attributes.value === 0) {
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-base font-normal">
+              Rank History
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex h-[30vh] justify-center">
+            <div className="mb-auto mt-auto text-gray-500">
+              We don't have any rank information for this server!
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   // Push all attributes to an array
-  const attributes = data.data.map((item) => {
+  const attributes = data?.data.map((item) => {
     return {
       rank: item.attributes.value,
       timestamp: item.attributes.timestamp,
@@ -33,7 +84,7 @@ export function RankChart({ data }: RankChartProps) {
         <CardContent>
           <div className="flex justify-between">
             <div className="mb-6 text-2xl font-bold">
-              #{data.data[data.data.length - 1].attributes.value}
+              #{data?.data[data?.data.length - 1].attributes.value}
             </div>
             <div className=" text-sm  text-muted-foreground hover:underline">
               In the last 30 days

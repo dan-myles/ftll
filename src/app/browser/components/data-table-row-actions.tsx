@@ -1,3 +1,4 @@
+import { DrawerContext } from "@/components/stateful-table-row"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -15,8 +16,7 @@ import {
 } from "@radix-ui/react-icons"
 import { Row } from "@tanstack/react-table"
 import { CopyIcon, InfoIcon } from "lucide-react"
-import { useEffect, useState } from "react"
-import DataTableMoreInfo from "./data-table-more-info"
+import { useContext, useEffect, useState } from "react"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -27,10 +27,7 @@ export function DataTableRowActions<TData>({
 }: DataTableRowActionsProps<TData>) {
   const { addServer, removeServer, serverList } = useFavoriteServerStore()
   const [isFavorite, setFavorite] = useState(false)
-  const [open, setOpen] = useState(false)
-
-  const handleClose = () => setOpen(false)
-  const handleOpen = () => setOpen(true)
+  const handleDrawerOpen = useContext(DrawerContext)
 
   const handleCopy = () => {
     const server = row.original as Server
@@ -51,7 +48,7 @@ export function DataTableRowActions<TData>({
 
   useEffect(() => {
     const server = row.original as Server
-    const isFavorited = serverList.some((s) => s.addr === server.addr)
+    const isFavorited = serverList.some((s: Server) => s.addr === server.addr)
     setFavorite(isFavorited)
   }, [serverList, row])
 
@@ -87,13 +84,12 @@ export function DataTableRowActions<TData>({
             Copy
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleOpen}>
+          <DropdownMenuItem onClick={handleDrawerOpen}>
             <InfoIcon className="mr-2 h-4 w-4" />
             More Info
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <DataTableMoreInfo open={open} onClose={handleClose} row={row} />
     </>
   )
 }

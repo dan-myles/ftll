@@ -6,9 +6,9 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer"
-import { useServerRankGraphData } from "@/hooks/useServerRankGraphData"
 import { serverSchema } from "@/validators/ftla/server-schema"
 import { Row } from "@tanstack/react-table"
+import { useEffect, useState } from "react"
 import { RankChart } from "./more-info-server-rank-chart"
 
 interface DataTableMoreInfoProps<TData> {
@@ -23,7 +23,19 @@ export default function DataTableMoreInfo<TData>({
   row,
 }: DataTableMoreInfoProps<TData>) {
   const server = serverSchema.parse(row.original)
-  const { data } = useServerRankGraphData(server.name)
+  const [mounted, setMounted] = useState(false)
+
+  // Need to delay the rendering of the chart to prevent the
+  // over fetching of data from BM api.
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setMounted(true)
+    }, 1000)
+
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [])
 
   return (
     <>
@@ -39,7 +51,7 @@ export default function DataTableMoreInfo<TData>({
             </DrawerDescription>
           </DrawerHeader>
           <div className="p-4">
-            <RankChart data={data} />
+            {mounted && <RankChart name={server.name} />}
           </div>
           <DrawerFooter>{server.steamId}</DrawerFooter>
         </DrawerContent>

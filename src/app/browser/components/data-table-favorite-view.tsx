@@ -1,5 +1,4 @@
 import { UpdatedServerContext } from "@/components/stateful-table-row"
-import { Button } from "@/components/ui/button"
 import { useFavoriteServerStore } from "@/stores/favorite-server-store"
 import { Server } from "@/validators/ftla/server-schema"
 import { HeartFilledIcon, HeartIcon } from "@radix-ui/react-icons"
@@ -47,16 +46,22 @@ export function DataTableFavoriteView<TData>({
   }, [serverList, row])
 
   return (
-    <div className="max-w-4">
+    <div className="">
       {!isFavorite && (
-        <Button variant="ghost" onClick={handleFavorited}>
+        <div
+          onClick={handleFavorited}
+          className="max-w-fit cursor-pointer rounded-md p-2 hover:bg-accent"
+        >
           <HeartIcon className="h-4 w-4" />
-        </Button>
+        </div>
       )}
       {isFavorite && (
-        <Button variant="ghost" onClick={handleFavorited}>
+        <div
+          onClick={handleFavorited}
+          className="max-w-fit cursor-pointer rounded-md p-2 hover:bg-accent"
+        >
           <HeartFilledIcon className="h-4 w-4 text-red-500" />
-        </Button>
+        </div>
       )}
     </div>
   )

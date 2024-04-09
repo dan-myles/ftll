@@ -15,7 +15,7 @@ import { DataTableTimeView } from "./data-table-time-view"
 export const columns: ColumnDef<Server>[] = [
   {
     id: "Favorited",
-    header: () => <HeartFilledIcon className="ml-4 h-4 w-4" />,
+    header: () => <HeartFilledIcon className="ml-2 h-4 w-4" />,
     cell: ({ row }) => <DataTableFavoriteView row={row} />,
     enableSorting: false,
     enableHiding: false,

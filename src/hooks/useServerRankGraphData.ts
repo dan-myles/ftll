@@ -1,5 +1,4 @@
 import { rankGraphSchema } from "@/validators/battlemetrics/rank-graph"
-import { searchSchema } from "@/validators/battlemetrics/search"
 import { useQuery } from "@tanstack/react-query"
 
 export function useServerRankGraphData(serverName: string) {
@@ -7,6 +6,7 @@ export function useServerRankGraphData(serverName: string) {
     queryKey: ["bm-graph", serverName],
     queryFn: fetchGraphData,
     staleTime: 1000 * 60 * 60 * 24, // 24 hours
+    retryDelay: 1000 * 30, // 30 seconds
   })
 
   return res
@@ -24,28 +24,21 @@ async function fetchGraphData({ queryKey }: { queryKey: string[] }) {
   ).then(async (res) => {
     return await res.json()
   })
-
-  // Parse safely and return data
-  const searchData = await searchSchema
-    .safeParseAsync(res)
-    .then(() => {
-      return searchSchema.parse(res)
-    })
-    .catch((err) => {
-      return Promise.reject(
-        new Error("Failed to fetch server data, " + err.message)
-      )
-    })
+  const id = res.data[0].id
 
   // Get ISO string time of now to 30 days ago
   const now = new Date()
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(now.getDate() - 30)
 
+  // Wait a bit before fetching graph data
+  // to avoid rate limiting
+  setTimeout(() => {}, 1000)
+
   // Fetch for graph data
   const graphRes = await fetch(
     "https://api.battlemetrics.com/servers/" +
-      searchData.data[0].id +
+      id +
       "/rank-history?start=" +
       thirtyDaysAgo.toISOString() +
       "&stop=" +

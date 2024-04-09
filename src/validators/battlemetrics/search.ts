@@ -1,5 +1,9 @@
 import { z } from "zod"
 
+// NOTE: This is currently not in use since the type definition is not complete,
+// they also don't provide docs on their public api so we are, unsafely
+// parsing server "ids" with no type safety.
+
 export type SearchRes = z.infer<typeof searchSchema>
 
 export const searchSchema = z.object({

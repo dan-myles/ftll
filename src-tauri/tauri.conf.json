@@ -12,9 +12,9 @@
     "windows": [
       {
         "title": "ftll",
-        "width": 920,
-        "minWidth": 920,
-        "height": 600,
+        "width": 940,
+        "minWidth": 940,
+        "height": 700,
         "minHeight": 700,
         "resizable": true,
         "decorations": false,

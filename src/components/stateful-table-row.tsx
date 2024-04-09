@@ -7,6 +7,7 @@ import { Server, serverSchema } from "@/validators/ftla/server-schema"
 import { createContext, useState } from "react"
 
 export const UpdatedServerContext = createContext<Server | undefined>(undefined)
+export const DrawerContext = createContext<() => void>(() => {})
 
 export function StatefulTableRow({
   className,
@@ -22,19 +23,21 @@ export function StatefulTableRow({
   return (
     <>
       <UpdatedServerContext.Provider value={update}>
-        <tr
-          className={cn(
-            "select-none border-b transition-colors data-[state=selected]:bg-muted hover:bg-muted/50",
-            className
-          )}
-          onDoubleClickCapture={() => handleOpenDrawer()}
-          {...props}
-        ></tr>
-        <DataTableMoreInfo
-          row={row}
-          open={isDrawerOpen}
-          onClose={handleCloseDrawer}
-        />
+        <DrawerContext.Provider value={handleOpenDrawer}>
+          <tr
+            className={cn(
+              "select-none border-b transition-colors data-[state=selected]:bg-muted hover:bg-muted/50",
+              className
+            )}
+            onDoubleClickCapture={() => handleOpenDrawer()}
+            {...props}
+          ></tr>
+          <DataTableMoreInfo
+            row={row}
+            open={isDrawerOpen}
+            onClose={handleCloseDrawer}
+          />
+        </DrawerContext.Provider>
       </UpdatedServerContext.Provider>
     </>
   )
