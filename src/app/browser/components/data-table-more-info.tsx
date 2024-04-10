@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react"
+import { Row } from "@tanstack/react-table"
 import {
   Drawer,
   DrawerContent,
@@ -7,9 +9,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer"
 import { serverSchema } from "@/validators/ftla/server-schema"
-import { Row } from "@tanstack/react-table"
-import { useEffect, useState } from "react"
-import { RankChart } from "./more-info-server-rank-chart"
+import { RankGraph } from "./server-rank-graph"
 
 interface DataTableMoreInfoProps<TData> {
   open: boolean
@@ -53,7 +53,7 @@ export default function DataTableMoreInfo<TData>({
           <div className="flex h-[50vh] justify-between">
             <div className="max-w-[50vw] flex-grow bg-red-200 p-4">
               {/* This component fetches from the BM API */}
-              {mounted && <RankChart name={server.name} />}
+              {mounted && <RankGraph name={server.name} />}
             </div>
             <div className="max-w-[50vw] flex-grow bg-blue-500">test</div>
           </div>

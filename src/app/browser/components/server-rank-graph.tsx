@@ -1,13 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useServerRankGraphData } from "@/hooks/useServerRankGraphData"
 import { useTheme } from "next-themes"
 import { Line, LineChart, ResponsiveContainer, Tooltip, YAxis } from "recharts"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useServerRankGraphData } from "@/hooks/useServerRankGraphData"
 
 interface RankChartProps {
   name: string
 }
 
-export function RankChart({ name }: RankChartProps) {
+export function RankGraph({ name }: RankChartProps) {
   const { theme: mode } = useTheme()
   const { theme } = useTheme()
   const { data, isLoading, error } = useServerRankGraphData(name)
