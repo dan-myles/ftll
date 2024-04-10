@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useFavoriteServerStore } from "@/stores/favorite-server-store"
+import { useFavoriteServer } from "@/hooks/useFavoriteServer"
 import { Server } from "@/validators/ftla/server-schema"
 import {
   DotsHorizontalIcon,
@@ -16,7 +16,7 @@ import {
 } from "@radix-ui/react-icons"
 import { Row } from "@tanstack/react-table"
 import { CopyIcon, InfoIcon } from "lucide-react"
-import { useContext, useEffect, useState } from "react"
+import { useContext } from "react"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -25,32 +25,16 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const { addServer, removeServer, serverList } = useFavoriteServerStore()
-  const [isFavorite, setFavorite] = useState(false)
   const handleDrawerOpen = useContext(DrawerContext)
+  const { isFavorite, handleFavorited } = useFavoriteServer(
+    row.original as Server
+  )
 
   const handleCopy = () => {
     const server = row.original as Server
     const addr = server.addr.split(":")[0]
     navigator.clipboard.writeText(addr + ":" + server.gamePort)
   }
-
-  const handleFavorited = () => {
-    const server = row.original as Server
-    if (isFavorite) {
-      setFavorite(false)
-      removeServer(server)
-    } else {
-      setFavorite(true)
-      addServer(server)
-    }
-  }
-
-  useEffect(() => {
-    const server = row.original as Server
-    const isFavorited = serverList.some((s: Server) => s.addr === server.addr)
-    setFavorite(isFavorited)
-  }, [serverList, row])
 
   return (
     <>

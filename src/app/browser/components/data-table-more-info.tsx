@@ -50,10 +50,14 @@ export default function DataTableMoreInfo<TData>({
               {server.addr}:{server.gamePort}
             </DrawerDescription>
           </DrawerHeader>
-          <div className="p-4">
-            {mounted && <RankChart name={server.name} />}
+          <div className="flex h-[50vh] justify-between">
+            <div className="max-w-[50vw] flex-grow bg-red-200 p-4">
+              {/* This component fetches from the BM API */}
+              {mounted && <RankChart name={server.name} />}
+            </div>
+            <div className="max-w-[50vw] flex-grow bg-blue-500">test</div>
           </div>
-          <DrawerFooter>{server.steamId}</DrawerFooter>
+          <DrawerFooter></DrawerFooter>
         </DrawerContent>
       </Drawer>
     </>

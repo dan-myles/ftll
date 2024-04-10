@@ -1,9 +1,7 @@
-import { UpdatedServerContext } from "@/components/stateful-table-row"
-import { useFavoriteServerStore } from "@/stores/favorite-server-store"
+import { useFavoriteServer } from "@/hooks/useFavoriteServer"
 import { Server } from "@/validators/ftla/server-schema"
 import { HeartFilledIcon, HeartIcon } from "@radix-ui/react-icons"
 import { Row } from "@tanstack/react-table"
-import { useContext, useEffect, useState } from "react"
 
 interface DataTableFavoriteView<TData> {
   row: Row<TData>
@@ -12,38 +10,9 @@ interface DataTableFavoriteView<TData> {
 export function DataTableFavoriteView<TData>({
   row,
 }: DataTableFavoriteView<TData>) {
-  const { updateServer, addServer, removeServer, serverList } =
-    useFavoriteServerStore()
-  const [isFavorite, setFavorite] = useState(false)
-  const updatedServer = useContext(UpdatedServerContext)
-
-  const handleFavorited = () => {
-    const server = row.original as Server
-    if (isFavorite) {
-      setFavorite(false)
-      removeServer(server)
-    } else {
-      setFavorite(true)
-      addServer(server)
-    }
-  }
-
-  useEffect(() => {
-    const update = () => {
-      if (updatedServer === undefined) {
-        return
-      }
-      updateServer(updatedServer)
-    }
-
-    update()
-  }, [updatedServer, updateServer])
-
-  useEffect(() => {
-    const server = row.original as Server
-    const isFavorited = serverList.some((s: Server) => s.addr === server.addr)
-    setFavorite(isFavorited)
-  }, [serverList, row])
+  const { isFavorite, handleFavorited } = useFavoriteServer(
+    row.original as Server
+  )
 
   return (
     <div className="">

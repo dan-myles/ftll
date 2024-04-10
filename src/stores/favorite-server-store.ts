@@ -1,4 +1,4 @@
-import type { Server, ServerList } from "@/app/browser/data/server-schema"
+import type { Server, ServerList } from "@/validators/ftla/server-schema"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 

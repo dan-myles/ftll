@@ -33,7 +33,7 @@ export function useUpdateServer(s: Server) {
       clearTimeout(delayBeforeUpdate)
       clearInterval(intervalToUpdate)
     }
-  }, [s])
+  }, [])
 
   return server
 }

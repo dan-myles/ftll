@@ -1,8 +1,10 @@
 "use client"
 
 import { cn } from "@/lib/utils"
+import { useFavoriteServerStore } from "@/stores/favorite-server-store"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { Button } from "./uia/moving-border"
 import { UserNav } from "./user-nav"
 
 export function MainNav({
@@ -10,11 +12,12 @@ export function MainNav({
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
   const path = usePathname()
+  const { serverList, setServerList } = useFavoriteServerStore()
 
   return (
     <div
       className="
-      flex-1 flex-col space-y-8 bg-background pl-4 pr-4 pt-4 
+      flex-1 flex-col space-y-8 bg-background pl-4 pr-4 pt-4
       shadow-2xl shadow-black md:flex"
     >
       <div className="border-b">
@@ -37,7 +40,7 @@ export function MainNav({
             ) : (
               <Link
                 href="/"
-                className="text-sm font-medium text-muted-foreground 
+                className="text-sm font-medium text-muted-foreground
                   transition-colors hover:text-primary"
               >
                 Home
@@ -53,7 +56,7 @@ export function MainNav({
             ) : (
               <Link
                 href="/browser"
-                className="text-sm font-medium text-muted-foreground 
+                className="text-sm font-medium text-muted-foreground
                   transition-colors hover:text-primary"
               >
                 Server Browser
@@ -69,12 +72,19 @@ export function MainNav({
             ) : (
               <Link
                 href="/mod-manager"
-                className="text-sm font-medium text-muted-foreground 
+                className="text-sm font-medium text-muted-foreground
                   transition-colors hover:text-primary"
               >
                 Mods
               </Link>
             )}
+            <Button
+              onClick={() => {
+                console.log(serverList)
+              }}
+            >
+              Debug
+            </Button>
           </nav>
         </div>
       </div>
