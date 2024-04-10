@@ -15,10 +15,14 @@ export function RankChart({ name }: RankChartProps) {
   if (isLoading) {
     return (
       <Card className="flex h-full flex-col">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader
+          className="flex flex-row items-center justify-between space-y-0 pb-2"
+        >
           <CardTitle className="text-base font-normal">Rank History</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-grow flex-col items-center justify-center">
+        <CardContent
+          className="flex flex-grow flex-col items-center justify-center"
+        >
           <div className="mb-auto mt-auto text-gray-500">Loading...</div>
         </CardContent>
       </Card>
@@ -28,10 +32,14 @@ export function RankChart({ name }: RankChartProps) {
   if (error) {
     return (
       <Card className="flex h-full flex-col">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader
+          className="flex flex-row items-center justify-between space-y-0 pb-2"
+        >
           <CardTitle className="text-base font-normal">Rank History</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-grow flex-col items-center justify-center">
+        <CardContent
+          className="flex flex-grow flex-col items-center justify-center"
+        >
           <div className="mb-auto mt-auto text-gray-500">
             There was an error fetching rank data for this server!
           </div>
@@ -43,12 +51,16 @@ export function RankChart({ name }: RankChartProps) {
   if (data?.data[0].attributes.value === 0) {
     return (
       <Card className="flex h-full flex-col">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader
+          className="flex flex-row items-center justify-between space-y-0 pb-2"
+        >
           <CardTitle className="text-base font-normal">Rank History</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-grow flex-col items-center justify-center">
+        <CardContent
+          className="flex flex-grow flex-col items-center justify-center"
+        >
           <div className="mb-auto mt-auto text-gray-500">
-            We don't have any rank information for this server!
+            We don&apos;t have any rank information for this server!
           </div>
         </CardContent>
       </Card>
@@ -65,7 +77,9 @@ export function RankChart({ name }: RankChartProps) {
 
   return (
     <Card className="flex h-full flex-col">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader
+        className="flex flex-row items-center justify-between space-y-0 pb-2"
+      >
         <CardTitle className="text-base font-normal">Rank History</CardTitle>
       </CardHeader>
       <CardContent className="flex h-full flex-col">
@@ -73,7 +87,7 @@ export function RankChart({ name }: RankChartProps) {
           <div className="mb-6 text-2xl font-bold">
             #{data?.data[data?.data.length - 1].attributes.value}
           </div>
-          <div className=" text-sm  text-muted-foreground hover:underline">
+          <div className=" text-sm text-muted-foreground hover:underline">
             In the last 30 days
           </div>
         </div>
