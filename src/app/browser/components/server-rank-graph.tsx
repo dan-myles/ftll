@@ -109,10 +109,10 @@ export function RankGraph({ name }: RankChartProps) {
                 axisLine={true}
                 tickLine={true}
                 tickMargin={10}
-                className="text-sm font-extralight"
                 style={
                   {
                     stroke: theme === "dark" ? "#9CA3AF" : "#4B5563",
+                    fontSize: "0.65rem",
                   } as React.CSSProperties
                 }
                 reversed={true}
