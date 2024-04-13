@@ -1,9 +1,9 @@
 "use client"
 
-import { cn } from "@/lib/utils"
-import { useFavoriteServerStore } from "@/stores/favorite-server-store"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
+import { useFavoriteServerStore } from "@/stores/favorite-server-store"
 import { Button } from "./uia/moving-border"
 import { UserNav } from "./user-nav"
 
@@ -16,9 +16,8 @@ export function MainNav({
 
   return (
     <div
-      className="
-      flex-1 flex-col space-y-8 bg-background pl-4 pr-4 pt-4
-      shadow-2xl shadow-black md:flex"
+      className=" flex-1 flex-col space-y-8 bg-background pl-4 pr-4 pt-4
+        shadow-black md:flex"
     >
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
@@ -33,7 +32,8 @@ export function MainNav({
             {path === "/" ? (
               <Link
                 href="/"
-                className="text-sm font-medium transition-colors hover:text-primary"
+                className="text-sm font-medium transition-colors
+                  hover:text-primary"
               >
                 Home
               </Link>
@@ -49,7 +49,8 @@ export function MainNav({
             {path === "/browser" ? (
               <Link
                 href="/browser"
-                className="text-sm font-medium transition-colors hover:text-primary"
+                className="text-sm font-medium transition-colors
+                  hover:text-primary"
               >
                 Server Browser
               </Link>
@@ -62,16 +63,17 @@ export function MainNav({
                 Server Browser
               </Link>
             )}
-            {path === "/mod-manager" ? (
+            {path === "/mods" ? (
               <Link
                 href="/settings"
-                className="text-sm font-medium transition-colors hover:text-primary"
+                className="text-sm font-medium transition-colors
+                  hover:text-primary"
               >
                 Mods
               </Link>
             ) : (
               <Link
-                href="/mod-manager"
+                href="/mods"
                 className="text-sm font-medium text-muted-foreground
                   transition-colors hover:text-primary"
               >
