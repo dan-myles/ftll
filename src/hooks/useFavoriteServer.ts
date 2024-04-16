@@ -1,12 +1,13 @@
-import { useFavoriteServerStore } from "@/stores/favorite-server-store"
-import { Server } from "@/validators/ftla/server-schema"
 import { useEffect, useState } from "react"
+import { type Server } from "@/schemas/ftla/server-schema"
+import { useFavoriteServerStore } from "@/stores/favorite-server-store"
 
 export function useFavoriteServer(s: Server) {
-  const { addServer, removeServer, serverList } = useFavoriteServerStore()
   const [isFavorite, setFavorite] = useState(false)
+  const { addServer, removeServer, serverList } = useFavoriteServerStore()
 
   // Handle the favorited server
+  // Meant to be called from an onClick event
   const handleFavorited = () => {
     if (isFavorite) {
       setFavorite(false)
@@ -17,7 +18,7 @@ export function useFavoriteServer(s: Server) {
     }
   }
 
-  // Check if the server is favorited
+  // Check if the server is favorited before rendering
   useEffect(() => {
     const isFavorited = serverList.some((server) => server.addr === s.addr)
     setFavorite(isFavorited)

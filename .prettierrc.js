@@ -19,4 +19,4 @@ const config = {
   endOfLine: "lf",
 }
 
-module.exports = config
+export default config

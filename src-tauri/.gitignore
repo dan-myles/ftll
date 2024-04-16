@@ -2,8 +2,3 @@
 # will have compiled files and executables
 /target/
 /gen/schemas
-
-# Protect Secrets
-.env
-.env.*local
-.env.*production

@@ -4,22 +4,22 @@
   "identifier": "com.ftl-launcher.app",
   "build": {
     "frontendDist": "../dist",
-    "devUrl": "http://localhost:3000",
+    "devUrl": "http://localhost:5173",
     "beforeDevCommand": "bun run dev",
     "beforeBuildCommand": "bun run build"
   },
   "app": {
     "windows": [
       {
-        "title": "ftll",
+        "title": "FTLL",
         "width": 940,
-        "minWidth": 940,
+        "minWidth": 920,
         "height": 700,
-        "minHeight": 700,
+        "minHeight": 680,
         "resizable": true,
+        "transparent": true,
         "decorations": false,
-        "fullscreen": false,
-        "transparent": true
+        "fullscreen": false
       }
     ],
     "security": {
@@ -35,10 +35,6 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ],
-    "resources": [
-      "steam_api64.dll",
-      "steam_api64.lib"
     ]
   },
   "$schema": "../node_modules/@tauri-apps/cli/schema.json"

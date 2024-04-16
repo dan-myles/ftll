@@ -1,9 +1,0 @@
-C:\Users\Dan\Personal\ftl-launcher\src-tauri\a2s\target\debug\deps\libbzip2-90d2c9e04c82db26.rmeta: C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\lib.rs C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\mem.rs C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\bufread.rs C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\read.rs C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\write.rs
-
-C:\Users\Dan\Personal\ftl-launcher\src-tauri\a2s\target\debug\deps\bzip2-90d2c9e04c82db26.d: C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\lib.rs C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\mem.rs C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\bufread.rs C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\read.rs C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\write.rs
-
-C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\lib.rs:
-C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\mem.rs:
-C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\bufread.rs:
-C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\read.rs:
-C:\Users\Dan\scoop\persist\rustup\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bzip2-0.4.4\src\write.rs:

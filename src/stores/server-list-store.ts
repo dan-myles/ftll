@@ -1,7 +1,11 @@
-import type { Server, ServerList } from "@/validators/ftla/server-schema"
 import { del, get, set } from "idb-keyval"
 import { create } from "zustand"
-import { StateStorage, createJSONStorage, persist } from "zustand/middleware"
+import {
+  type StateStorage,
+  createJSONStorage,
+  persist,
+} from "zustand/middleware"
+import type { Server, ServerList } from "@/schemas/ftla/server-schema"
 
 interface ServerListState {
   serverList: ServerList
@@ -14,7 +18,9 @@ interface ServerListActions {
 
 const serverStorage: StateStorage = {
   getItem: async (name) => {
+    // eslint-disable-next-line
     const value = await get(name)
+    // eslint-disable-next-line
     return value || null
   },
   setItem: async (name, value) => {

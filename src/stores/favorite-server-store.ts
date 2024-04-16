@@ -1,6 +1,6 @@
-import type { Server, ServerList } from "@/validators/ftla/server-schema"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
+import type { Server, ServerList } from "@/schemas/ftla/server-schema"
 
 interface FavoriteServerState {
   serverList: ServerList
@@ -48,7 +48,7 @@ export const useFavoriteServerStore = create<
       },
     }),
     {
-      name: "favorites-storage",
+      name: "favorites-storage", // Unique key for local storage
       storage: createJSONStorage(() => localStorage),
     }
   )
