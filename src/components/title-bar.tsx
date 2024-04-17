@@ -3,7 +3,7 @@ import { Icons } from "./icons"
 
 export function TitleBar() {
   return (
-    <WindowTitlebar controlsOrder="right" className="bg-transparent">
+    <WindowTitlebar controlsOrder="right" className="h-10 bg-transparent">
       <div
         className="inline-flex justify-center p-2 text-white
           dark:text-indigo-500"

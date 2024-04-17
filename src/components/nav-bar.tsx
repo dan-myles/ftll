@@ -2,13 +2,12 @@ import { useRouterState } from "@tanstack/react-router"
 import { UserButton } from "./user-button"
 
 export function NavBar() {
-  const router = useRouterState()
-  const path = router.location.pathname
+  const path = useRouterState().location.pathname
 
   return (
     <div
-      className=" flex-1 flex-col space-y-8 bg-background pl-4 pr-4 pt-4
-        shadow-black md:flex"
+      className="h-[81px] flex-1 flex-col space-y-8 rounded-t-3xl bg-background
+        pl-4 pr-4 pt-4 shadow-black md:flex"
     >
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
@@ -31,9 +30,9 @@ export function NavBar() {
                 Home
               </a>
             )}
-            {path === "/browser" ? (
+            {path === "/server-browser" ? (
               <a
-                href="/browser"
+                href="/server-browser"
                 className="text-sm font-medium transition-colors
                   hover:text-primary"
               >
@@ -41,14 +40,14 @@ export function NavBar() {
               </a>
             ) : (
               <a
-                href="/browser"
+                href="/server-browser"
                 className="text-sm font-medium text-muted-foreground
                   transition-colors hover:text-primary"
               >
                 Server Browser
               </a>
             )}
-            {path === "/mods" ? (
+            {path === "/mod-manager" ? (
               <a
                 href="/settings"
                 className="text-sm font-medium transition-colors
@@ -58,7 +57,7 @@ export function NavBar() {
               </a>
             ) : (
               <a
-                href="/mods"
+                href="/mod-manager"
                 className="text-sm font-medium text-muted-foreground
                   transition-colors hover:text-primary"
               >

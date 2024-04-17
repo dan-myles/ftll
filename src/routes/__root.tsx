@@ -50,12 +50,11 @@ function Root() {
           enableSystem
         >
           <TitleBar />
+          <NavBar />
           <main
-            // 100vh - 40px for titlebar
-            className="h-[calc(100vh-40px)] w-screen overflow-clip rounded-t-3xl
-              bg-background"
+            // 100vh - 121px for titlebar and navbar
+            className="h-[calc(100vh-121px)] bg-background"
           >
-            <NavBar />
             <Outlet />
           </main>
           <ScreenIndicator />

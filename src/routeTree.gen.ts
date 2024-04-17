@@ -12,11 +12,23 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as ServerBrowserIndexImport } from './routes/server-browser/index'
+import { Route as ModManagerIndexImport } from './routes/mod-manager/index'
 
 // Create/Update Routes
 
 const IndexRoute = IndexImport.update({
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ServerBrowserIndexRoute = ServerBrowserIndexImport.update({
+  path: '/server-browser/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ModManagerIndexRoute = ModManagerIndexImport.update({
+  path: '/mod-manager/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -28,11 +40,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/mod-manager/': {
+      preLoaderRoute: typeof ModManagerIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/server-browser/': {
+      preLoaderRoute: typeof ServerBrowserIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([IndexRoute])
+export const routeTree = rootRoute.addChildren([
+  IndexRoute,
+  ModManagerIndexRoute,
+  ServerBrowserIndexRoute,
+])
 
 /* prettier-ignore-end */
