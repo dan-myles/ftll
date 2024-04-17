@@ -1,5 +1,5 @@
-import { RocketIcon } from "@radix-ui/react-icons"
 import { WindowTitlebar } from "@/components/window-controls"
+import { Icons } from "./icons"
 
 export function TitleBar() {
   return (
@@ -8,8 +8,8 @@ export function TitleBar() {
         className="inline-flex justify-center p-2 text-white
           dark:text-indigo-500"
       >
-        <RocketIcon className="h-5 w-5" />
-        <div className="text-md h-fit pl-2 font-bold text-white">FTLL</div>
+        <Icons.rocket className="h-6 w-6" />
+        <div className="text-md h-fit pl-3 font-bold text-white">FTLL</div>
       </div>
     </WindowTitlebar>
   )

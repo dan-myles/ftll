@@ -3,8 +3,9 @@ import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persist
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { persistQueryClient } from "@tanstack/react-query-persist-client"
 import { Outlet, createRootRoute } from "@tanstack/react-router"
-import { TanStackRouterDevtools } from "@tanstack/router-devtools"
+import { NavBar } from "@/components/nav-bar"
 import { ScreenIndicator } from "@/components/screen-indicator"
+import { TanStackRouterDevtools } from "@/components/tanstack-router-devtools"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TitleBar } from "@/components/title-bar"
 
@@ -54,10 +55,11 @@ function Root() {
             className="h-[calc(100vh-40px)] w-screen overflow-clip rounded-t-3xl
               bg-background"
           >
+            <NavBar />
             <Outlet />
           </main>
           <ScreenIndicator />
-          <TanStackRouterDevtools position="bottom-right" />
+          <TanStackRouterDevtools />
         </ThemeProvider>
       </QueryClientProvider>
     </>
