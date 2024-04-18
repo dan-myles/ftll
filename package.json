@@ -45,6 +45,7 @@
     "@tanstack/react-router": "^1.28.1",
     "@tauri-apps/api": "^2.0.0-beta.8",
     "@tauri-apps/plugin-os": "^2.0.0-beta.2",
+    "@tauri-apps/plugin-process": "^2.0.0-beta.2",
     "@tauri-apps/plugin-shell": "^2.0.0-beta.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",

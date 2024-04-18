@@ -3,6 +3,7 @@ import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persist
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { persistQueryClient } from "@tanstack/react-query-persist-client"
 import { Outlet, createRootRoute } from "@tanstack/react-router"
+import { FTLLContextProvider } from "@/components/ftll-context-provider"
 import { NavBar } from "@/components/nav-bar"
 import { ScreenIndicator } from "@/components/screen-indicator"
 import { TanStackRouterDevtools } from "@/components/tanstack-router-devtools"
@@ -49,16 +50,18 @@ function Root() {
           defaultTheme="system"
           enableSystem
         >
-          <TitleBar />
-          <NavBar />
-          <main
-            // 100vh - 121px for titlebar and navbar
-            className="h-[calc(100vh-121px)] bg-background"
-          >
-            <Outlet />
-          </main>
-          <ScreenIndicator />
-          <TanStackRouterDevtools />
+          <FTLLContextProvider>
+            <TitleBar />
+            <NavBar />
+            <main
+              // 100vh - 121px for titlebar and navbar
+              className="h-[calc(100vh-121px)] bg-background"
+            >
+              <Outlet />
+            </main>
+            <ScreenIndicator />
+            <TanStackRouterDevtools />
+          </FTLLContextProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </>

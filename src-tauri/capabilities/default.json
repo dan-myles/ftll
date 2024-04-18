@@ -21,6 +21,7 @@
     "window:allow-toggle-maximize",
     "window:allow-minimize",
     "window:allow-close",
+    "process:allow-exit",
     "fs:default",
     "fs:allow-appdata-read",
     "fs:allow-appdata-write",
