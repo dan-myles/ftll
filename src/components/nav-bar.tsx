@@ -1,4 +1,7 @@
-import { useRouterState } from "@tanstack/react-router"
+import { Link, useRouterState } from "@tanstack/react-router"
+import { Route as IndexRoute } from "@/routes/index"
+import { Route as ModManagerRoute } from "@/routes/mod-manager/index"
+import { Route as ServerBrowserRoute } from "@/routes/server-browser/index"
 import { UserButton } from "./user-button"
 
 export function NavBar() {
@@ -14,55 +17,55 @@ export function NavBar() {
           <UserButton />
           <nav className="flex items-center space-x-4 lg:space-x-6">
             {path === "/" ? (
-              <a
-                href="/"
+              <Link
+                to={IndexRoute.to}
                 className="text-sm font-medium transition-colors
                   hover:text-primary"
               >
                 Home
-              </a>
+              </Link>
             ) : (
-              <a
-                href="/"
+              <Link
+                to={IndexRoute.to}
                 className="text-sm font-medium text-muted-foreground
                   transition-colors hover:text-primary"
               >
                 Home
-              </a>
+              </Link>
             )}
             {path === "/server-browser" ? (
-              <a
-                href="/server-browser"
+              <Link
+                to={ServerBrowserRoute.to}
                 className="text-sm font-medium transition-colors
                   hover:text-primary"
               >
                 Server Browser
-              </a>
+              </Link>
             ) : (
-              <a
-                href="/server-browser"
+              <Link
+                to={ServerBrowserRoute.to}
                 className="text-sm font-medium text-muted-foreground
                   transition-colors hover:text-primary"
               >
                 Server Browser
-              </a>
+              </Link>
             )}
             {path === "/mod-manager" ? (
-              <a
-                href="/settings"
+              <Link
+                to={ModManagerRoute.to}
                 className="text-sm font-medium transition-colors
                   hover:text-primary"
               >
                 Mods
-              </a>
+              </Link>
             ) : (
-              <a
-                href="/mod-manager"
+              <Link
+                to={ModManagerRoute.to}
                 className="text-sm font-medium text-muted-foreground
                   transition-colors hover:text-primary"
               >
                 Mods
-              </a>
+              </Link>
             )}
           </nav>
         </div>

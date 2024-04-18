@@ -2,6 +2,10 @@ use anyhow::Result;
 
 mod client;
 
+lazy_static::lazy_static! {
+    static ref IS_STEAMWORKS_INITIALIZED: std::sync::Mutex<bool> = std::sync::Mutex::new(false);
+}
+
 #[tauri::command]
 pub async fn get_user_display_name() -> String {
     client::get_client().friends().name()
@@ -23,8 +27,17 @@ pub async fn get_user_avi_rgba() -> Result<Vec<u8>, String> {
 
 #[tauri::command]
 pub async fn init_steamworks() -> Result<(), String> {
-    if client::has_client() {
+    let mut steamworks_initialized = IS_STEAMWORKS_INITIALIZED
+        .lock()
+        .map_err(|e| e.to_string())?;
+
+    if *steamworks_initialized {
         return Ok(());
+    }
+
+    if client::has_client() {
+        client::drop_client();
+        client::drop_single();
     }
 
     // DayZ App ID
@@ -35,10 +48,12 @@ pub async fn init_steamworks() -> Result<(), String> {
             let (client, single) = client;
             client::set_client(client);
             client::set_single(single);
+            *steamworks_initialized = true;
             Ok(())
         }
         Err(e) => {
             println!("Error initializing Steamworks: {}", e);
+            *steamworks_initialized = false;
             Err(e.to_string())
         }
     }

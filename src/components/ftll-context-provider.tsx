@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
 import { type ReactNode } from "react"
-import { useRouter } from "@tanstack/react-router"
 import { invoke } from "@tauri-apps/api/core"
 import { exit } from "@tauri-apps/plugin-process"
 import tryingUrl from "@/assets/trying.gif"
+import zombieUrl from "@/assets/zombie.gif"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,50 +23,64 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
   const [isSteamInitialized, setSteamInitialized] = useState(true)
   const { setUserName, setSteamId, setAvi } = useUserInfoStore((state) => state)
   const setServerList = useServerListStore((state) => state.setServerList)
-  const router = useRouter()
 
   async function init() {
-    const steamRunning = await invoke("init_steamworks").catch((e) => {
-      console.error(e)
-      setSteamInitialized(false)
-    })
+    // Load steamworks
+    const loadSteam = async () => {
+      await invoke("init_steamworks").catch((e) => {
+        console.error(e)
+        setSteamInitialized(false)
+        return false
+      })
 
-    // // Load locally cached servers
-    // const loadServers = async () => {
-    //   setLoadingServers(true)
-    //   await useServerListStore.persist.rehydrate()
-    //
-    //   if (useServerListStore.persist.hasHydrated()) {
-    //     if (useServerListStore.getState().serverList.length === 0) {
-    //       const res = await invoke<ServerList>("get_server_list").catch((e) => {
-    //         console.error(e)
-    //         setLoadingServers(false)
-    //       })
-    //       const serverList = serverListSchema.parse(res)
-    //       setServerList(serverList)
-    //       setLoadingServers(false)
-    //     } else {
-    //       setLoadingServers(false)
-    //     }
-    //   }
-    // }
-    //
-    // const getUserInfo = async () => {
-    //   const userName = await invoke<string>("get_user_display_name")
-    //   const steamId = await invoke<string>("get_user_steam_id")
-    //   const avi = await invoke<Uint8Array>("get_user_avi_rgba")
-    //   setUserName(userName)
-    //   setSteamId(steamId)
-    //   setAvi(avi)
-    // }
+      return true
+    }
+
+    // Load locally cached servers
+    const loadServers = async () => {
+      await useServerListStore.persist.rehydrate()
+      if (useServerListStore.persist.hasHydrated()) {
+        if (useServerListStore.getState().serverList.length === 0) {
+          setLoadingServers(true)
+          const res = await invoke<ServerList>("get_server_list").catch((e) => {
+            console.error(e)
+            setLoadingServers(false)
+          })
+          const serverList = serverListSchema.parse(res)
+          setServerList(serverList)
+          setLoadingServers(false)
+        } else {
+          setLoadingServers(false)
+        }
+      }
+    }
+
+    const getUserInfo = async () => {
+      const userName = await invoke<string>("get_user_display_name")
+      const steamId = await invoke<string>("get_user_steam_id")
+      const avi = await invoke<Uint8Array>("get_user_avi_rgba")
+      setUserName(userName)
+      setSteamId(steamId)
+      setAvi(avi)
+    }
+
+    // If steam isn't loaded, dont load servers!
+    const res = await loadSteam()
+    if (!res) return
+
+    // Load everything else
+    await loadServers()
+    await getUserInfo()
   }
 
+  // On omunt we will initialize stores
   useEffect(() => {
     (async () => {
       await init()
     })().catch((e) => {
       console.error(e)
     })
+    // eslint-disable-next-line
   }, [])
 
   return (
@@ -81,16 +95,14 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
               &ldquo;supercalafragilisticexpialidocious&ldquo;!
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="">
-            <div className="flex w-full justify-center">
-              <div className="">
-                <img src="/zombie-bloody.gif" alt="zombie" />
-              </div>
+          <div className="flex w-full justify-center">
+            <div className="">
+              <img src={zombieUrl} alt="zombie" />
             </div>
-          </AlertDialogFooter>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
-      <AlertDialog open={!isSteamInitialized}>
+      <AlertDialog open={!isSteamInitialized && !isLoadingServers}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Uh oh... 😭</AlertDialogTitle>

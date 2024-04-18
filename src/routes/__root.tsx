@@ -9,6 +9,7 @@ import { ScreenIndicator } from "@/components/screen-indicator"
 import { TanStackRouterDevtools } from "@/components/tanstack-router-devtools"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TitleBar } from "@/components/title-bar"
+import { Toaster } from "@/components/ui/sonner"
 
 // This is the root for our app, however this is not near <html>
 // and starts at a <div> with id "root", html styles are in index.html
@@ -61,6 +62,7 @@ function Root() {
             </main>
             <ScreenIndicator />
             <TanStackRouterDevtools />
+            <Toaster />
           </FTLLContextProvider>
         </ThemeProvider>
       </QueryClientProvider>
