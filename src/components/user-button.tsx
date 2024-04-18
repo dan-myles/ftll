@@ -53,7 +53,7 @@ export function UserButton() {
         <DropdownMenuTrigger className="flex items-center justify-center">
           <Avatar>
             <canvas
-              className="h-8 w-8"
+              className="mt-1 h-8 w-8"
               height="64"
               width="64"
               ref={canvasRef}
