@@ -49,35 +49,23 @@ export function UserButton() {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger className="mr-6">
+      <DropdownMenu modal={true}>
+        <DropdownMenuTrigger className="flex items-center justify-center">
           <Avatar>
             <canvas
-              className="h-11 w-11 rounded-full"
+              className="h-8 w-8"
               height="64"
               width="64"
               ref={canvasRef}
             ></canvas>
           </Avatar>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{user.name}</p>
-              <p className="text-[10px] leading-none text-muted-foreground">
-                {user.steamId}
-              </p>
-            </div>
-          </DropdownMenuLabel>
+        <DropdownMenuContent className="w-56" align="start" forceMount>
+          <DropdownMenuItem onClick={() => setIsAboutOpen(true)}>
+            About FTLL
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem
-              onClick={() => {
-                void open("https://steamcommunity.com/profiles/" + user.steamId)
-              }}
-            >
-              Profile
-            </DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Theme</DropdownMenuSubTrigger>
@@ -129,13 +117,23 @@ export function UserButton() {
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
+            <DropdownMenuItem
+              onClick={() => {
+                void open("https://steamcommunity.com/profiles/" + user.steamId)
+              }}
+            >
+              Profile
+            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setIsAboutOpen(true)}>
-            About FTLL
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>Quit</DropdownMenuItem>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">{user.name}</p>
+              <p className="text-[10px] leading-none text-muted-foreground">
+                {user.steamId}
+              </p>
+            </div>
+          </DropdownMenuLabel>
         </DropdownMenuContent>
       </DropdownMenu>
       <Dialog open={isAboutOpen} onOpenChange={handleAboutChange}>

@@ -13,7 +13,7 @@ export function NameView<TData>({ row }: NameViewProps<TData>) {
     return (
       <div className="flex flex-col">
         <div
-          className="truncate font-medium md:max-w-[400px] lg:max-w-[600px]
+          className="truncate font-medium md:max-w-[350px] lg:max-w-[600px]
             xl:max-w-[850px]"
         >
           {server.name}
@@ -26,7 +26,7 @@ export function NameView<TData>({ row }: NameViewProps<TData>) {
     return (
       <div className="flex flex-col">
         <div
-          className="truncate font-medium md:max-w-[400px] lg:max-w-[600px]
+          className="truncate font-medium md:max-w-[350px] lg:max-w-[600px]
             xl:max-w-[850px]"
         >
           {server.name}
@@ -38,7 +38,7 @@ export function NameView<TData>({ row }: NameViewProps<TData>) {
   return (
     <div className="flex max-w-[350px] flex-col">
       <div
-        className="truncate font-medium md:max-w-[400px] lg:max-w-[600px]
+        className="truncate font-medium md:max-w-[350px] lg:max-w-[600px]
           xl:max-w-[850px]"
       >
         {server.name}

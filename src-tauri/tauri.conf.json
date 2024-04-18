@@ -12,8 +12,8 @@
     "windows": [
       {
         "title": "FTLL",
-        "width": 940,
-        "minWidth": 920,
+        "width": 975,
+        "minWidth": 950,
         "height": 700,
         "minHeight": 680,
         "resizable": true,

@@ -135,7 +135,8 @@ export function RankGraph({ name }: RankChartProps) {
                 }}
                 style={
                   {
-                    stroke: theme === "dark" ? "#6366f1" : "black",
+                    // Indigo 400 for dark mode!
+                    stroke: theme === "dark" ? "#818cf8" : "black",
                   } as React.CSSProperties
                 }
               />

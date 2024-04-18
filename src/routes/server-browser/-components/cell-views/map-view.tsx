@@ -14,5 +14,9 @@ export function MapView<TData>({ row }: MapViewProps<TData>) {
   const map = row.getValue("Map")
   const mapData = maps.find((m) => m.value === map)
 
-  return <div>{mapData ? mapData.label : (map as string)}</div>
+  return (
+    <div className="max-w-[90px]">
+      {mapData ? mapData.label : (map as string)}
+    </div>
+  )
 }

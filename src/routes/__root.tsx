@@ -4,12 +4,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { persistQueryClient } from "@tanstack/react-query-persist-client"
 import { Outlet, createRootRoute } from "@tanstack/react-router"
 import { FTLLContextProvider } from "@/components/ftll-context-provider"
-import { NavBar } from "@/components/nav-bar"
 import { ScreenIndicator } from "@/components/screen-indicator"
+import { SideNav } from "@/components/side-nav"
 import { TanStackRouterDevtools } from "@/components/tanstack-router-devtools"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TitleBar } from "@/components/title-bar"
 import { Toaster } from "@/components/ui/sonner"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 // This is the root for our app, however this is not near <html>
 // and starts at a <div> with id "root", html styles are in index.html
@@ -52,17 +53,21 @@ function Root() {
           enableSystem
         >
           <FTLLContextProvider>
-            <TitleBar />
-            <NavBar />
-            <main
-              // 100vh - 121px for titlebar and navbar
-              className="h-[calc(100vh-121px)] bg-background"
-            >
-              <Outlet />
-            </main>
-            <ScreenIndicator />
-            <TanStackRouterDevtools />
-            <Toaster />
+            <TooltipProvider>
+              <TitleBar />
+              <main
+                // 100vh - 121px for titlebar and navbar
+                className="flex h-[calc(100vh-40px)] flex-row"
+              >
+                <SideNav />
+                <div className="flex-grow bg-background p-2">
+                  <Outlet />
+                </div>
+              </main>
+              <Toaster />
+              <ScreenIndicator />
+              <TanStackRouterDevtools />
+            </TooltipProvider>
           </FTLLContextProvider>
         </ThemeProvider>
       </QueryClientProvider>

@@ -53,10 +53,7 @@ export function ModFilter<TData, TValue>({
       </PopoverTrigger>
       <PopoverContent className="w-[225px] p-0" align="start">
         <div className="">
-          <div
-            className="flex items-center border-b px-3"
-            cmdk-input-wrapper=""
-          >
+          <div className="flex items-center px-3" cmdk-input-wrapper="">
             <MagnifyingGlassIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
             <input
               placeholder="Search..."
@@ -72,9 +69,9 @@ export function ModFilter<TData, TValue>({
               <Button
                 onClick={() => column?.setFilterValue(undefined)}
                 className="relative flex w-full cursor-pointer select-none
-                  items-center rounded-sm px-2 py-1.5 text-sm font-extralight
-                  text-muted-foreground outline-none aria-selected:bg-accent
-                  data-[disabled]:opacity-50"
+                  items-center rounded-sm border-t px-2 py-1.5 text-sm
+                  font-extralight text-muted-foreground outline-none
+                  aria-selected:bg-accent data-[disabled]:opacity-50"
                 variant="ghost"
               >
                 Clear filters

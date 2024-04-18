@@ -38,7 +38,7 @@ export function RowActionsView<TData>({ row }: RowActionsViewProps<TData>) {
       server.name.length > 45
         ? server.name.substring(0, 45) + "..."
         : server.name
-    toast("Server address copied!", {
+    toast.success("Server address copied!", {
       description: shortName,
       position: "bottom-center",
     })
