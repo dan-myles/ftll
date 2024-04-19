@@ -1,4 +1,5 @@
 import { type EmblaOptionsType } from "embla-carousel"
+import Autoplay from "embla-carousel-autoplay"
 import useEmblaCarousel from "embla-carousel-react"
 import { Bug, HeartCrack, Info, Play } from "lucide-react"
 import React from "react"
@@ -24,7 +25,9 @@ const MAX_SERVER_NAME_LENGTH = 45
 
 export const EmblaCarousel: React.FC<PropType> = (props) => {
   const { cards, options } = props
-  const [emblaRef, emblaApi] = useEmblaCarousel(options)
+  const [emblaRef, emblaApi] = useEmblaCarousel(options, [
+    Autoplay({ playOnInit: true, delay: 4500 }),
+  ])
 
   // eslint-disable-next-line
   const {

@@ -12,8 +12,8 @@ function Index() {
 
   return (
     <div
-      className="h-full flex-1 flex-grow flex-col space-y-4 bg-background p-4
-        pt-2 md:flex"
+      className="h-full flex-1 flex-grow flex-col space-y-4 bg-background p-6
+        md:flex"
     >
       <ServerBrowser data={servers} columns={columns} />
     </div>

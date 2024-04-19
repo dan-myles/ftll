@@ -53,6 +53,7 @@
     "clsx": "^2.1.0",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
+    "embla-carousel-autoplay": "^8.0.2",
     "embla-carousel-react": "^8.0.2",
     "idb-keyval": "^6.2.1",
     "input-otp": "^1.2.4",
