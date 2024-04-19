@@ -76,7 +76,7 @@ export function Table<TData, TValue>({
       <Toolbar table={table} />
       <ScrollArea className="rounded-md border">
         <BaseTable className="h-full max-h-full">
-          <TableHeader className="sticky top-0 bg-accent">
+          <TableHeader className="sticky top-0 z-10 bg-accent">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

@@ -60,7 +60,7 @@ function Root() {
                 className="flex h-[calc(100vh-40px)] flex-row"
               >
                 <SideNav />
-                <div className="flex-grow bg-background p-2">
+                <div className="flex-grow bg-background">
                   <Outlet />
                 </div>
               </main>

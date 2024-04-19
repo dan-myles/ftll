@@ -14,8 +14,7 @@ function Index() {
         <Button>Reset</Button>
         <div className="border-b" />
       </div>
-      <div className="flex-grow rounded-md border p-4">Table goes here</div>
+      <div className="h-full flex-grow rounded-md border">Table goes here</div>
     </div>
   )
 }
-

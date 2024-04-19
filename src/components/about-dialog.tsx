@@ -1,6 +1,8 @@
+import { useTheme } from "next-themes"
 import { useCallback, useState } from "react"
 import { UpdateIcon } from "@radix-ui/react-icons"
 import { Icons } from "./icons"
+import { Logo } from "./logo"
 import { Button } from "./ui/button"
 import {
   DialogContent,
@@ -23,35 +25,40 @@ export function AboutDialog() {
     )
     const { arch } = await import("@tauri-apps/plugin-os")
 
-    void getName && getName().then((x) => setName(x))
-    void getVersion && getVersion().then((x) => setVersion(x))
-    void getTauriVersion && getTauriVersion().then((x) => setTauriVersion(x))
-    void arch && arch().then((x) => setArch(x))
+    getName()
+      .then((x) => setName(x))
+      .catch(console.error)
+    getVersion()
+      .then((x) => setVersion(x))
+      .catch(console.error)
+    getTauriVersion()
+      .then((x) => setTauriVersion(x))
+      .catch(console.error)
+    arch()
+      .then((x) => setArch(x))
+      .catch(console.error)
   }, [])
 
   if (typeof window !== "undefined") {
-    void getInfo()
+    getInfo().catch(console.error)
   }
 
   const open = useCallback(async (url: string) => {
     const { open } = await import("@tauri-apps/plugin-shell")
-    void open && open(url)
+    open(url).catch(console.error)
   }, [])
 
   return (
     <DialogContent className="overflow-clip pb-2">
       <DialogHeader className="flex items-center text-center">
         <div
-          className="rounded-full bg-background p-[6px] text-slate-600
-            drop-shadow-none transition duration-1000 hover:text-slate-800
-            hover:drop-shadow-[0_0px_10px_rgba(0,10,50,0.50)]
-            dark:hover:text-slate-400"
+          onClick={() => open("https://ftl-launcher.com/")}
+          className="cursor-pointer"
         >
-          <Icons.logo className="h-12 w-12" />
+          <Logo />
         </div>
 
         <DialogTitle className="flex flex-col items-center gap-2 pt-2">
-          FTLL
           <span className="flex gap-1 font-mono text-xs font-medium">
             Version {version} ({arch})
             <span className="font-sans font-medium text-gray-400">
@@ -59,7 +66,8 @@ export function AboutDialog() {
               <span
                 className="cursor-pointer text-blue-500"
                 onClick={() =>
-                  open("https://github.com/agmmnn/tauri-ui/releases/tag/v0.2.0")
+                  // TODO: Figure out a way to get the exact tag for current version
+                  open("https://github.com/dan-myles/ftl-launcher/releases")
                 }
               >
                 release notes

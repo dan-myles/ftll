@@ -1,8 +1,8 @@
 import {
   Bot,
   Home,
+  Info,
   Library,
-  LifeBuoy,
   ListTree,
   Moon,
   Settings2,
@@ -105,7 +105,7 @@ export function SideNav() {
                 aria-label="Help"
                 onClick={() => setIsAboutOpen(true)}
               >
-                <Store className="size-5" />
+                <Library className="size-5" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right" sideOffset={5}>
