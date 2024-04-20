@@ -36,7 +36,9 @@ export function NameView<TData>({ row }: NameViewProps<TData>) {
   }
 
   return (
-    <div className="flex max-w-[350px] flex-col">
+    <div
+      className="flex max-w-[350px] flex-col lg:max-w-[600px] xl:max-w-[850px]"
+    >
       <div
         className="truncate font-medium md:max-w-[350px] lg:max-w-[600px]
           xl:max-w-[850px]"

@@ -34,7 +34,11 @@ export function TableRow<TData>({ className, row, ...props }: RowProps<TData>) {
           onDoubleClickCapture={() => handleOpenDrawer()}
           {...props}
         ></tr>
-        <MoreInfo row={row} open={isDrawerOpen} onClose={handleCloseDrawer} />
+        <MoreInfo
+          server={row.original as Server}
+          open={isDrawerOpen}
+          onClose={handleCloseDrawer}
+        />
       </DrawerContext.Provider>
     </UpdatedServerContext.Provider>
   )

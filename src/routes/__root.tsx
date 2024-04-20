@@ -56,8 +56,8 @@ function Root() {
             <TooltipProvider>
               <TitleBar />
               <main
-                // 100vh - 121px for titlebar and navbar
-                className="flex h-[calc(100vh-40px)] flex-row"
+                // 100vh - 40px for titlebar
+                className="flex h-[calc(100vh-40px)]"
               >
                 <SideNav />
                 <div className="flex-grow bg-background">
@@ -65,8 +65,8 @@ function Root() {
                 </div>
               </main>
               <Toaster />
-              <ScreenIndicator />
-              <TanStackRouterDevtools />
+              <ScreenIndicator open={true} />
+              <TanStackRouterDevtools position="bottom-right" open={false} />
             </TooltipProvider>
           </FTLLContextProvider>
         </ThemeProvider>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import { useNavigate, useRouterState } from "@tanstack/react-router"
+import { useRouterState } from "@tanstack/react-router"
 import { WindowTitlebar } from "@/components/window-controls"
-import { Logo, LogoWhite } from "./logo"
+import { Logo } from "./logo"
 
 export function TitleBar() {
   const path = useRouterState().location.pathname
@@ -35,7 +35,7 @@ export function TitleBar() {
 
   return (
     <div className="flex h-10 justify-between">
-      {/* Transparent Logo ~ left side */}
+      {/* Transparent BG Logo ~ left side */}
       <div
         className="inline-flex w-[52px] justify-center bg-transparent p-2
           text-white dark:text-indigo-400"

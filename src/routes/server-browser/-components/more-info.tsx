@@ -5,7 +5,6 @@ import {
   PlayIcon,
 } from "lucide-react"
 import { useEffect, useState } from "react"
-import { type Row } from "@tanstack/react-table"
 import { RankGraph } from "@/components/server-rank-graph"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -18,16 +17,15 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { serverSchema } from "@/schemas/ftla/server-schema"
+import { type Server } from "@/schemas/ftla/server-schema"
 
-interface MoreInfoProps<TData> {
+interface MoreInfoProps {
   open: boolean
   onClose: () => void
-  row: Row<TData>
+  server: Server
 }
 
-export function MoreInfo<TData>({ open, onClose, row }: MoreInfoProps<TData>) {
-  const server = serverSchema.parse(row.original)
+export function MoreInfo({ open, onClose, server }: MoreInfoProps) {
   const [mounted, setMounted] = useState(false)
 
   // Need to delay the rendering of the chart to prevent the
