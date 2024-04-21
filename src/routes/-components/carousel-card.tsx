@@ -23,9 +23,9 @@ export function CarouselCard({
 }) {
   const [server, setServer] = useState(initServer)
   const [open, setOpen] = useState(false)
+  const newServer = useUpdateServer(server)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
-  const newServer = useUpdateServer(server)
 
   useEffect(() => {
     if (newServer) {
