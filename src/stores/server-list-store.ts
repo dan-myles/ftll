@@ -5,7 +5,7 @@ import {
   createJSONStorage,
   persist,
 } from "zustand/middleware"
-import type { Server, ServerList } from "@/schemas/ftla/server-schema"
+import type { Server, ServerList } from "@/schemas/server-schema"
 
 interface ServerListState {
   serverList: ServerList

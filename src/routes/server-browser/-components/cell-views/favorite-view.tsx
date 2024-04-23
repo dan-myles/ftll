@@ -1,7 +1,7 @@
 import { HeartFilledIcon, HeartIcon } from "@radix-ui/react-icons"
 import { type Row } from "@tanstack/react-table"
 import { useFavoriteServer } from "@/hooks/useFavoriteServer"
-import { serverSchema } from "@/schemas/ftla/server-schema"
+import { serverSchema } from "@/schemas/server-schema"
 
 interface FavrotieViewProps<TData> {
   row: Row<TData>

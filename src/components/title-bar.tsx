@@ -17,6 +17,10 @@ export function TitleBar() {
     if (path === "/mod-manager") {
       return "Mod Manager"
     }
+
+    if (path === "/settings") {
+      return "Settings"
+    }
   })
 
   useEffect(() => {
@@ -30,6 +34,10 @@ export function TitleBar() {
 
     if (path === "/mod-manager") {
       setTitle("Mod Manager")
+    }
+
+    if (path === "/settings") {
+      setTitle("Settings")
     }
   }, [path])
 

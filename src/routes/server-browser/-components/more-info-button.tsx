@@ -2,7 +2,6 @@ import {
   FolderCogIcon,
   FolderInputIcon,
   HeartIcon,
-  Info,
   PlayIcon,
 } from "lucide-react"
 import { useEffect, useState } from "react"
@@ -17,22 +16,20 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useFavoriteServer } from "@/hooks/useFavoriteServer"
-import { useUpdateServer } from "@/hooks/useUpdateServer"
 import { type Server } from "@/schemas/server-schema"
 
-interface MoreInfoButtonProps {
-  initServer: Server
+interface MoreInfoProps {
+  open: boolean
+  onClose: () => void
+  server: Server
 }
 
-export function MoreInfoButton({ initServer }: MoreInfoButtonProps) {
-  const [server, setServer] = useState<Server>(initServer)
+export function MoreInfo({ open, onClose, server }: MoreInfoProps) {
   const [mounted, setMounted] = useState(false)
   const { isFavorite, handleFavorited } = useFavoriteServer(server)
-  const newServer = useUpdateServer(initServer)
 
   // Need to delay the rendering of the chart to prevent the
   // over fetching of data from BM api.
@@ -46,20 +43,12 @@ export function MoreInfoButton({ initServer }: MoreInfoButtonProps) {
     }
   }, [])
 
-  useEffect(() => {
-    if (newServer) {
-      setServer(newServer)
-    }
-  }, [newServer])
-
   return (
-    <Drawer>
-      <DrawerTrigger>
-        <Button variant="secondary">
-          <Info size={16} />
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent className="min-h-[75vh] select-text">
+    <Drawer open={open} onClose={onClose}>
+      <DrawerContent
+        className="min-h-[75vh] select-text"
+        onInteractOutside={onClose}
+      >
         <DrawerHeader>
           <DrawerTitle>{server.name}</DrawerTitle>
           <DrawerDescription>

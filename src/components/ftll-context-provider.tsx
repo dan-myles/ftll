@@ -14,7 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { type ServerList, serverListSchema } from "@/schemas/ftla/server-schema"
+import { type ServerList, serverListSchema } from "@/schemas/server-schema"
 import { useServerListStore } from "@/stores/server-list-store"
 import { useUserInfoStore } from "@/stores/user-info-store"
 
@@ -36,6 +36,13 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
       return true
     }
 
+    // Run callbacks
+    const runCallbacks = async () => {
+      await invoke("run_callbacks").catch((e) => {
+        console.error(e)
+      })
+    }
+
     // Load locally cached servers
     const loadServers = async () => {
       await useServerListStore.persist.rehydrate()
@@ -55,6 +62,7 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
       }
     }
 
+    // Get user info
     const getUserInfo = async () => {
       const userName = await invoke<string>("get_user_display_name")
       const steamId = await invoke<string>("get_user_steam_id")
@@ -64,16 +72,17 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
       setAvi(avi)
     }
 
-    // If steam isn't loaded, dont load servers!
+    // If steam isn't loaded, its a problem!
     const res = await loadSteam()
     if (!res) return
 
     // Load everything else
+    await runCallbacks()
     await loadServers()
     await getUserInfo()
   }
 
-  // On omunt we will initialize stores
+  // On mount we will initialize stores
   useEffect(() => {
     (async () => {
       await init()

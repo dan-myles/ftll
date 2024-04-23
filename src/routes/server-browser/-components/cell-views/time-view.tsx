@@ -1,7 +1,7 @@
 import { useContext } from "react"
 import { type Row } from "@tanstack/react-table"
 import { toTwelveHourTime } from "@/lib/convert-time"
-import { type Server, serverSchema } from "@/schemas/ftla/server-schema"
+import { type Server, serverSchema } from "@/schemas/server-schema"
 import { UpdatedServerContext } from "../row"
 
 interface TimeViewProps<TData> {

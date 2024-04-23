@@ -1,5 +1,5 @@
 import { type Row } from "@tanstack/react-table"
-import { serverSchema } from "@/schemas/ftla/server-schema"
+import { serverSchema } from "@/schemas/server-schema"
 
 interface NameViewProps<TData> {
   row: Row<TData>

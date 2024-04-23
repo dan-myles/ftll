@@ -1,5 +1,6 @@
 import { Info, Play } from "lucide-react"
 import { useEffect, useState } from "react"
+import { MoreInfoButton } from "@/components/more-info-button"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -11,7 +12,7 @@ import {
 import { CarouselItem } from "@/components/ui/carousel"
 import { maps } from "@/data/map-filter-data"
 import { useUpdateServer } from "@/hooks/useUpdateServer"
-import { type Server } from "@/schemas/ftla/server-schema"
+import { type Server } from "@/schemas/server-schema"
 import { MoreInfo } from "../server-browser/-components/more-info"
 
 export function CarouselCard({
@@ -72,14 +73,9 @@ export function CarouselCard({
             </div>
           </CardContent>
           <div className="mt-[-8px] flex justify-between">
-            <Button
-              variant="secondary"
-              className="mb-[-8px]"
-              onClick={handleOpen}
-            >
-              <Info size={16} />
-              <MoreInfo server={server} open={open} onClose={handleClose} />
-            </Button>
+            <div className="mb-[-8px]">
+              <MoreInfoButton initServer={server} />
+            </div>
             <Button variant="secondary" className="mb-[-8px]">
               <Play size={16} />
             </Button>

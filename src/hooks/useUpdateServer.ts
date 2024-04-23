@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { invoke } from "@tauri-apps/api/core"
-import { type Server } from "@/schemas/ftla/server-schema"
+import { type Server } from "@/schemas/server-schema"
 
 export function useUpdateServer(s: Server) {
   const [server, setServer] = useState<Server>()

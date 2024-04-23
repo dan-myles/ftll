@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as SettingsIndexImport } from './routes/settings/index'
 import { Route as ServerBrowserIndexImport } from './routes/server-browser/index'
 import { Route as ModManagerIndexImport } from './routes/mod-manager/index'
 
@@ -19,6 +20,11 @@ import { Route as ModManagerIndexImport } from './routes/mod-manager/index'
 
 const IndexRoute = IndexImport.update({
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SettingsIndexRoute = SettingsIndexImport.update({
+  path: '/settings/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -48,6 +54,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServerBrowserIndexImport
       parentRoute: typeof rootRoute
     }
+    '/settings/': {
+      preLoaderRoute: typeof SettingsIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -57,6 +67,7 @@ export const routeTree = rootRoute.addChildren([
   IndexRoute,
   ModManagerIndexRoute,
   ServerBrowserIndexRoute,
+  SettingsIndexRoute,
 ])
 
 /* prettier-ignore-end */

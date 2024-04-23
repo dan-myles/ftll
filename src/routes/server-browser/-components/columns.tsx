@@ -1,6 +1,6 @@
 import { HeartFilledIcon } from "@radix-ui/react-icons"
 import { type ColumnDef } from "@tanstack/react-table"
-import { type Server } from "@/schemas/ftla/server-schema"
+import { type Server } from "@/schemas/server-schema"
 import { FavoriteView } from "./cell-views/favorite-view"
 import { MapView } from "./cell-views/map-view"
 import { NameView } from "./cell-views/name-view"

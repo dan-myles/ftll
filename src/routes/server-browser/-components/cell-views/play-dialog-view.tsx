@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { serverSchema } from "@/schemas/ftla/server-schema"
+import { serverSchema } from "@/schemas/server-schema"
 
 interface PlayDialogViewProps<TData> {
   row: Row<TData>

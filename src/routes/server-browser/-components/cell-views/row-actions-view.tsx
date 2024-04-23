@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useFavoriteServer } from "@/hooks/useFavoriteServer"
-import { type Server } from "@/schemas/ftla/server-schema"
+import { type Server } from "@/schemas/server-schema"
 import { DrawerContext } from "../row"
 
 interface RowActionsViewProps<TData> {

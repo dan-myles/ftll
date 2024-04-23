@@ -2,7 +2,7 @@ import { createContext, useState } from "react"
 import { type Row } from "@tanstack/react-table"
 import { useUpdateServer } from "@/hooks/useUpdateServer"
 import { cn } from "@/lib/utils"
-import { type Server, serverSchema } from "@/schemas/ftla/server-schema"
+import { type Server, serverSchema } from "@/schemas/server-schema"
 import { MoreInfo } from "./more-info"
 
 export const UpdatedServerContext = createContext<Server | undefined>(undefined)
@@ -35,7 +35,7 @@ export function TableRow<TData>({ className, row, ...props }: RowProps<TData>) {
           {...props}
         ></tr>
         <MoreInfo
-          server={row.original as Server}
+          initServer={row.original as Server}
           open={isDrawerOpen}
           onClose={handleCloseDrawer}
         />

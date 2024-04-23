@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { type Server } from "@/schemas/ftla/server-schema"
+import { type Server } from "@/schemas/server-schema"
 import { useFavoriteServerStore } from "@/stores/favorite-server-store"
 
 export function useFavoriteServer(s: Server) {

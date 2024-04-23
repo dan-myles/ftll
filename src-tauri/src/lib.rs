@@ -26,7 +26,9 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
+            steam::run_callbacks,
             steam::init_steamworks,
+            steam::get_installed_mods,
             steam::get_user_avi_rgba,
             steam::get_user_display_name,
             steam::get_user_steam_id,

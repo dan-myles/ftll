@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { type Row } from "@tanstack/react-table"
-import { serverSchema } from "@/schemas/ftla/server-schema"
+import { serverSchema } from "@/schemas/server-schema"
 import { UpdatedServerContext } from "../row"
 
 interface PlayersViewProps<TData> {
