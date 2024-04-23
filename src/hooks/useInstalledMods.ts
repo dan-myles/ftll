@@ -4,8 +4,9 @@ import { listen } from "@tauri-apps/api/event"
 import { type ModInfo } from "@/schemas/mod-info"
 import { useModListStore } from "@/stores/mod-list-store"
 
+// NOTE: We can move this to FTLLContextProvider if we want to
 export function useInstalledMods() {
-  const { addMod, removeMod, modList } = useModListStore()
+  const { addMod, modList } = useModListStore()
 
   useEffect(() => {
     // Listen for installed mods
@@ -29,5 +30,5 @@ export function useInstalledMods() {
     // eslint-disable-next-line
   }, [])
 
-  return { modList, removeMod }
+  return { modList }
 }
