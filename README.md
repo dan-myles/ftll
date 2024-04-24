@@ -31,11 +31,11 @@
 recommend that you do not use it currently! Come back soon for more updates,
 or visit our [website](https://ftl-launcher.com) for the latest.
 
-FTLL is a simple and small mod launcher & manager for DayZ. Built with Rust,
+FTLL is a simple and small mod launcher & manager for DayZ, built with Rust,
 [Tauri](https://tauri.app), React and modern tools. Completely open-source and
-always will be. FTLL uses your systems native web-view to render a beautiful UI
-letting us keep our bundle size extremely small. *Blazing* fast caching and loading
-of the most popular servers in the DayZ community. Try it out today!
+always will be. FTLL uses your systems native web-view to render a beautiful UI,
+which lets us keep our bundle size extremely small. *Blazing* fast caching and loading
+of the most popular servers in the DayZ community. Try it out!
 
 Although this project *was* built with Linux compatability in mind, I don't have
 a Linux machine to test that, and disabling secure boot to dualboot Linux is a
