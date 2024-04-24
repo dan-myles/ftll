@@ -3,16 +3,13 @@
 </div>
 
 <div align="center">
-   <a href="https://github.com/avvo-na/ftl-launcher?tab=readme-ov-file#-info">Info</a>
-   <span> • </span>
-
-   <a href="https://github.com/avvo-na/ftl-launcher?tab=readme-ov-file#%EF%B8%8F--install">Install</a>
-   <span> • </span>
-
-   <a href="https://ftl-launcher.com">Website</a>
-   <span> • </span>
-
-   <a href="https://discord.gg/xujqFZsEac">Discord</a>
+  <a href="https://github.com/avvo-na/ftl-launcher?tab=readme-ov-file#-info">Info</a>
+  <span> • </span>
+  <a href="https://github.com/avvo-na/ftl-launcher?tab=readme-ov-file#%EF%B8%8F--install">Install</a>
+  <span> • </span>
+  <a href="https://ftl-launcher.com">Website</a>
+  <span> • </span>
+  <a href="https://discord.gg/xujqFZsEac">Discord</a>
 </div>
 
 <br />
