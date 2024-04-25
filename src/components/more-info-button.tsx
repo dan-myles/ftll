@@ -55,18 +55,13 @@ export function MoreInfoButton({ initServer }: MoreInfoButtonProps) {
   return (
     <Drawer>
       <DrawerTrigger>
-        <Button variant="secondary">
-          <Info size={16} />
-        </Button>
+        <Info size={16} />
       </DrawerTrigger>
       <DrawerContent className="min-h-[75vh] select-text">
         <DrawerHeader>
           <DrawerTitle>{server.name}</DrawerTitle>
           <DrawerDescription>
-            <div className="flex flex-row justify-between">
-              <div>{server.addr}</div>
-              <div>{server.steamId}</div>
-            </div>
+            {server.addr.split(":")[0] + ":" + server.gamePort}
           </DrawerDescription>
         </DrawerHeader>
         {/* Main Content Div */}

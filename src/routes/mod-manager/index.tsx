@@ -9,14 +9,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useInstalledMods } from "@/hooks/useInstalledMods"
+import { useModListStore } from "@/stores/mod-list-store"
 
 export const Route = createFileRoute("/mod-manager/")({
   component: Index,
 })
 
 function Index() {
-  const { modList } = useInstalledMods()
+  const { modList } = useModListStore()
 
   return (
     <div className="flex h-full flex-col space-y-2 p-4">
@@ -69,6 +69,15 @@ function Index() {
               </div>
             </div>
           ))}
+          {modList.length === 0 && (
+            <div
+              className="flex min-h-[20vh] flex-grow items-center justify-center
+                text-gray-500"
+            >
+              You have no mods installed! (Or they're not showing up here for
+              some reason)
+            </div>
+          )}
         </div>
       </ScrollArea>
     </div>

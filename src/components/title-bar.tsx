@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useRouterState } from "@tanstack/react-router"
 import { WindowTitlebar } from "@/components/window-controls"
 import { Logo } from "./logo"
+import { PlayerCountBadge } from "./player-count-badge"
 
 export function TitleBar() {
   const path = useRouterState().location.pathname
@@ -55,7 +56,19 @@ export function TitleBar() {
 
       {/* Window Controls ~ right side */}
       <WindowTitlebar controlsOrder="right" className="flex-grow bg-background">
-        <div className="pl-6 pt-[12px] text-xl font-semibold">{title}</div>
+        <div
+          className="flex flex-grow flex-row justify-between"
+          data-tauri-drag-region
+        >
+          <div
+            className="flex flex-col justify-center pl-4 text-xl font-semibold"
+          >
+            {title}
+          </div>
+          <div className="flex flex-col justify-center pr-4">
+            {path === "/" && <PlayerCountBadge />}
+          </div>
+        </div>
       </WindowTitlebar>
     </div>
   )

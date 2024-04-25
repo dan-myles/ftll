@@ -1,4 +1,3 @@
-import { useTheme } from "next-themes"
 import { useCallback, useState } from "react"
 import { UpdateIcon } from "@radix-ui/react-icons"
 import { Icons } from "./icons"
@@ -60,7 +59,7 @@ export function AboutDialog() {
 
         <DialogTitle className="flex flex-col items-center gap-2 pt-2">
           <span className="flex gap-1 font-mono text-xs font-medium">
-            Version {version} ({arch})
+            v{version}-alpha ({arch})
             <span className="font-sans font-medium text-gray-400">
               (
               <span

@@ -23,6 +23,7 @@ import { Route as IndexRoute } from "@/routes/index"
 import { Route as ModManagerRoute } from "@/routes/mod-manager/index"
 import { Route as ServerBrowserRoute } from "@/routes/server-browser/index"
 import { AboutDialog } from "./about-dialog"
+import { Badge } from "./ui/badge"
 import { Dialog } from "./ui/dialog"
 import { UserToolTip } from "./user-tooltip"
 
@@ -51,6 +52,9 @@ export function SideNav() {
   return (
     <>
       <aside className="flex h-full w-[52px] flex-col">
+        <div className="flex w-full items-center justify-center">
+          <p className="mb-[10px] mt-[-10px] text-xs font-extralight">ALPHA</p>
+        </div>
         <nav className="grid gap-1 p-2">
           <NavButton to={IndexRoute.to} aria-label="Home" hoverText="Home">
             <Home className="size-5" />

@@ -61,10 +61,7 @@ export function MoreInfo({ open, onClose, initServer }: MoreInfoProps) {
         <DrawerHeader>
           <DrawerTitle>{server.name}</DrawerTitle>
           <DrawerDescription>
-            <div className="flex flex-row justify-between">
-              <div>{server.addr}</div>
-              <div>{server.steamId}</div>
-            </div>
+            {server.addr.split(":")[0] + ":" + server.gamePort}
           </DrawerDescription>
         </DrawerHeader>
         {/* Main Content Div */}

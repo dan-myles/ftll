@@ -1,5 +1,4 @@
 use anyhow::Result;
-use tauri::async_runtime;
 use tauri::{AppHandle, Manager};
 
 mod client;
@@ -49,6 +48,30 @@ pub async fn get_installed_mods(app_handle: AppHandle) -> Result<(), String> {
     }
 
     Ok(())
+}
+
+#[tauri::command]
+pub async fn download_mod(published_file_id: u64) -> Result<(), String> {
+    let client = client::get_client();
+    let ugc = client.ugc();
+
+    let handle = ugc.download_item(steamworks::PublishedFileId(published_file_id), true);
+    match handle {
+        true => Ok(()),
+        false => Err("Failed to download mod".to_string()),
+    }
+}
+
+#[tauri::command]
+pub async fn get_mod_download_progress(published_file_id: u64) -> Result<[u64; 2], String> {
+    let client = client::get_client();
+    let ugc = client.ugc();
+
+    let info = ugc.item_download_info(steamworks::PublishedFileId(published_file_id));
+    match info {
+        Some(info) => Ok([info.0, info.1]),
+        None => Err("Failed to get download info".to_string()),
+    }
 }
 
 #[tauri::command]

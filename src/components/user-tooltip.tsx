@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react"
 import { useUserInfoStore } from "@/stores/user-info-store"
-import { Button } from "./ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
 
 export function UserToolTip() {

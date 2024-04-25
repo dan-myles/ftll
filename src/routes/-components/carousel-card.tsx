@@ -1,4 +1,4 @@
-import { Info, Play } from "lucide-react"
+import { Play } from "lucide-react"
 import { useEffect, useState } from "react"
 import { MoreInfoButton } from "@/components/more-info-button"
 import { Badge } from "@/components/ui/badge"
@@ -13,20 +13,10 @@ import { CarouselItem } from "@/components/ui/carousel"
 import { maps } from "@/data/map-filter-data"
 import { useUpdateServer } from "@/hooks/useUpdateServer"
 import { type Server } from "@/schemas/server-schema"
-import { MoreInfo } from "../server-browser/-components/more-info"
 
-export function CarouselCard({
-  initServer,
-  key,
-}: {
-  initServer: Server
-  key: number
-}) {
+export function CarouselCard({ initServer }: { initServer: Server }) {
   const [server, setServer] = useState(initServer)
-  const [open, setOpen] = useState(false)
   const newServer = useUpdateServer(server)
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
 
   useEffect(() => {
     if (newServer) {
@@ -35,14 +25,16 @@ export function CarouselCard({
   }, [newServer])
 
   return (
-    <CarouselItem key={key} className="flex basis-1/3 flex-col pl-1">
+    <CarouselItem className="flex basis-1/3 flex-col pl-1">
       <div className="flex-grow p-1">
         <Card className="h-full p-4">
           <CardTitle className="truncate">{server.name}</CardTitle>
           <CardDescription className="truncate text-xs">
             {server.addr.split(":")[0] + ":" + server.gamePort}
           </CardDescription>
-          <CardContent className="ml-[-25px] flex flex-col space-y-2 p-6 text-sm">
+          <CardContent
+            className="ml-[-25px] mt-[-10px] flex flex-col space-y-2 p-6 text-sm"
+          >
             <div className="flex space-x-2">
               <Badge variant="secondary">Status</Badge>
               {server.ping !== 99999 ? (
@@ -67,18 +59,14 @@ export function CarouselCard({
                 {maps.find((m) => m.value === server.map)?.label ?? server.map}
               </Badge>
             </div>
-            <div className="flex space-x-2">
-              <Badge variant="secondary">Version</Badge>
-              <Badge variant="outline">{server.version}</Badge>
-            </div>
           </CardContent>
-          <div className="mt-[-8px] flex justify-between">
-            <div className="mb-[-8px]">
-              <MoreInfoButton initServer={server} />
-            </div>
-            <Button variant="secondary" className="mb-[-8px]">
+          <div className="mt-[-10px] flex justify-between">
+            <Button variant="secondary" className="h-8">
               <Play size={16} />
             </Button>
+            <div className="flex h-8">
+              <MoreInfoButton initServer={server} />
+            </div>
           </div>
         </Card>
       </div>

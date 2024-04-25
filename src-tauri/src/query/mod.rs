@@ -245,6 +245,8 @@ pub async fn refresh_server_cache() -> Result<()> {
     let server_map_remote = SERVER_MAP.clone().lock_owned().await.clone();
 
     // Merge remote map into local map, overwriting any existing keys
+    // This should give us updated steam ids, for the servers we have
+    // if playerlists are not working, outdated steam ids is probably why!
     for (key, value) in server_map_remote.iter() {
         if !server_map_local.contains_key(key) {
             server_map_local.insert(key.clone(), value.clone());
