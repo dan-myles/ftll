@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react"
 import { useRouterState } from "@tanstack/react-router"
 import { WindowTitlebar } from "@/components/window-controls"
+import { useModDownloadQueue } from "@/stores/mod-download-queue"
 import { Logo } from "./logo"
 import { PlayerCountBadge } from "./player-count-badge"
+import { Button } from "./ui/button"
 
 export function TitleBar() {
+  const { downloadQueue, clearQueue } = useModDownloadQueue()
   const path = useRouterState().location.pathname
   const [title, setTitle] = useState(() => {
     if (path === "/") {
@@ -67,6 +70,23 @@ export function TitleBar() {
           </div>
           <div className="flex flex-col justify-center pr-4">
             {path === "/" && <PlayerCountBadge />}
+            <div className="space-x-2">
+              <Button
+                onClick={() => {
+                  console.log(downloadQueue)
+                }}
+              >
+                DBG
+              </Button>
+              <Button
+                onClick={() => {
+                  console.log("clearing download quque")
+                  clearQueue()
+                }}
+              >
+                CLR
+              </Button>
+            </div>
           </div>
         </div>
       </WindowTitlebar>

@@ -1,17 +1,28 @@
 import { invoke } from "@tauri-apps/api/core"
 import { Button } from "@/components/ui/button"
+import { useServerListStore } from "@/stores/server-list-store"
 
 export function Test() {
-  const handleClick = async () => {
-    const res = await invoke("download_mod", { publishedFileId: 1234 })
-    console.log(res)
+  const { serverList } = useServerListStore()
+
+  // Test Mod
+  // https://steamcommunity.com/sharedfiles/filedetails/?id=3147619641&searchtext=
+  const id = 3147619641
+
+  const testClick = async () => {
+    console.log("Downloading sharks!", id)
+    await invoke("download_mod", { publishedFileId: id }).catch((e) => {
+      console.error(e)
+    })
   }
 
   return (
     <div>
       <Button
         onClick={() => {
-          handleClick().catch(console.error)
+          testClick().catch((e) => {
+            console.error(e)
+          })
         }}
       >
         Test

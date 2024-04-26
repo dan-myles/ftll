@@ -48,6 +48,13 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
         })
       }
 
+      // Start a listener for the mod daemon
+      const runModDaemon = async () => {
+        await invoke("start_mod_daemon").catch((e) => {
+          console.error(e)
+        })
+      }
+
       // Load locally cached servers
       const loadServers = async () => {
         await useServerListStore.persist.rehydrate()
@@ -85,6 +92,7 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
 
       // Load everything else
       await runCallbacks()
+      await runModDaemon()
       await loadServers()
       await getUserInfo()
     }

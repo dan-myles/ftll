@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useModListStore } from "@/stores/mod-list-store"
+import { Test } from "./-test"
 
 export const Route = createFileRoute("/mod-manager/")({
   component: Index,
@@ -29,6 +30,7 @@ function Index() {
             </div>
           </div>
         </ScrollArea>
+        <Test />
       </div>
 
       <div className="pt-8">
@@ -43,7 +45,12 @@ function Index() {
                 "flex flex-row space-x-2 p-2" + (idx === 0 ? "" : " border-t")
               }
             >
-              <div className="flex-grow">{mod.title}</div>
+              <div className="inline-flex flex-grow">
+                <div>{mod.title}</div>
+                <div className="pl-4 text-gray-500">
+                  {mod.published_file_id}
+                </div>
+              </div>
               <div className="flex flex-row space-x-2 pr-2">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

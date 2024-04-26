@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { useValidateServerMods } from "@/hooks/useValidateServerMods"
 import { serverSchema } from "@/schemas/server-schema"
 
 interface PlayDialogViewProps<TData> {
@@ -19,6 +20,7 @@ interface PlayDialogViewProps<TData> {
 
 export function PlayDialogView<TData>({ row }: PlayDialogViewProps<TData>) {
   const server = serverSchema.parse(row.original)
+  const { handleValidateServerMods } = useValidateServerMods()
 
   return (
     <AlertDialog>
@@ -36,15 +38,22 @@ export function PlayDialogView<TData>({ row }: PlayDialogViewProps<TData>) {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle className="max-w-[450px] truncate">
+            {server.name}
+            <p className="truncate text-sm font-normal text-secondary-foreground">
+              {server.addr.split(":")[0] + ":" + server.gamePort}
+            </p>
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            You are about to connect to this server! If you do not have the mods
+            for this server downloaded, we'll download them for you.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={() => handleValidateServerMods(server)}>
+            Play
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

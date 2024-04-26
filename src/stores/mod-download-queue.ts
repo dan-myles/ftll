@@ -1,15 +1,16 @@
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
-import { type ModInfo } from "@/schemas/mod-info"
+import { type Mod } from "@/schemas/server-schema"
 
 interface ModDownloadQueueState {
-  downloadQueue: ModInfo[]
+  downloadQueue: Mod[]
 }
 
 interface ModDownloadQueueActions {
-  popMod: () => void
-  pushMod: (mod: ModInfo) => void
-  removeMod: (id: number) => void
+  popMod: () => Mod | undefined
+  pushMod: (mod: Mod) => void
+  removeMod: (workshopId: number) => void
+  clearQueue: () => void
 }
 
 export const useModDownloadQueue = create<
@@ -19,18 +20,20 @@ export const useModDownloadQueue = create<
     (set) => ({
       downloadQueue: [],
       popMod: () => {
+        let mod = undefined
         set((state) => {
+          mod = state.downloadQueue.shift()
           return {
-            downloadQueue: state.downloadQueue.slice(1),
+            downloadQueue: state.downloadQueue,
           }
         })
+
+        return mod
       },
       pushMod: (mod) => {
         set((state) => {
           if (
-            state.downloadQueue.some(
-              (m) => m.published_file_id === mod.published_file_id
-            )
+            state.downloadQueue.some((m) => m.workshopId === mod.workshopId)
           ) {
             return state
           }
@@ -40,15 +43,16 @@ export const useModDownloadQueue = create<
           }
         })
       },
-      removeMod: (id) => {
+      removeMod: (workshopId) => {
         set((state) => {
           return {
             downloadQueue: state.downloadQueue.filter(
-              (m) => m.published_file_id !== id
+              (m) => m.workshopId !== workshopId
             ),
           }
         })
       },
+      clearQueue: () => set({ downloadQueue: [] }),
     }),
     {
       name: "mod-storage",

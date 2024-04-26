@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 // Schema Definitions
-export const modListSchema = z.object({
+export const modSchema = z.object({
   workshopId: z.number(),
   name: z.string(),
 })
@@ -24,13 +24,13 @@ export const serverSchema = z.object({
   dedicated: z.boolean(),
   os: z.string(),
   gameType: z.string(),
-  modList: z.array(modListSchema).or(z.null()).or(z.undefined()),
+  modList: z.array(modSchema).or(z.null()).or(z.undefined()),
   ping: z.number().or(z.null()).or(z.undefined()),
 })
 
 export const serverListSchema = z.array(serverSchema)
 
 // Type Definitions
-export type ModList = z.infer<typeof modListSchema>
+export type Mod = z.infer<typeof modSchema>
 export type Server = z.infer<typeof serverSchema>
 export type ServerList = z.infer<typeof serverListSchema>
