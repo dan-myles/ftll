@@ -378,12 +378,16 @@ pub async fn steam_start_daemon() -> Result<(), String> {
     // Normally we would just use a tokio task, but the Steamworks API requires a blocking call
     // from a non-async context to run callbacks, or else it will panic.
     println!("Running Steamworks callbacks...");
-    std::thread::spawn(|| {
-        let single = client::get_single();
-        loop {
-            single.run_callbacks();
-            std::thread::sleep(std::time::Duration::from_millis(50));
+    std::thread::spawn(|| loop {
+        std::thread::sleep(std::time::Duration::from_millis(50));
+        let is_steamworks_initialized = IS_STEAMWORKS_INITIALIZED.lock().unwrap();
+        if !*is_steamworks_initialized {
+            drop(is_steamworks_initialized);
+            continue;
         }
+
+        let single = client::get_single();
+        single.run_callbacks();
     });
 
     *callbacks_running = true;

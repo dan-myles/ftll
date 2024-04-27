@@ -1,7 +1,8 @@
-use lazy_static::lazy_static;
 use std::sync::Mutex;
 use steamworks::Client;
 use steamworks::SingleClient;
+
+use lazy_static::lazy_static;
 
 lazy_static! {
     static ref STEAM_CLIENT: Mutex<Option<Client>> = Mutex::new(None);
