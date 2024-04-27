@@ -32,13 +32,18 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
     const init = async () => {
       // Init steamworks
       const initSteam = async () => {
-        await invoke("steam_init_api").catch((e) => {
+        // We have two options, either invoke throws and NO API
+        // or it returns null and we have the API
+        const res = await invoke("steam_mount_api").catch((e) => {
           console.error(e)
           setSteamInitialized(false)
           return false
         })
 
-        return true
+        if (res === null) {
+          setSteamInitialized(true)
+          return true
+        }
       }
 
       // Run callback daemon
@@ -148,8 +153,8 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Uh oh... 😭</AlertDialogTitle>
             <AlertDialogDescription>
-              It looks like Steam isn&apos;t running! Please start Steam and try
-              again.
+              It looks like Steam isn&apos;t running, or your client is
+              out-of-date! Please start Steam and try again.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="flex w-full justify-center">

@@ -26,8 +26,8 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
-            steam::steam_init_api,
-            steam::steam_reinit_api,
+            steam::steam_mount_api,
+            steam::steam_unmount_api,
             steam::steam_start_daemon,
             steam::steam_get_user_id,
             steam::steam_get_user_avi,

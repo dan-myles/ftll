@@ -1,31 +1,38 @@
-use std::sync::Mutex;
+use std::sync::Arc;
 use steamworks::Client;
 use steamworks::SingleClient;
+use tokio::sync::Mutex;
 
 use lazy_static::lazy_static;
 
 lazy_static! {
-    static ref STEAM_CLIENT: Mutex<Option<Client>> = Mutex::new(None);
+    pub static ref STEAM_CLIENT: Arc<Mutex<Option<Client>>> = Arc::new(Mutex::new(None));
 }
 
-static mut STEAM_SINGLE: Option<SingleClient> = None;
+// NOTE: Only one thread may have this at a time, so no mutex 😛
+pub static mut STEAM_SINGLE: Option<SingleClient> = None;
 
-pub fn has_client() -> bool {
-    STEAM_CLIENT.lock().unwrap().is_some()
+pub async fn has_client() -> bool {
+    let steam_client_ref = STEAM_CLIENT.clone();
+    let has_client = steam_client_ref.lock().await.is_some();
+    has_client
 }
 
-pub fn get_client() -> Client {
-    let option = STEAM_CLIENT.lock().unwrap().to_owned();
-    option.unwrap()
+pub async fn get_client() -> Option<Client> {
+    let steam_client_ref = STEAM_CLIENT.clone();
+    let client = steam_client_ref.lock().await.to_owned();
+    client
 }
 
-pub fn set_client(client: Client) {
-    let mut client_ref = STEAM_CLIENT.lock().unwrap();
+pub async fn set_client(client: Client) {
+    let steam_client_ref = STEAM_CLIENT.clone();
+    let mut client_ref = steam_client_ref.lock().await;
     *client_ref = Some(client);
 }
 
-pub fn drop_client() {
-    let mut client_ref = STEAM_CLIENT.lock().unwrap();
+pub async fn drop_client() {
+    let steam_client_ref = STEAM_CLIENT.clone();
+    let mut client_ref = steam_client_ref.lock().await;
     *client_ref = None;
 }
 
