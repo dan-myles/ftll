@@ -30,9 +30,9 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const init = async () => {
-      // Load steamworks
-      const loadSteam = async () => {
-        await invoke("init_steamworks").catch((e) => {
+      // Init steamworks
+      const initSteam = async () => {
+        await invoke("steam_init_api").catch((e) => {
           console.error(e)
           setSteamInitialized(false)
           return false
@@ -41,16 +41,16 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
         return true
       }
 
-      // Run callbacks
-      const runCallbacks = async () => {
-        await invoke("run_callbacks").catch((e) => {
+      // Run callback daemon
+      const startCallbackDaemon = async () => {
+        await invoke("steam_start_daemon").catch((e) => {
           console.error(e)
         })
       }
 
       // Start a listener for the mod daemon
-      const runModDaemon = async () => {
-        await invoke("start_mod_daemon").catch((e) => {
+      const startModDaemon = async () => {
+        await invoke("mdq_start_daemon").catch((e) => {
           console.error(e)
         })
       }
@@ -78,21 +78,21 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
 
       // Get user info
       const getUserInfo = async () => {
-        const userName = await invoke<string>("get_user_display_name")
-        const steamId = await invoke<string>("get_user_steam_id")
-        const avi = await invoke<Uint8Array>("get_user_avi_rgba")
+        const userName = await invoke<string>("steam_get_user_display_name")
+        const steamId = await invoke<string>("steam_get_user_id")
+        const avi = await invoke<Uint8Array>("steam_get_user_avi")
         setUserName(userName)
         setSteamId(steamId)
         setAvi(avi)
       }
 
       // If steam isn't loaded, its a problem!
-      const res = await loadSteam()
+      const res = await initSteam()
       if (!res) return
 
       // Load everything else
-      await runCallbacks()
-      await runModDaemon()
+      await startCallbackDaemon()
+      await startModDaemon()
       await loadServers()
       await getUserInfo()
     }
@@ -107,15 +107,15 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
     // Listen for installed mods
     // Due to how the Steamworks API works, we can't await the response
     // we have to listen for a callback event instead
-    const unlisten = listen("found_installed_mod", (event) => {
+    const unlisten = listen("steam_get_installed_mods_result", (event) => {
       const modInfo = event.payload as ModInfo
       addMod(modInfo)
     }).catch(console.error)
 
     // Now that we're listening for installed mods, we can request the list
-    invoke("get_installed_mods").catch(console.error)
+    invoke("steam_get_installed_mods").catch(console.error)
     const interval = setInterval(() => {
-      invoke("get_installed_mods").catch(console.error)
+      invoke("steam_get_installed_mods").catch(console.error)
     }, 1000 /*Ms*/ * 3 /*Seconds*/)
 
     return () => {

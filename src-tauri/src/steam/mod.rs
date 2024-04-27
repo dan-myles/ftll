@@ -10,108 +10,22 @@ mod client;
 
 lazy_static::lazy_static! {
     static ref IS_STEAMWORKS_INITIALIZED: std::sync::Mutex<bool> = std::sync::Mutex::new(false);
-    static ref IS_CALLBACKS_RUNNING: std::sync::Mutex<bool> = std::sync::Mutex::new(false);
+    static ref IS_CALLBACK_DAEMON_RUNNING: std::sync::Mutex<bool> = std::sync::Mutex::new(false);
     static ref IS_MOD_DAEMON_RUNNING: std::sync::Mutex<bool> = std::sync::Mutex::new(false);
-    static ref CURRENT_MOD_DOWNLOAD: Arc<Mutex<u64>> = Arc::new(Mutex::new(0));
     static ref MOD_DOWNLOAD_QUEUE: Arc<RwLock<VecDeque<u64>>> = Arc::new(RwLock::new(VecDeque::new()));
+    static ref MOD_DOWNLOAD_QUEUE_ACTIVE_DOWNLOAD_ID: Arc<Mutex<u64>> = Arc::new(Mutex::new(0));
 }
 
-/**
-* function: get_installed_mods
-* --------------------------
-* Queries the Steamworks API for all installed mods and emits the results to the frontend.
-* Emits a "found_installed_mod" event for each mod found, with the mod's information.
-*/
 #[tauri::command]
-pub async fn get_installed_mods(app_handle: AppHandle) -> Result<(), String> {
-    let client = client::get_client();
-    let ugc = client.ugc();
-
-    let subscribed_items = ugc.subscribed_items();
-    for item in subscribed_items {
-        let extended_info = ugc.query_item(item).map_err(|e| e.to_string())?;
-
-        let handle = app_handle.clone();
-        extended_info.fetch(move |i| {
-            let query_result = i.unwrap().get(0).unwrap();
-
-            let result = ModInfo {
-                published_file_id: query_result.published_file_id.0,
-                title: query_result.title,
-                description: query_result.description,
-                owner_steam_id: query_result.owner.raw(),
-                time_created: query_result.time_created,
-                time_updated: query_result.time_updated,
-                time_added_to_user_list: query_result.time_added_to_user_list,
-                banned: query_result.banned,
-                accepted_for_use: query_result.accepted_for_use,
-                tags: query_result.tags.clone(),
-                tags_truncated: query_result.tags_truncated,
-                file_size: query_result.file_size,
-                url: query_result.url.clone(),
-                num_upvotes: query_result.num_upvotes,
-                num_downvotes: query_result.num_downvotes,
-                score: query_result.score,
-                num_children: query_result.num_children,
-            };
-
-            handle
-                .emit("found_installed_mod", result)
-                .expect("Failed to emit query result");
-        });
-    }
-
-    Ok(())
-}
-
-/**
-* function: get_mod_info
-* --------------------------
-* Queries the Steamworks API for a specific mod's information and emits the results to the frontend.
-* Emits a "found_mod_info" event with the mod's information.
-*/
-#[tauri::command]
-pub async fn get_mod_info(app_handle: AppHandle, published_file_id: u64) -> Result<(), String> {
-    let client = client::get_client();
-    let ugc = client.ugc();
-
-    let extended_info = ugc
-        .query_item(steamworks::PublishedFileId(published_file_id))
-        .map_err(|e| e.to_string())?;
-
-    extended_info.fetch(move |i| {
-        let query_result = i.unwrap().get(0).unwrap();
-
-        let result = ModInfo {
-            published_file_id: query_result.published_file_id.0,
-            title: query_result.title,
-            description: query_result.description,
-            owner_steam_id: query_result.owner.raw(),
-            time_created: query_result.time_created,
-            time_updated: query_result.time_updated,
-            time_added_to_user_list: query_result.time_added_to_user_list,
-            banned: query_result.banned,
-            accepted_for_use: query_result.accepted_for_use,
-            tags: query_result.tags.clone(),
-            tags_truncated: query_result.tags_truncated,
-            file_size: query_result.file_size,
-            url: query_result.url.clone(),
-            num_upvotes: query_result.num_upvotes,
-            num_downvotes: query_result.num_downvotes,
-            score: query_result.score,
-            num_children: query_result.num_children,
-        };
-
-        app_handle
-            .emit("found_mod_info", result)
-            .expect("Failed to emit query result");
-    });
-
+pub async fn mdq_clear() -> Result<(), String> {
+    let mod_queue_ref = MOD_DOWNLOAD_QUEUE.clone();
+    let mut mod_queue = mod_queue_ref.write().await;
+    (*mod_queue).clear();
     Ok(())
 }
 
 #[tauri::command]
-pub async fn download_mod(published_file_id: u64) -> Result<(), String> {
+pub async fn mdq_mod_add(published_file_id: u64) -> Result<(), String> {
     let mod_queue_ref = MOD_DOWNLOAD_QUEUE.clone();
     let mut mod_queue = mod_queue_ref.write().await;
 
@@ -135,8 +49,21 @@ pub async fn download_mod(published_file_id: u64) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn get_mod_download_progress() -> Result<[u64; 2], String> {
-    let current_mod_ref = CURRENT_MOD_DOWNLOAD.clone();
+pub async fn mdq_mod_remove(published_file_id: u64) -> Result<(), String> {
+    let mod_queue_ref = MOD_DOWNLOAD_QUEUE.clone();
+    let mut mod_queue = mod_queue_ref.write().await;
+
+    if (*mod_queue).contains(&published_file_id) {
+        (*mod_queue).retain(|&x| x != published_file_id);
+        Ok(())
+    } else {
+        Err("Mod not found in download queue!".to_string())
+    }
+}
+
+#[tauri::command]
+pub async fn mdq_active_download_progress() -> Result<[u64; 2], String> {
+    let current_mod_ref = MOD_DOWNLOAD_QUEUE_ACTIVE_DOWNLOAD_ID.clone();
     let current_mod = current_mod_ref.lock().await;
 
     match *current_mod {
@@ -154,47 +81,18 @@ pub async fn get_mod_download_progress() -> Result<[u64; 2], String> {
 }
 
 #[tauri::command]
-pub async fn clear_mod_download_queue() -> Result<(), String> {
-    let mod_queue_ref = MOD_DOWNLOAD_QUEUE.clone();
-    let mut mod_queue = mod_queue_ref.write().await;
-    (*mod_queue).clear();
-    Ok(())
-}
+pub async fn mdq_active_download_id() -> Result<u64, String> {
+    let current_mod_ref = MOD_DOWNLOAD_QUEUE_ACTIVE_DOWNLOAD_ID.clone();
+    let current_mod = current_mod_ref.lock().await;
 
-#[tauri::command]
-pub async fn remove_mod_from_queue(published_file_id: u64) -> Result<(), String> {
-    let mod_queue_ref = MOD_DOWNLOAD_QUEUE.clone();
-    let mut mod_queue = mod_queue_ref.write().await;
-
-    if (*mod_queue).contains(&published_file_id) {
-        (*mod_queue).retain(|&x| x != published_file_id);
-        Ok(())
-    } else {
-        Err("Mod not found in download queue!".to_string())
+    match *current_mod {
+        0 => Err("No active download!".to_string()),
+        _ => Ok(*current_mod),
     }
 }
 
 #[tauri::command]
-pub async fn get_user_display_name() -> String {
-    client::get_client().friends().name()
-}
-
-#[tauri::command]
-pub async fn get_user_steam_id() -> String {
-    client::get_client().user().steam_id().raw().to_string()
-}
-
-#[tauri::command]
-pub async fn get_user_avi_rgba() -> Result<Vec<u8>, String> {
-    let avi = client::get_client().friends().medium_avatar();
-    match avi {
-        Some(avi) => Ok(avi),
-        None => Err("WARN: No avatar found 😥".to_string()),
-    }
-}
-
-#[tauri::command]
-pub async fn start_mod_daemon() -> Result<(), String> {
+pub async fn mdq_start_daemon() -> Result<(), String> {
     // Check if Steamworks is initialized
     let steamworks_initialized = IS_STEAMWORKS_INITIALIZED
         .lock()
@@ -203,7 +101,9 @@ pub async fn start_mod_daemon() -> Result<(), String> {
         return Err("Steamworks not initialized".to_string());
     }
 
-    let callback_running = IS_CALLBACKS_RUNNING.lock().map_err(|e| e.to_string())?;
+    let callback_running = IS_CALLBACK_DAEMON_RUNNING
+        .lock()
+        .map_err(|e| e.to_string())?;
     if !*callback_running {
         return Err("Steamworks callbacks not running".to_string());
     }
@@ -222,7 +122,7 @@ pub async fn start_mod_daemon() -> Result<(), String> {
     task::spawn(async {
         loop {
             time::sleep(Duration::from_millis(150)).await;
-            let current_mod_ref = CURRENT_MOD_DOWNLOAD.clone();
+            let current_mod_ref = MOD_DOWNLOAD_QUEUE_ACTIVE_DOWNLOAD_ID.clone();
             let mut current_mod = current_mod_ref.lock().await;
 
             if *current_mod == 0 {
@@ -275,7 +175,7 @@ pub async fn start_mod_daemon() -> Result<(), String> {
 
             // Set the current mod downloading
             let id = front.unwrap();
-            let current_mod_ref = CURRENT_MOD_DOWNLOAD.clone();
+            let current_mod_ref = MOD_DOWNLOAD_QUEUE_ACTIVE_DOWNLOAD_ID.clone();
             let mut current_mod = current_mod_ref.lock().await;
 
             match *current_mod {
@@ -309,9 +209,133 @@ pub async fn start_mod_daemon() -> Result<(), String> {
     Ok(())
 }
 
+/**
+* function: get_installed_mods
+* --------------------------
+* Queries the Steamworks API for all installed mods and emits the results to the frontend.
+* Emits a "found_installed_mod" event for each mod found, with the mod's information.
+*/
 #[tauri::command]
-pub async fn run_callbacks() -> Result<(), String> {
-    let mut callbacks_running = IS_CALLBACKS_RUNNING.lock().map_err(|e| e.to_string())?;
+pub async fn steam_get_installed_mods(app_handle: AppHandle) -> Result<(), String> {
+    let client = client::get_client();
+    let ugc = client.ugc();
+
+    let subscribed_items = ugc.subscribed_items();
+    for item in subscribed_items {
+        let extended_info = ugc.query_item(item).map_err(|e| e.to_string())?;
+
+        let handle = app_handle.clone();
+        extended_info.fetch(move |i| {
+            let query_result = i.unwrap().get(0).unwrap();
+
+            let result = ModInfo {
+                published_file_id: query_result.published_file_id.0,
+                title: query_result.title,
+                description: query_result.description,
+                owner_steam_id: query_result.owner.raw(),
+                time_created: query_result.time_created,
+                time_updated: query_result.time_updated,
+                time_added_to_user_list: query_result.time_added_to_user_list,
+                banned: query_result.banned,
+                accepted_for_use: query_result.accepted_for_use,
+                tags: query_result.tags.clone(),
+                tags_truncated: query_result.tags_truncated,
+                file_size: query_result.file_size,
+                url: query_result.url.clone(),
+                num_upvotes: query_result.num_upvotes,
+                num_downvotes: query_result.num_downvotes,
+                score: query_result.score,
+                num_children: query_result.num_children,
+            };
+
+            handle
+                .emit("steam_get_installed_mods_result", result)
+                .expect("Failed to emit query result");
+        });
+    }
+
+    Ok(())
+}
+
+/**
+* function: get_mod_info
+* ---
+* Queries the Steamworks API for a specific mod's information and emits the results to the frontend.
+* Emits a "found_mod_info" event with the mod's information.
+*/
+#[tauri::command]
+pub async fn steam_get_mod_info(
+    app_handle: AppHandle,
+    published_file_id: u64,
+) -> Result<(), String> {
+    let client = client::get_client();
+    let ugc = client.ugc();
+
+    let extended_info = ugc
+        .query_item(steamworks::PublishedFileId(published_file_id))
+        .map_err(|e| e.to_string())?;
+
+    extended_info.fetch(move |i| {
+        let query_result = i.unwrap().get(0).unwrap();
+
+        let result = ModInfo {
+            published_file_id: query_result.published_file_id.0,
+            title: query_result.title,
+            description: query_result.description,
+            owner_steam_id: query_result.owner.raw(),
+            time_created: query_result.time_created,
+            time_updated: query_result.time_updated,
+            time_added_to_user_list: query_result.time_added_to_user_list,
+            banned: query_result.banned,
+            accepted_for_use: query_result.accepted_for_use,
+            tags: query_result.tags.clone(),
+            tags_truncated: query_result.tags_truncated,
+            file_size: query_result.file_size,
+            url: query_result.url.clone(),
+            num_upvotes: query_result.num_upvotes,
+            num_downvotes: query_result.num_downvotes,
+            score: query_result.score,
+            num_children: query_result.num_children,
+        };
+
+        app_handle
+            .emit("steam_get_mod_info_result", result)
+            .expect("Failed to emit query result");
+    });
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn steam_get_user_display_name() -> String {
+    client::get_client().friends().name()
+}
+
+#[tauri::command]
+pub async fn steam_get_user_id() -> String {
+    client::get_client().user().steam_id().raw().to_string()
+}
+
+/**
+* function: steam_user_avi
+* --------------------------
+* Queries the Steamworks API for the current user's avatar and returns it as a byte array.
+* RGBA format.
+*/
+#[tauri::command]
+pub async fn steam_get_user_avi() -> Result<Vec<u8>, String> {
+    let avi = client::get_client().friends().medium_avatar();
+    match avi {
+        Some(avi) => Ok(avi),
+        None => Err("WARN: No avatar found 😥".to_string()),
+    }
+}
+
+#[tauri::command]
+pub async fn steam_start_daemon() -> Result<(), String> {
+    let mut callbacks_running = IS_CALLBACK_DAEMON_RUNNING
+        .lock()
+        .map_err(|e| e.to_string())?;
     let steamworks_initialized = IS_STEAMWORKS_INITIALIZED
         .lock()
         .map_err(|e| e.to_string())?;
@@ -342,7 +366,7 @@ pub async fn run_callbacks() -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn init_steamworks() -> Result<(), String> {
+pub async fn steam_init_api() -> Result<(), String> {
     let mut steamworks_initialized = IS_STEAMWORKS_INITIALIZED
         .lock()
         .map_err(|e| e.to_string())?;
@@ -370,6 +394,39 @@ pub async fn init_steamworks() -> Result<(), String> {
         Err(e) => {
             println!("Error initializing Steamworks: {}", e);
             *steamworks_initialized = false;
+            Err(e.to_string())
+        }
+    }
+}
+
+#[tauri::command]
+pub async fn steam_reinit_api() -> Result<(), String> {
+    // Let other threads know that Steamworks is no longer available
+    let mut steamworks_initialized = IS_STEAMWORKS_INITIALIZED
+        .lock()
+        .map_err(|e| e.to_string())?;
+    *steamworks_initialized = false;
+    drop(steamworks_initialized);
+
+    client::drop_client();
+    client::drop_single();
+
+    // DayZ App ID
+    let result = steamworks::Client::init_app(221100);
+
+    match result {
+        Ok(client) => {
+            let (client, single) = client;
+            client::set_client(client);
+            client::set_single(single);
+            let mut steamworks_initialized = IS_STEAMWORKS_INITIALIZED
+                .lock()
+                .map_err(|e| e.to_string())?;
+            *steamworks_initialized = true;
+            Ok(())
+        }
+        Err(e) => {
+            println!("Error reinitializing Steamworks: {}", e);
             Err(e.to_string())
         }
     }

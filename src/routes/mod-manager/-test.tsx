@@ -11,7 +11,7 @@ export function Test() {
 
   const testClick = async () => {
     console.log("Downloading sharks!", id)
-    await invoke("download_mod", { publishedFileId: id }).catch((e) => {
+    await invoke("mdq_mod_add", { publishedFileId: id }).catch((e) => {
       console.error(e)
     })
   }

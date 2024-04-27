@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
+import { invoke } from "@tauri-apps/api/core"
 import { type Mod } from "@/schemas/server-schema"
 
 interface ModDownloadQueueState {
@@ -27,7 +28,6 @@ export const useModDownloadQueue = create<
             downloadQueue: state.downloadQueue,
           }
         })
-
         return mod
       },
       pushMod: (mod) => {
@@ -37,6 +37,10 @@ export const useModDownloadQueue = create<
           ) {
             return state
           }
+
+          // invoke("download_mod", { publishedFileId: mod.workshopId }).catch(
+          //   console.error
+          // )
 
           return {
             downloadQueue: [...state.downloadQueue, mod],

@@ -11,7 +11,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { useValidateServerMods } from "@/hooks/useValidateServerMods"
 import { serverSchema } from "@/schemas/server-schema"
 
 interface PlayDialogViewProps<TData> {
@@ -20,7 +19,6 @@ interface PlayDialogViewProps<TData> {
 
 export function PlayDialogView<TData>({ row }: PlayDialogViewProps<TData>) {
   const server = serverSchema.parse(row.original)
-  const { handleValidateServerMods } = useValidateServerMods()
 
   return (
     <AlertDialog>
@@ -51,9 +49,7 @@ export function PlayDialogView<TData>({ row }: PlayDialogViewProps<TData>) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={() => handleValidateServerMods(server)}>
-            Play
-          </AlertDialogAction>
+          <AlertDialogAction>Play</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
