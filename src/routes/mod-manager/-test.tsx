@@ -26,15 +26,15 @@ export function Test() {
   }
 
   const testClick2 = async () => {
-    console.log("FORCE REMOUNT 👹👹", id)
-    await invoke("steam_mount_api", { publishedFileId: id }).catch((e) => {
+    console.log("FORCE MOUNT ✅✅")
+    await invoke("steam_mount_api").catch((e) => {
       console.error(e)
     })
   }
 
   const testClick3 = async () => {
-    console.log("FORCE REMOUNT 👹👹", id)
-    await invoke("steam_unmount_api", { publishedFileId: id }).catch((e) => {
+    console.log("FORCE UNMOUNT 👹👹")
+    await invoke("steam_unmount_api").catch((e) => {
       console.error(e)
     })
   }

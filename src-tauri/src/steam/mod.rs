@@ -148,6 +148,7 @@ pub async fn mdq_start_daemon() -> Result<(), String> {
                 continue;
             }
             let front = front.unwrap();
+            println!("mdq_daemon: Checking mod: {}", front);
 
             // Sometimes we can unmount steam while the daemon is running, so we
             // need to check if steamworks is still initialized! 🤭
@@ -158,37 +159,31 @@ pub async fn mdq_start_daemon() -> Result<(), String> {
             }
             let client = client.unwrap();
 
+            println!("mdq_daemon: Got the client!");
+
             // Lets check if the mod is installed?
             let ugc = client.ugc();
-            let is_done = ugc
-                .item_install_info(steamworks::PublishedFileId(front))
-                .is_some();
-            if !is_done {
-                mod_queue.push_front(front);
+            let is_installed = ugc.item_install_info(steamworks::PublishedFileId(front));
+            if is_installed.is_some() {
+                println!(
+                    "mdq_daemon: Mod was installed already: {}",
+                    is_installed.unwrap().folder
+                );
                 continue;
             }
 
             // Its not installed, either we are downloading it or we need to download it!
-            // Lets check if we are downloading it.
             let download_info = ugc.item_download_info(steamworks::PublishedFileId(front));
-            if download_info.is_none() {
-                // This does not mean that the mod is not downloading
-                // It means that Steam had an error getting *any* info
-                panic!("mdq_daemon: ❌ There was an error with: {}", front);
+            if download_info.is_some() {
+                println!("mdq_daemon: Mod is downloading already!");
+                mod_queue.push_front(front); // Add it back and check again later
+                continue;
             }
-            let download_info = download_info.unwrap();
 
-            match download_info {
-                (0, 0) => {
-                    // We are not downloading the mod, lets download it!
-                    ugc.subscribe_item(steamworks::PublishedFileId(front), |_i| {});
-                    println!("mdq_daemon: ✅ Downlading mod: {}", front);
-                }
-                (_, _) => {
-                    // We are downloading the mod, lets put it back in the queue!
-                    mod_queue.push_front(front);
-                }
-            }
+            // At this point we know the mod is not installed and not downloading...
+            // Lets cook that shit up 🍳 P.S. don't care about the callback
+            ugc.subscribe_item(steamworks::PublishedFileId(front), |_i| {});
+            println!("mdq_daemon: ✅ Downlading mod: {}", front);
         }
     });
 
