@@ -16,6 +16,22 @@ export function Test() {
     })
   }
 
+  const testClick1 = async () => {
+    console.log("removing sharks 💀💀💀", id)
+    await invoke("steam_remove_mod_forcefully", { publishedFileId: id }).catch(
+      (e) => {
+        console.error(e)
+      }
+    )
+  }
+
+  const testClick2 = async () => {
+    console.log("FORCE REMOUNT 👹👹", id)
+    await invoke("steam_reinit_api", { publishedFileId: id }).catch((e) => {
+      console.error(e)
+    })
+  }
+
   return (
     <div>
       <Button
@@ -25,7 +41,25 @@ export function Test() {
           })
         }}
       >
-        Test
+        download sharks
+      </Button>
+      <Button
+        onClick={() => {
+          testClick1().catch((e) => {
+            console.error(e)
+          })
+        }}
+      >
+        force remove sharks
+      </Button>
+      <Button
+        onClick={() => {
+          testClick2().catch((e) => {
+            console.error(e)
+          })
+        }}
+      >
+        REMOUNT STEAM api
       </Button>
     </div>
   )

@@ -352,7 +352,7 @@ pub async fn steam_get_user_avi() -> Result<Vec<u8>, String> {
     let avi = client::get_client().friends().medium_avatar();
     match avi {
         Some(avi) => Ok(avi),
-        None => Err("WARN: No avatar found 😥".to_string()),
+        None => Err("No avatar found 😥".to_string()),
     }
 }
 
@@ -428,13 +428,17 @@ pub async fn steam_init_api() -> Result<(), String> {
 * function: steam_reinit_api
 * ---
 * Reinitializes the Steamworks API. Currently causes a lot of threads to panic.
+* Probably will also cause the program to crash LOL. Use with caution.
 * Sometimes necessary when removing mods, as `unsubscribe` does not run until
 * the "game" is not running. Unforunately, init-ing the Steamworks API
-* with the DayZ App ID is considered a running game. Could just let em panic 🤣
+* with the DayZ App ID is considered a running game.
 * ---
+* WARN: CAUSES PANICS 💀
 * TODO: Fix panics when reinitializing the Steamworks API. Can do this by
 * moving steamworks checks to be done before calling the Steamworks API, and
 * moving the IS_STEAMWORKS_INITIALIZED to a tokio RwLock... maybe? 💀
+* We just have to make sure that we don't call the Steamworks API at all,
+* while its being remounted.
 */
 #[tauri::command]
 pub async fn steam_reinit_api() -> Result<(), String> {
