@@ -307,6 +307,31 @@ pub async fn steam_get_mod_info(
 }
 
 #[tauri::command]
+pub async fn steam_remove_mod_forcefully(published_file_id: u64) -> Result<(), String> {
+    let client = client::get_client();
+    let ugc = client.ugc();
+
+    ugc.unsubscribe_item(steamworks::PublishedFileId(published_file_id), |_i| {});
+    ugc.delete_item(
+        steamworks::PublishedFileId(published_file_id),
+        |i| match i {
+            Ok(_) => println!("Mod deleted successfully"),
+            Err(e) => println!("Error deleting mod: {}", e),
+        },
+    );
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn steam_remove_mod(published_file_id: u64) -> Result<(), String> {
+    let client = client::get_client();
+    let ugc = client.ugc();
+
+    ugc.unsubscribe_item(steamworks::PublishedFileId(published_file_id), |_i| {});
+    Ok(())
+}
+
+#[tauri::command]
 pub async fn steam_get_user_display_name() -> String {
     client::get_client().friends().name()
 }
@@ -399,6 +424,18 @@ pub async fn steam_init_api() -> Result<(), String> {
     }
 }
 
+/**
+* function: steam_reinit_api
+* ---
+* Reinitializes the Steamworks API. Currently causes a lot of threads to panic.
+* Sometimes necessary when removing mods, as `unsubscribe` does not run until
+* the "game" is not running. Unforunately, init-ing the Steamworks API
+* with the DayZ App ID is considered a running game. Could just let em panic 🤣
+* ---
+* TODO: Fix panics when reinitializing the Steamworks API. Can do this by
+* moving steamworks checks to be done before calling the Steamworks API, and
+* moving the IS_STEAMWORKS_INITIALIZED to a tokio RwLock... maybe? 💀
+*/
 #[tauri::command]
 pub async fn steam_reinit_api() -> Result<(), String> {
     // Let other threads know that Steamworks is no longer available

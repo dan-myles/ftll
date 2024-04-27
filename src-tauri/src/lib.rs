@@ -34,6 +34,8 @@ pub fn run() {
             steam::steam_get_user_display_name,
             steam::steam_get_mod_info,
             steam::steam_get_installed_mods,
+            steam::steam_remove_mod,
+            steam::steam_remove_mod_forcefully,
             steam::mdq_start_daemon,
             steam::mdq_clear,
             steam::mdq_mod_add,
