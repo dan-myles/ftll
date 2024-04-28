@@ -1,6 +1,7 @@
 use anyhow::Result;
 use lazy_static::lazy_static;
 use std::collections::VecDeque;
+use std::fs;
 use std::sync::Arc;
 use std::time::Duration;
 use tauri::{AppHandle, Manager};
@@ -18,6 +19,11 @@ lazy_static! {
         Arc::new(RwLock::new(VecDeque::new()));
 }
 
+/**
+* function: mdq_clear
+* ---
+* Clears the mod download queue.
+*/
 #[tauri::command]
 pub async fn mdq_clear() -> Result<(), String> {
     let mod_queue_ref = MOD_DOWNLOAD_QUEUE.clone();
@@ -26,6 +32,11 @@ pub async fn mdq_clear() -> Result<(), String> {
     Ok(())
 }
 
+/**
+* function: mdq_mod_add
+* ---
+* Adds a mod to the download queue.
+*/
 #[tauri::command]
 pub async fn mdq_mod_add(published_file_id: u64) -> Result<(), String> {
     let mod_queue_ref = MOD_DOWNLOAD_QUEUE.clone();
@@ -48,7 +59,10 @@ pub async fn mdq_mod_add(published_file_id: u64) -> Result<(), String> {
     let is_installed = ugc.item_install_info(steamworks::PublishedFileId(published_file_id));
 
     match is_installed {
-        Some(_) => return Err("Mod already installed!".to_string()),
+        Some(_) => {
+            (*mod_queue).push_back(published_file_id);
+            return Err("Mod already installed!".to_string());
+        }
         None => {
             (*mod_queue).push_back(published_file_id);
             Ok(())
@@ -56,6 +70,11 @@ pub async fn mdq_mod_add(published_file_id: u64) -> Result<(), String> {
     }
 }
 
+/**
+* function: mdq_mod_remove
+* ---
+* Removes a mod from the download queue.
+*/
 #[tauri::command]
 pub async fn mdq_mod_remove(published_file_id: u64) -> Result<(), String> {
     let mod_queue_ref = MOD_DOWNLOAD_QUEUE.clone();
@@ -69,6 +88,11 @@ pub async fn mdq_mod_remove(published_file_id: u64) -> Result<(), String> {
     }
 }
 
+/**
+* function: mdq_active_download_progress
+* ---
+* Returns the progress of an active mod download. Will error if there is no active download.
+*/
 #[tauri::command]
 pub async fn mdq_active_download_progress() -> Result<[u64; 2], String> {
     // Grab the mod queue and drop it like its hot!
@@ -100,6 +124,11 @@ pub async fn mdq_active_download_progress() -> Result<[u64; 2], String> {
     Ok([download_progress.0, download_progress.1])
 }
 
+/**
+* function: mdq_active_download_id
+* ---
+* Returns the workshopId of an active mod download. Will error if there is no active download.
+*/
 #[tauri::command]
 pub async fn mdq_active_download_id() -> Result<u64, String> {
     let mod_queue_ref = MOD_DOWNLOAD_QUEUE.clone();
@@ -116,9 +145,12 @@ pub async fn mdq_active_download_id() -> Result<u64, String> {
 * function: mdq_start_daemon
 * ---
 * Starts the mod download queue daemon. This daemon will check if there are any mods in the queue
+* then download them. This daemon will run continuously until the app is closed. Handles,
+* unmounting of the steam api, and checking if the mod is already installed.
+* Emits a "mdq_active_download_info" event while a mod is downloading.
 */
 #[tauri::command]
-pub async fn mdq_start_daemon() -> Result<(), String> {
+pub async fn mdq_start_daemon(app_handle: AppHandle) -> Result<(), String> {
     // Check if the mod daemon is already running
     let is_mod_daemon_running_ref = IS_MOD_DAEMON_RUNNING.clone();
     let mut is_mod_daemon_running = is_mod_daemon_running_ref.write().await;
@@ -132,11 +164,12 @@ pub async fn mdq_start_daemon() -> Result<(), String> {
     // This task will run continuously and check if there are any mods in the download queue
     // to download. If there are, it will download them and remove them from the queue.
     // If there are no mods in the queue, it will sleep for a bit and check again.
-    task::spawn(async {
+    task::spawn(async move {
+        let handle = app_handle.clone();
+
         loop {
             // How fast do we want to check the queue?
             time::sleep(Duration::from_millis(150)).await;
-            println!("mdq_daemon: Checking the mod queue!");
 
             // Now lets grab the front of that queue!
             // P.S. Sometimes the queue is empty!
@@ -144,11 +177,9 @@ pub async fn mdq_start_daemon() -> Result<(), String> {
             let mut mod_queue = mod_queue_ref.write().await;
             let front = mod_queue.pop_front();
             if front.is_none() {
-                println!("mdq_daemon: No mods in the queue!");
-                continue;
+                continue; // No mods in the queue, lets check again!
             }
             let front = front.unwrap();
-            println!("mdq_daemon: Checking mod: {}", front);
 
             // Sometimes we can unmount steam while the daemon is running, so we
             // need to check if steamworks is still initialized! 🤭
@@ -159,42 +190,67 @@ pub async fn mdq_start_daemon() -> Result<(), String> {
             }
             let client = client.unwrap();
 
-            println!("mdq_daemon: Got the client!");
-
             // Lets check if the mod is installed?
             let ugc = client.ugc();
             let is_installed = ugc.item_install_info(steamworks::PublishedFileId(front));
             if is_installed.is_some() {
                 println!(
-                    "mdq_daemon: Mod was installed already: {}",
+                    "mdq_daemon: Mod has been installed: {}",
                     is_installed.unwrap().folder
                 );
                 continue;
             }
 
             // Its not installed, either we are downloading it or we need to download it!
+            // Lets check our last download id...
             let download_info = ugc.item_download_info(steamworks::PublishedFileId(front));
             if download_info.is_some() {
-                println!("mdq_daemon: Mod is downloading already!");
-                mod_queue.push_front(front); // Add it back and check again later
+                // Add it back and check again later
+                mod_queue.push_front(front);
+
+                // Gather the download info and send it to the frontend
+                let bytes_downloaded = download_info.unwrap().0;
+                let bytes_total = download_info.unwrap().1;
+                let percentage_downloaded = bytes_downloaded as f64 / bytes_total as f64 * 100.0;
+
+                let event = ActiveDownloadProgressEvent {
+                    published_file_id: front,
+                    bytes_downloaded,
+                    bytes_total,
+                    percentage_downloaded,
+                };
+
+                println!(
+                    "mdq_daemon: {} is downloading... {:.1}% ({}/{})",
+                    front, percentage_downloaded, bytes_downloaded, bytes_total
+                );
+
+                handle
+                    .emit("mdq_active_download_progress", event)
+                    .expect("Failed to emit event!");
                 continue;
             }
 
             // At this point we know the mod is not installed and not downloading...
             // Lets cook that shit up 🍳 P.S. don't care about the callback
             ugc.subscribe_item(steamworks::PublishedFileId(front), |_i| {});
-            println!("mdq_daemon: ✅ Downlading mod: {}", front);
+            mod_queue.push_front(front);
+            println!("mdq_daemon: ✅ Downloading mod: {}", front);
         }
     });
+
+    // Event Emitter 👷
+    // This is responsible for keeping the frontend up to date about what mod is currently
+    // downloading and its information.
 
     Ok(())
 }
 
 /**
-* function: get_installed_mods
-* --------------------------
+* function: steam_get_installed_mods
+* ---
 * Queries the Steamworks API for all installed mods and emits the results to the frontend.
-* Emits a "found_installed_mod" event for each mod found, with the mod's information.
+* Emits a "steam_get_installed_mods_result" event for each mod found, with the mod's information.
 */
 #[tauri::command]
 pub async fn steam_get_installed_mods(app_handle: AppHandle) -> Result<(), String> {
@@ -245,12 +301,12 @@ pub async fn steam_get_installed_mods(app_handle: AppHandle) -> Result<(), Strin
 }
 
 /**
-* function: get_mod_info
+* function: steam_get_mod_info
 * ---
 * Queries the Steamworks API for a specific mod's information and emits the results to the frontend.
-* Emits a "found_mod_info" event with the mod's information.
+* Emits a "steam_get_mod_info_result" event with the mod's information.
 * ---
-* NOTE: UNTESTED
+* NOTE: Untested, but should work.
 */
 #[tauri::command]
 pub async fn steam_get_mod_info(
@@ -301,6 +357,38 @@ pub async fn steam_get_mod_info(
     Ok(())
 }
 
+/**
+* function: steam_remove_mod
+* ---
+* Unsubscribes from a mod from the Steamworks API.
+*/
+#[tauri::command]
+pub async fn steam_remove_mod(published_file_id: u64) -> Result<(), String> {
+    // Check that steam client!
+    let client = client::get_client().await;
+    if client.is_none() {
+        return Err("No steam client found!".to_string());
+    }
+    let client = client.unwrap();
+
+    // Unsubscribe the mod
+    let ugc = client.ugc();
+    ugc.unsubscribe_item(
+        steamworks::PublishedFileId(published_file_id),
+        |i| match i {
+            Ok(_) => println!("steam_remove_mod, mod unsubscribed successfully"),
+            Err(e) => println!("Error unsubscribing mod: {}", e),
+        },
+    );
+
+    Ok(())
+}
+
+/**
+* function: steam_remove_mod_forcefully
+* ---
+* Unsubscribes and requests deletion of a mod from the Steamworks API.
+*/
 #[tauri::command]
 pub async fn steam_remove_mod_forcefully(published_file_id: u64) -> Result<(), String> {
     // Check that steam client!
@@ -315,22 +403,29 @@ pub async fn steam_remove_mod_forcefully(published_file_id: u64) -> Result<(), S
     ugc.unsubscribe_item(
         steamworks::PublishedFileId(published_file_id),
         |i| match i {
-            Ok(_) => println!("Mod unsubscribed successfully"),
+            Ok(_) => println!("steam_remove_mod_forcefully: mod unsubscribed successfully"),
             Err(e) => println!("Error unsubscribing mod: {}", e),
         },
     );
     ugc.delete_item(
         steamworks::PublishedFileId(published_file_id),
         |i| match i {
-            Ok(_) => println!("Mod deleted successfully"),
+            Ok(_) => {
+                println!("steam_remove_mod_forcefully: requested deletion of mod successfully")
+            }
             Err(e) => println!("Error deleting mod: {}", e),
         },
     );
     Ok(())
 }
 
+/**
+* function: steam_fix_mod
+* ---
+* Tries to reset local mod cache and redownload the mod from the Steamworks API.
+*/
 #[tauri::command]
-pub async fn steam_remove_mod(published_file_id: u64) -> Result<(), String> {
+pub async fn steam_fix_mod(published_file_id: u64) -> Result<(), String> {
     // Check that steam client!
     let client = client::get_client().await;
     if client.is_none() {
@@ -338,43 +433,164 @@ pub async fn steam_remove_mod(published_file_id: u64) -> Result<(), String> {
     }
     let client = client.unwrap();
 
-    // Unsubscribe the mod
+    // Check if the mod is installed before trying to download it
     let ugc = client.ugc();
-    ugc.unsubscribe_item(steamworks::PublishedFileId(published_file_id), |_i| {});
-    Ok(())
+    let install_info = ugc.item_install_info(steamworks::PublishedFileId(published_file_id));
+    if install_info.is_none() {
+        return Err("Mod is not installed! I can only fix installed mods.".to_string());
+    }
+
+    // Try to "download" the mod again, will verify the files
+    let is_success = ugc.download_item(steamworks::PublishedFileId(published_file_id), true);
+
+    match is_success {
+        true => Ok(()),
+        false => Err("Failed to download mod, you may have an invalid id.".to_string()),
+    }
 }
 
+/**
+* function: steam_fix_mod_forcefully
+* ---
+* Removes the mod's local files and redownloads the mod from the Steamworks API.
+* ---
+* WARN: This will remove all local files associated with the mod.
+*/
 #[tauri::command]
-pub async fn steam_get_user_display_name() -> String {
+pub async fn steam_fix_mod_forcefully(
+    published_file_id: u64,
+    app_handle: AppHandle,
+) -> Result<(), String> {
     // Check that steam client!
     let client = client::get_client().await;
     if client.is_none() {
-        return "No steam client found!".to_string();
+        return Err("No steam client found!".to_string());
+    }
+    let client = client.unwrap();
+
+    // Make sure the mod is installed!
+    let ugc = client.ugc();
+    let install_info = ugc.item_install_info(steamworks::PublishedFileId(published_file_id));
+    if install_info.is_none() {
+        return Err("Mod is not installed! I can only fix installed mods.".to_string());
+    }
+    let path = install_info.unwrap().folder;
+
+    // Delete that mod... 🤭
+    println!(
+        "steam_fix_mod_forcefully: ❌ Deleting mod... {}",
+        published_file_id
+    );
+    fs::remove_dir_all(path).map_err(|e| e.to_string())?;
+
+    // Now we download the mod again
+    println!(
+        "steam_fix_mod_forcefully: ✅ Re-downloading mod... {}",
+        published_file_id
+    );
+    ugc.download_item(steamworks::PublishedFileId(published_file_id), true);
+
+    // A short task to periodically check the download status
+    task::spawn(async move {
+        let handle = app_handle.clone();
+
+        loop {
+            time::sleep(Duration::from_millis(250)).await;
+
+            // Get the client...
+            let client = client::get_client().await;
+            if client.is_none() {
+                continue;
+            }
+            let client = client.unwrap();
+
+            // Query the download status
+            let ugc = client.ugc();
+            let download_info =
+                ugc.item_download_info(steamworks::PublishedFileId(published_file_id));
+            if download_info.is_none() {
+                panic!("⚠️ There was a serious error querying the download status!");
+            }
+            let download_info = download_info.unwrap();
+
+            // Gather the data for the active download
+            let bytes_downloaded = download_info.0;
+            let bytes_total = download_info.1;
+            let percentage_downloaded = bytes_downloaded as f64 / bytes_total as f64 * 100.0;
+            let event = ActiveDownloadProgressEvent {
+                published_file_id,
+                bytes_downloaded,
+                bytes_total,
+                percentage_downloaded,
+            };
+
+            println!(
+                "steam_fix_mod_forcefully: {} is downloading... {:.1}% ({}/{})",
+                published_file_id, percentage_downloaded, bytes_downloaded, bytes_total
+            );
+
+            // Emit the event
+            handle
+                .emit("steam_fix_mod_forcefully_progress", event)
+                .expect("Failed to emit progress event");
+
+            // Make sure we're done
+            if percentage_downloaded >= 100.0 {
+                println!(
+                    "steam_fix_mod_forcefully: {} has been redownloaded!",
+                    published_file_id
+                );
+                break;
+            }
+        }
+    });
+
+    Ok(())
+}
+
+/**
+* function: steam_get_user_display_name
+* ---
+* Retrieves the current user's display name from the Steamworks API.
+* Will error if no steam client is found.
+*/
+#[tauri::command]
+pub async fn steam_get_user_display_name() -> Result<String, String> {
+    // Check that steam client!
+    let client = client::get_client().await;
+    if client.is_none() {
+        return Err("No steam client found!".to_string());
     }
     let client = client.unwrap();
 
     // Grab that name!
-    client.friends().name()
+    Ok(client.friends().name())
 }
 
+/**
+* function: steam_get_user_id
+* ---
+* Retrieves the current user's Steam 64 ID from the Steamworks API.
+* Will error if no steam client is found.
+*/
 #[tauri::command]
-pub async fn steam_get_user_id() -> String {
+pub async fn steam_get_user_id() -> Result<String, String> {
     // Check that steam client!
     let client = client::get_client().await;
     if client.is_none() {
-        return "No steam client found!".to_string();
+        return Err("No steam client found!".to_string());
     }
     let client = client.unwrap();
 
     // Grab that ID!
-    client.user().steam_id().raw().to_string()
+    Ok(client.user().steam_id().raw().to_string())
 }
 
 /**
 * function: steam_get_user_avi
 * --------------------------
 * Queries the Steamworks API for the current user's avatar and returns it as a byte array.
-* RGBA format.
+* RGBA format. Will error if no steam client is found.
 */
 #[tauri::command]
 pub async fn steam_get_user_avi() -> Result<Vec<u8>, String> {
@@ -431,9 +647,10 @@ pub async fn steam_start_daemon() -> Result<(), String> {
 }
 
 /**
-* function: steam_init_api
+* function: steam_mount_api
 * ---
 * Initializes the Steamworks API. This function must be called before any other Steamworks functions.
+* Can error if the is already mounted, or has an incorrect app id.
 */
 #[tauri::command]
 pub async fn steam_mount_api() -> Result<(), String> {
@@ -467,6 +684,15 @@ pub async fn steam_mount_api() -> Result<(), String> {
     }
 }
 
+/**
+* function: steam_unmount_api
+* ---
+* Destructures the Steamworks API. Does not *need* to be called, but can be useful forcing Steam
+* to think that we have shutdown and the "game" has been closed.
+* Can error if the is already mounted, or has an incorrect app id.
+* ---
+* WARN: This function is inherently unsafe! Please use with caution.
+*/
 #[tauri::command]
 pub async fn steam_unmount_api() -> Result<(), String> {
     // Get the base reference to the client
@@ -478,11 +704,35 @@ pub async fn steam_unmount_api() -> Result<(), String> {
         return Ok(());
     }
 
+    // Run some last callbacks!
+    unsafe {
+        client::STEAM_SINGLE.as_ref().unwrap().run_callbacks();
+    }
+
     // Manually set the client and single
     *client_ref = None;
     unsafe {
         client::STEAM_SINGLE = None;
     }
+
+    // Now we nuke the API 💣
+    println!("Shutting down Steamworks API");
+    steamworks::Client::shutdown();
+
+    // Now we have to quickly remount and unmount the api to 480
+    // As well as run the callbacks, so we don't get any errors
+    let e = steamworks::Client::init_app(0);
+    // print the error form E
+    match e {
+        Err(e) => {
+            println!("Error initializing Steamworks: {}", e);
+            return Err(e.to_string());
+        }
+        Ok(_) => {}
+    }
+
+    steamworks::Client::shutdown();
+
     Ok(())
 }
 
@@ -505,4 +755,12 @@ struct ModInfo {
     num_downvotes: u32,
     score: f32,
     num_children: u32,
+}
+
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+struct ActiveDownloadProgressEvent {
+    published_file_id: u64,
+    bytes_downloaded: u64,
+    bytes_total: u64,
+    percentage_downloaded: f64,
 }

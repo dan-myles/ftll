@@ -1,4 +1,6 @@
+import { useEffect } from "react"
 import { invoke } from "@tauri-apps/api/core"
+import { listen } from "@tauri-apps/api/event"
 import { Button } from "@/components/ui/button"
 import { useServerListStore } from "@/stores/server-list-store"
 
@@ -39,6 +41,50 @@ export function Test() {
     })
   }
 
+  const forceDownload = async () => {
+    console.log("Fixing sharks FORCE ⚙️⚙️")
+    await invoke("steam_fix_mod_forcefully", { publishedFileId: id }).catch(
+      (e) => {
+        console.error(e)
+      }
+    )
+  }
+
+  const bigTest = async () => {
+    console.log("BIG TEST")
+    await invoke("mdq_mod_add", { publishedFileId: id }).catch((e) => {
+      console.error(e)
+    })
+
+    Promise.all([
+      await invoke("mdq_mod_add", { publishedFileId: 2208354587 }).catch(
+        console.error
+      ),
+      await invoke("mdq_mod_add", { publishedFileId: 1623711988 }).catch(
+        console.error
+      ),
+      await invoke("mdq_mod_add", { publishedFileId: 2892071837 }).catch(
+        console.error
+      ),
+    ]).catch(console.error)
+  }
+
+  // useffect to listen to event
+  useEffect(() => {
+    const unlisten = listen("mdq_active_download_progress", (event) => {
+      console.log(event)
+    }).catch(console.error)
+
+    const unlisten2 = listen("steam_fix_mod_forcefully_progress", (event) => {
+      console.log(event)
+    }).catch(console.error)
+
+    return () => {
+      unlisten.then((f) => f?.()).catch(console.error)
+      unlisten2.then((f) => f?.()).catch(console.error)
+    }
+  }, [])
+
   return (
     <div>
       <Button
@@ -76,6 +122,24 @@ export function Test() {
         }}
       >
         unmount steam api
+      </Button>
+      <Button
+        onClick={() => {
+          forceDownload().catch((e) => {
+            console.error(e)
+          })
+        }}
+      >
+        fix sharks FORCE
+      </Button>
+      <Button
+        onClick={() => {
+          bigTest().catch((e) => {
+            console.error(e)
+          })
+        }}
+      >
+        BIG TEST
       </Button>
     </div>
   )

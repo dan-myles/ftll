@@ -148,15 +148,14 @@ pub async fn update_server_info_semaphore(max_updates: usize) {
 pub async fn get_server_info(server: Server) -> Result<Server, String> {
     let semaphore = MAX_UPDATES_SEMAPHORE.clone();
     let semaphore = semaphore.read().await;
-    println!("Waiting for permit: {}", server.name);
     let permit = semaphore.acquire().await;
 
     if permit.is_err() {
-        println!("!!Failed to acquire permit!!");
+        println!("⚠️ Failed to acquire permit for: {}", server.name);
         return Ok(server);
     }
 
-    println!("Permit acquired: {}", server.name);
+    // Don't spawn servers! So lets sleep for a second.
     tokio::time::sleep(Duration::from_millis(1000)).await;
 
     let a2s_client = A2SClient::new()
@@ -172,7 +171,7 @@ pub async fn get_server_info(server: Server) -> Result<Server, String> {
 
     match response {
         Ok(info) => {
-            println!("Returning server info: {}", server.name);
+            println!("Server query was successful: {}", server.name);
             return Ok(Server {
                 addr: server.addr,
                 name: server.name,

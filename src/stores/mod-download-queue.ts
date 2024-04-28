@@ -8,10 +8,8 @@ interface ModDownloadQueueState {
 }
 
 interface ModDownloadQueueActions {
-  popMod: () => Mod | undefined
-  pushMod: (mod: Mod) => void
   removeMod: (workshopId: number) => void
-  clearQueue: () => void
+  pushMod: (mod: Mod) => void
 }
 
 export const useModDownloadQueue = create<
@@ -20,16 +18,6 @@ export const useModDownloadQueue = create<
   persist(
     (set) => ({
       downloadQueue: [],
-      popMod: () => {
-        let mod = undefined
-        set((state) => {
-          mod = state.downloadQueue.shift()
-          return {
-            downloadQueue: state.downloadQueue,
-          }
-        })
-        return mod
-      },
       pushMod: (mod) => {
         set((state) => {
           if (
@@ -38,9 +26,12 @@ export const useModDownloadQueue = create<
             return state
           }
 
-          // invoke("download_mod", { publishedFileId: mod.workshopId }).catch(
-          //   console.error
-          // )
+          invoke("mdq_mod_add", { publishedFileId: mod.workshopId }).catch(
+            () => {
+              console.error
+              return state
+            }
+          )
 
           return {
             downloadQueue: [...state.downloadQueue, mod],
@@ -56,7 +47,6 @@ export const useModDownloadQueue = create<
           }
         })
       },
-      clearQueue: () => set({ downloadQueue: [] }),
     }),
     {
       name: "mod-storage",

@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useModDownloadQueue } from "@/stores/mod-download-queue"
 import { useModListStore } from "@/stores/mod-list-store"
 import { Test } from "./-test"
 
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/mod-manager/")({
 
 function Index() {
   const { modList } = useModListStore()
+  const { downloadQueue } = useModDownloadQueue()
 
   return (
     <div className="flex h-full flex-col space-y-2 p-4">
@@ -25,9 +27,25 @@ function Index() {
         <p className="mb-2 max-w-fit text-lg font-semibold">Pending Mods</p>
         <ScrollArea className="h-[20vh] rounded-md border">
           <div className="flex h-full flex-grow flex-col">
-            <div className="pt-2 text-center text-gray-500">
-              No mods pending installation
-            </div>
+            {downloadQueue.map((mod, idx) => (
+              <div
+                key={idx}
+                className={
+                  "flex flex-row space-x-2 p-2" + (idx === 0 ? "" : " border-t")
+                }
+              >
+                <div className="inline-flex flex-grow">
+                  <div>{mod.name}</div>
+                  <div className="pl-4 text-gray-500">{mod.workshopId}</div>
+                </div>
+                <div className="flex flex-row space-x-2 pr-2">
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <Trash2 size={16} />
+                    <span className="sr-only">Cancel</span>
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
         </ScrollArea>
         <Test />

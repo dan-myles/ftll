@@ -111,14 +111,21 @@ export function MoreInfo({ open, onClose, initServer }: MoreInfoProps) {
                   ) {
                     return (
                       <div key={mod.workshopId} className="p-2">
-                        {mod.name}
+                        <div>{mod.name}</div>
+                        <div>{mod.workshopId}</div>
                       </div>
                     )
                   }
 
                   return (
-                    <div key={mod.workshopId} className="border-b p-2">
-                      {mod.name}
+                    <div
+                      key={mod.workshopId}
+                      className="inline-flex border-b p-2"
+                    >
+                      <div>{mod.name}</div>
+                      <div className="pl-2 text-muted-foreground">
+                        {mod.workshopId}
+                      </div>
                     </div>
                   )
                 })}

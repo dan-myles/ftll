@@ -36,6 +36,8 @@ pub fn run() {
             steam::steam_get_installed_mods,
             steam::steam_remove_mod,
             steam::steam_remove_mod_forcefully,
+            steam::steam_fix_mod,
+            steam::steam_fix_mod_forcefully,
             steam::mdq_start_daemon,
             steam::mdq_clear,
             steam::mdq_mod_add,
