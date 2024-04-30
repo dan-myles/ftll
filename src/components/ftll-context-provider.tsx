@@ -15,8 +15,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { type ActiveDownloadProgressEvent } from "@/schemas/events/active-download-progress"
 import { type ModInfo } from "@/schemas/mod-info"
 import { type ServerList, serverListSchema } from "@/schemas/server-schema"
+import { useModDownloadQueue } from "@/stores/mod-download-queue"
 import { useModListStore } from "@/stores/mod-list-store"
 import { useServerListStore } from "@/stores/server-list-store"
 import { useUserInfoStore } from "@/stores/user-info-store"
@@ -25,8 +27,9 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
   const [isLoadingServers, setLoadingServers] = useState(false)
   const [isSteamInitialized, setSteamInitialized] = useState(true)
   const { setUserName, setSteamId, setAvi } = useUserInfoStore((state) => state)
-  const { addMod } = useModListStore()
+  const { addMod, modList } = useModListStore()
   const { setServerList } = useServerListStore()
+  const { removeMod, downloadQueue } = useModDownloadQueue()
 
   useEffect(() => {
     const init = async () => {
@@ -114,7 +117,6 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
     // we have to listen for a callback event instead
     const unlisten = listen("steam_get_installed_mods_result", (event) => {
       const modInfo = event.payload as ModInfo
-      console.log("Installed mod:", modInfo)
       addMod(modInfo)
     }).catch(console.error)
 
@@ -129,6 +131,30 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
       clearInterval(interval)
     }
   }, [isSteamInitialized, addMod])
+
+  // Listen for mod download progress to clean up the queue
+  useEffect(() => {
+    if (!isSteamInitialized) return
+
+    const unlisten = listen("mdq_active_download_progress", (event) => {
+      const e = event.payload as ActiveDownloadProgressEvent
+      if (e.percentage_downloaded === 100) {
+        removeMod(e.published_file_id)
+      }
+    }).catch(console.error)
+
+    const unlisten2 = listen("steam_fix_mod_forcefully_progress", (event) => {
+      const e = event.payload as ActiveDownloadProgressEvent
+      if (e.percentage_downloaded === 100) {
+        removeMod(e.published_file_id)
+      }
+    }).catch(console.error)
+
+    return () => {
+      unlisten.then((f) => f?.()).catch(console.error)
+      unlisten2.then((f) => f?.()).catch(console.error)
+    }
+  }, [isSteamInitialized, removeMod])
 
   return (
     <>

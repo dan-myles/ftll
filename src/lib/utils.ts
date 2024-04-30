@@ -16,10 +16,10 @@ export function formatBytes(bytes: number, decimals = 2) {
     "MB",
     "GB",
     "TB",
-    "PetaBytes",
-    "ExaBytes",
-    "ZiB",
-    "YiB",
+    "PetaBytes 💀💀💀💀",
+    "ExaBytes 😥😥😥😥😥😥😥😥😥😥😥😥😥😥😥😥😥😥😥😥😥😥😥😥😥😥",
+    "ZiB ... this not okay bro",
+    "YiB ... hmu if you see this, i need some storage 💀",
   ]
 
   const i = Math.floor(Math.log(bytes) / Math.log(k))

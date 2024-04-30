@@ -1,9 +1,9 @@
 import { createContext, useState } from "react"
 import { type Row } from "@tanstack/react-table"
+import { MoreInfo } from "@/components/more-info"
 import { useUpdateServer } from "@/hooks/useUpdateServer"
 import { cn } from "@/lib/utils"
 import { type Server, serverSchema } from "@/schemas/server-schema"
-import { MoreInfo } from "./more-info"
 
 export const UpdatedServerContext = createContext<Server | undefined>(undefined)
 export const DrawerContext = createContext<() => void>(() => {

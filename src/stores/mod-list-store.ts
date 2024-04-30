@@ -40,6 +40,7 @@ export const useModListStore = create<ModListState & ModListActions>()(
       },
       removeMod: (id) => {
         set((state) => {
+          console.log("Removing mod", id)
           return {
             modList: state.modList.filter((m) => m.published_file_id !== id),
           }

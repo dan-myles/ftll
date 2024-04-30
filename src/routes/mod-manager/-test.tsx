@@ -7,7 +7,7 @@ import { useServerListStore } from "@/stores/server-list-store"
 
 export function Test() {
   const { serverList } = useServerListStore()
-  const { pushMod } = useModDownloadQueue()
+  const { pushMod, downloadQueue, clearQueue } = useModDownloadQueue()
 
   // Test Mod
   // https://steamcommunity.com/sharedfiles/filedetails/?id=3147619641&searchtext=
@@ -15,9 +15,7 @@ export function Test() {
 
   const testClick = async () => {
     console.log("Downloading sharks!", id)
-    await invoke("mdq_mod_add", { publishedFileId: id }).catch((e) => {
-      console.error(e)
-    })
+    pushMod({ workshopId: id, name: "sharks" }).catch(console.error)
   }
 
   const testClick1 = async () => {
@@ -158,6 +156,14 @@ export function Test() {
       >
         remove 2 mods
       </Button>
+      <Button
+        onClick={() => {
+          console.log(downloadQueue)
+        }}
+      >
+        print queue
+      </Button>
+      <Button onClick={() => clearQueue()}>clear queue</Button>
     </div>
   )
 }

@@ -44,8 +44,10 @@ pub async fn mdq_mod_add(published_file_id: u64) -> Result<(), String> {
     let mut mod_queue = mod_queue_ref.write().await;
 
     // Check if the mod is already in the queue
+    // We do not return an error here as the frontend can call this rapidly
+    // and we don't want the UI out of sync. (user spams a button)
     if (*mod_queue).contains(&published_file_id) {
-        return Err("Mod already in download queue!".to_string());
+        return Ok(());
     }
 
     // Check that steam client!
@@ -173,6 +175,7 @@ pub async fn mdq_start_daemon(app_handle: AppHandle) -> Result<(), String> {
             time::sleep(Duration::from_millis(150)).await;
 
             // Now lets grab the front of that queue!
+            // Keep in mind, we are grabbing the front, so we eventually have to put it back.
             // P.S. Sometimes the queue is empty!
             let mod_queue_ref = MOD_DOWNLOAD_QUEUE.clone();
             let mut mod_queue = mod_queue_ref.write().await;
@@ -199,6 +202,19 @@ pub async fn mdq_start_daemon(app_handle: AppHandle) -> Result<(), String> {
                     "mdq_daemon: Mod has been installed: {}",
                     is_installed.unwrap().folder
                 );
+
+                // Emit an extra event to let the frontend know the mod is installed
+                // Just in case the frontend is waiting for the download to finish
+                let event = ActiveDownloadProgressEvent {
+                    published_file_id: front,
+                    bytes_downloaded: 0,
+                    bytes_total: 0,
+                    percentage_downloaded: 100.0,
+                };
+
+                handle
+                    .emit("mdq_active_download_progress", event)
+                    .expect("Failed to emit event!");
                 continue;
             }
 
@@ -243,119 +259,6 @@ pub async fn mdq_start_daemon(app_handle: AppHandle) -> Result<(), String> {
     // Event Emitter 👷
     // This is responsible for keeping the frontend up to date about what mod is currently
     // downloading and its information.
-
-    Ok(())
-}
-
-/**
-* function: steam_get_installed_mods
-* ---
-* Queries the Steamworks API for all installed mods and emits the results to the frontend.
-* Emits a "steam_get_installed_mods_result" event for each mod found, with the mod's information.
-*/
-#[tauri::command]
-pub async fn steam_get_installed_mods(app_handle: AppHandle) -> Result<(), String> {
-    // Check that steam client!
-    let client = client::get_client().await;
-    if client.is_none() {
-        return Err("No steam client found!".to_string());
-    }
-    let client = client.unwrap();
-
-    // Get the installed mods
-    let ugc = client.ugc();
-    let subscribed_items = ugc.subscribed_items();
-    for item in subscribed_items {
-        let extended_info = ugc.query_item(item).map_err(|e| e.to_string())?;
-        let path = ugc.item_install_info(item).unwrap().folder;
-
-        let handle = app_handle.clone();
-        extended_info.fetch(move |i| {
-            let query_result = i.unwrap().get(0).unwrap();
-            let size = get_size(&path).unwrap();
-
-            let result = ModInfo {
-                published_file_id: query_result.published_file_id.0,
-                title: query_result.title,
-                description: query_result.description,
-                owner_steam_id: query_result.owner.raw(),
-                time_created: query_result.time_created,
-                time_updated: query_result.time_updated,
-                time_added_to_user_list: query_result.time_added_to_user_list,
-                banned: query_result.banned,
-                accepted_for_use: query_result.accepted_for_use,
-                tags: query_result.tags.clone(),
-                tags_truncated: query_result.tags_truncated,
-                file_size: size as u32,
-                url: query_result.url.clone(),
-                num_upvotes: query_result.num_upvotes,
-                num_downvotes: query_result.num_downvotes,
-                score: query_result.score,
-                num_children: query_result.num_children,
-            };
-
-            handle
-                .emit("steam_get_installed_mods_result", result)
-                .expect("Failed to emit query result");
-        });
-    }
-
-    Ok(())
-}
-
-/**
-* function: steam_get_mod_info
-* ---
-* Queries the Steamworks API for a specific mod's information and emits the results to the frontend.
-* Emits a "steam_get_mod_info_result" event with the mod's information.
-* ---
-* NOTE: Untested, but should work.
-*/
-#[tauri::command]
-pub async fn steam_get_mod_info(
-    app_handle: AppHandle,
-    published_file_id: u64,
-) -> Result<(), String> {
-    // Check that steam client!
-    let client = client::get_client().await;
-    if client.is_none() {
-        return Err("No steam client found!".to_string());
-    }
-    let client = client.unwrap();
-
-    // Get the mod info
-    let ugc = client.ugc();
-    let extended_info = ugc
-        .query_item(steamworks::PublishedFileId(published_file_id))
-        .map_err(|e| e.to_string())?;
-
-    extended_info.fetch(move |i| {
-        let query_result = i.unwrap().get(0).unwrap();
-
-        let result = ModInfo {
-            published_file_id: query_result.published_file_id.0,
-            title: query_result.title,
-            description: query_result.description,
-            owner_steam_id: query_result.owner.raw(),
-            time_created: query_result.time_created,
-            time_updated: query_result.time_updated,
-            time_added_to_user_list: query_result.time_added_to_user_list,
-            banned: query_result.banned,
-            accepted_for_use: query_result.accepted_for_use,
-            tags: query_result.tags.clone(),
-            tags_truncated: query_result.tags_truncated,
-            file_size: query_result.file_size,
-            url: query_result.url.clone(),
-            num_upvotes: query_result.num_upvotes,
-            num_downvotes: query_result.num_downvotes,
-            score: query_result.score,
-            num_children: query_result.num_children,
-        };
-
-        app_handle
-            .emit("steam_get_mod_info_result", result)
-            .expect("Failed to emit query result");
-    });
 
     Ok(())
 }
@@ -546,6 +449,155 @@ pub async fn steam_fix_mod_forcefully(
                 break;
             }
         }
+    });
+
+    Ok(())
+}
+
+/**
+* function: steam_get_missing_mods_for_server
+* ---
+* Queries the Steamworks API for a list of mods that are missing from the server.
+* Must be given an array of mod ids to check against.
+* Returns a list of mod ids that are missing.
+*/
+#[tauri::command]
+pub async fn steam_get_missing_mods_for_server(
+    required_mods: Vec<u64>,
+) -> Result<Vec<u64>, String> {
+    let client = client::get_client().await;
+    if client.is_none() {
+        return Err("No steam client found!".to_string());
+    }
+    let client = client.unwrap();
+    let ugc = client.ugc();
+
+    // Check if the mods are installed
+    let mut missing_mods: Vec<u64> = Vec::new();
+    for mod_id in required_mods {
+        let install_info = ugc.item_install_info(steamworks::PublishedFileId(mod_id));
+        if install_info.is_none() {
+            missing_mods.push(mod_id);
+        }
+    }
+
+    Ok(missing_mods)
+}
+
+/**
+* function: steam_get_installed_mods
+* ---
+* Queries the Steamworks API for all installed mods and emits the results to the frontend.
+* Emits a "steam_get_installed_mods_result" event for each mod found, with the mod's information.
+*/
+#[tauri::command]
+pub async fn steam_get_installed_mods(app_handle: AppHandle) -> Result<(), String> {
+    // Check that steam client!
+    let client = client::get_client().await;
+    if client.is_none() {
+        return Err("No steam client found!".to_string());
+    }
+    let client = client.unwrap();
+
+    // Get the installed mods
+    let ugc = client.ugc();
+    let subscribed_items = ugc.subscribed_items();
+    for item in subscribed_items {
+        let extended_info = ugc.query_item(item).map_err(|e| e.to_string())?;
+
+        // We only want DOWNLOADED mods
+        let path = ugc.item_install_info(item);
+        if path.is_none() {
+            continue;
+        }
+        let path = path.unwrap().folder;
+
+        let handle = app_handle.clone();
+        extended_info.fetch(move |i| {
+            let query_result = i.unwrap().get(0).unwrap();
+            let size = get_size(&path).unwrap();
+
+            let result = ModInfo {
+                published_file_id: query_result.published_file_id.0,
+                title: query_result.title,
+                description: query_result.description,
+                owner_steam_id: query_result.owner.raw(),
+                time_created: query_result.time_created,
+                time_updated: query_result.time_updated,
+                time_added_to_user_list: query_result.time_added_to_user_list,
+                banned: query_result.banned,
+                accepted_for_use: query_result.accepted_for_use,
+                tags: query_result.tags.clone(),
+                tags_truncated: query_result.tags_truncated,
+                file_size: size as u32,
+                url: query_result.url.clone(),
+                num_upvotes: query_result.num_upvotes,
+                num_downvotes: query_result.num_downvotes,
+                score: query_result.score,
+                num_children: query_result.num_children,
+            };
+
+            handle
+                .emit("steam_get_installed_mods_result", result)
+                .expect("Failed to emit query result");
+        });
+    }
+
+    Ok(())
+}
+
+/**
+* function: steam_get_mod_info
+* ---
+* Queries the Steamworks API for a specific mod's information and emits the results to the frontend.
+* Emits a "steam_get_mod_info_result" event with the mod's information.
+* ---
+* NOTE: Untested, but should work.
+*/
+#[tauri::command]
+pub async fn steam_get_mod_info(
+    app_handle: AppHandle,
+    published_file_id: u64,
+) -> Result<(), String> {
+    // Check that steam client!
+    let client = client::get_client().await;
+    if client.is_none() {
+        return Err("No steam client found!".to_string());
+    }
+    let client = client.unwrap();
+
+    // Get the mod info
+    let ugc = client.ugc();
+    let extended_info = ugc
+        .query_item(steamworks::PublishedFileId(published_file_id))
+        .map_err(|e| e.to_string())?;
+
+    extended_info.fetch(move |i| {
+        let query_result = i.unwrap().get(0).unwrap();
+
+        let result = ModInfo {
+            published_file_id: query_result.published_file_id.0,
+            title: query_result.title,
+            description: query_result.description,
+            owner_steam_id: query_result.owner.raw(),
+            time_created: query_result.time_created,
+            time_updated: query_result.time_updated,
+            time_added_to_user_list: query_result.time_added_to_user_list,
+            banned: query_result.banned,
+            accepted_for_use: query_result.accepted_for_use,
+            tags: query_result.tags.clone(),
+            tags_truncated: query_result.tags_truncated,
+            file_size: query_result.file_size,
+            url: query_result.url.clone(),
+            num_upvotes: query_result.num_upvotes,
+            num_downvotes: query_result.num_downvotes,
+            score: query_result.score,
+            num_children: query_result.num_children,
+        };
+
+        app_handle
+            .emit("steam_get_mod_info_result", result)
+            .expect("Failed to emit query result");
     });
 
     Ok(())

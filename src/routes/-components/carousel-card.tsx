@@ -1,6 +1,6 @@
-import { Play } from "lucide-react"
+import { Info, Play } from "lucide-react"
 import { useEffect, useState } from "react"
-import { MoreInfoButton } from "@/components/more-info-button"
+import { MoreInfo } from "@/components/more-info"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -65,7 +65,9 @@ export function CarouselCard({ initServer }: { initServer: Server }) {
               <Play size={16} />
             </Button>
             <div className="flex h-8">
-              <MoreInfoButton initServer={server} />
+              <MoreInfo initServer={server}>
+                <Info size={16} />
+              </MoreInfo>
             </div>
           </div>
         </Card>

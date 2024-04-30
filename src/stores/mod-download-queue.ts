@@ -8,8 +8,10 @@ interface ModDownloadQueueState {
 }
 
 interface ModDownloadQueueActions {
-  removeMod: (workshopId: number) => void
+  pushFix: (mod: Mod, force: boolean) => Promise<void>
   pushMod: (mod: Mod) => Promise<void>
+  removeMod: (workshopId: number) => void
+  clearQueue: () => void
 }
 
 export const useModDownloadQueue = create<
@@ -18,6 +20,32 @@ export const useModDownloadQueue = create<
   persist(
     (set) => ({
       downloadQueue: [],
+      pushFix: async (mod, force) => {
+        if (!force) {
+          await invoke("steam_fix_mod", {
+            publishedFileId: mod.workshopId,
+          }).catch(console.error)
+          return Promise.resolve()
+        }
+
+        await invoke("steam_fix_mod_forcefully", {
+          publishedFileId: mod.workshopId,
+        }).catch(console.error)
+
+        set((state) => {
+          if (
+            state.downloadQueue.some((m) => m.workshopId === mod.workshopId)
+          ) {
+            return state
+          }
+
+          return {
+            downloadQueue: [...state.downloadQueue, mod],
+          }
+        })
+
+        return Promise.resolve()
+      },
       pushMod: async (mod) => {
         await invoke("mdq_mod_add", { publishedFileId: mod.workshopId }).catch(
           (e) => {
@@ -48,6 +76,8 @@ export const useModDownloadQueue = create<
           }
         })
       },
+      // This does not remove the mods from the queue, just clears the UI representation
+      clearQueue: () => set({ downloadQueue: [] }),
     }),
     {
       name: "queue-storage",
