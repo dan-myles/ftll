@@ -1,10 +1,10 @@
 [package]
-name = "app"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+name = "ftl-launcher"
+version = "0.1.1"
+description = "A lightweight, open-source mod launcher for DayZ."
+authors = ["avvo-na"]
 license = ""
-repository = ""
+repository = "https://github.com/avvo-na/ftl-launcher"
 edition = "2021"
 rust-version = "1.70"
 
