@@ -11,7 +11,7 @@ interface PendingModProps {
 }
 
 export function PendingMod({ mod, className }: PendingModProps) {
-  const [downloadProgress, setDownloadProgress] = useState(0.0)
+  const [downloadProgress, setDownloadProgress] = useState<number | null>(null)
   const [totalBytes, setTotalBytes] = useState(0)
   const [downloadedBytes, setDownloadedBytes] = useState(0)
 
@@ -48,11 +48,11 @@ export function PendingMod({ mod, className }: PendingModProps) {
         <div className="min-w-fit">{mod.name}</div>
         <div className="min-w-fit text-xs text-gray-500">{mod.workshopId}</div>
         <div className="min-w-[12vw] text-center text-xs text-gray-500">
-          {downloadProgress !== 0.0
+          {downloadProgress !== null
             ? formatBytes(downloadedBytes) + "/" + formatBytes(totalBytes)
             : " "}
         </div>
-        {downloadProgress !== 0.0 && <Progress value={downloadProgress} />}
+        {downloadProgress !== null && <Progress value={downloadProgress} />}
       </div>
       <div className="flex flex-row space-x-2 pr-2" />
     </div>
