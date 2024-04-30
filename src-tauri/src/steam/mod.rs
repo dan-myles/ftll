@@ -1,4 +1,5 @@
 use anyhow::Result;
+use fs_extra::dir::get_size;
 use lazy_static::lazy_static;
 use std::collections::VecDeque;
 use std::fs;
@@ -266,10 +267,12 @@ pub async fn steam_get_installed_mods(app_handle: AppHandle) -> Result<(), Strin
     let subscribed_items = ugc.subscribed_items();
     for item in subscribed_items {
         let extended_info = ugc.query_item(item).map_err(|e| e.to_string())?;
+        let path = ugc.item_install_info(item).unwrap().folder;
 
         let handle = app_handle.clone();
         extended_info.fetch(move |i| {
             let query_result = i.unwrap().get(0).unwrap();
+            let size = get_size(&path).unwrap();
 
             let result = ModInfo {
                 published_file_id: query_result.published_file_id.0,
@@ -283,7 +286,7 @@ pub async fn steam_get_installed_mods(app_handle: AppHandle) -> Result<(), Strin
                 accepted_for_use: query_result.accepted_for_use,
                 tags: query_result.tags.clone(),
                 tags_truncated: query_result.tags_truncated,
-                file_size: query_result.file_size,
+                file_size: size as u32,
                 url: query_result.url.clone(),
                 num_upvotes: query_result.num_upvotes,
                 num_downvotes: query_result.num_downvotes,

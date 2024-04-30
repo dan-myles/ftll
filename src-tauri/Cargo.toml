@@ -36,4 +36,5 @@ a2s = { path = "./vendor/a2s", features = ["async"] }
 steamworks = { path = "../../steamworks-rs", features = ["serde"] }
 anyhow = "1.0.82"
 tauri-plugin-process = "2.0.0-beta.3"
+fs_extra = "1.3.0"
 

@@ -9,7 +9,7 @@ interface ModDownloadQueueState {
 
 interface ModDownloadQueueActions {
   removeMod: (workshopId: number) => void
-  pushMod: (mod: Mod) => void
+  pushMod: (mod: Mod) => Promise<void>
 }
 
 export const useModDownloadQueue = create<
@@ -18,7 +18,13 @@ export const useModDownloadQueue = create<
   persist(
     (set) => ({
       downloadQueue: [],
-      pushMod: (mod) => {
+      pushMod: async (mod) => {
+        await invoke("mdq_mod_add", { publishedFileId: mod.workshopId }).catch(
+          (e) => {
+            return Promise.reject(e)
+          }
+        )
+
         set((state) => {
           if (
             state.downloadQueue.some((m) => m.workshopId === mod.workshopId)
@@ -26,17 +32,12 @@ export const useModDownloadQueue = create<
             return state
           }
 
-          invoke("mdq_mod_add", { publishedFileId: mod.workshopId }).catch(
-            () => {
-              console.error
-              return state
-            }
-          )
-
           return {
             downloadQueue: [...state.downloadQueue, mod],
           }
         })
+
+        return Promise.resolve()
       },
       removeMod: (workshopId) => {
         set((state) => {
@@ -49,7 +50,7 @@ export const useModDownloadQueue = create<
       },
     }),
     {
-      name: "mod-storage",
+      name: "queue-storage",
       storage: createJSONStorage(() => sessionStorage),
     }
   )

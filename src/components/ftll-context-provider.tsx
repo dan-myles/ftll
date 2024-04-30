@@ -114,6 +114,7 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
     // we have to listen for a callback event instead
     const unlisten = listen("steam_get_installed_mods_result", (event) => {
       const modInfo = event.payload as ModInfo
+      console.log("Installed mod:", modInfo)
       addMod(modInfo)
     }).catch(console.error)
 

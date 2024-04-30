@@ -2,10 +2,12 @@ import { useEffect } from "react"
 import { invoke } from "@tauri-apps/api/core"
 import { listen } from "@tauri-apps/api/event"
 import { Button } from "@/components/ui/button"
+import { useModDownloadQueue } from "@/stores/mod-download-queue"
 import { useServerListStore } from "@/stores/server-list-store"
 
 export function Test() {
   const { serverList } = useServerListStore()
+  const { pushMod } = useModDownloadQueue()
 
   // Test Mod
   // https://steamcommunity.com/sharedfiles/filedetails/?id=3147619641&searchtext=
@@ -52,21 +54,27 @@ export function Test() {
 
   const bigTest = async () => {
     console.log("BIG TEST")
-    await invoke("mdq_mod_add", { publishedFileId: id }).catch((e) => {
+
+    pushMod({ workshopId: 2489196158, name: "splurges bag" }).catch(
+      console.error
+    )
+    pushMod({ workshopId: 3033180005, name: "karma balance chern" }).catch(
+      console.error
+    )
+  }
+
+  const bigTest2 = async () => {
+    await invoke("steam_remove_mod_forcefully", {
+      publishedFileId: 2489196158,
+    }).catch((e) => {
       console.error(e)
     })
 
-    Promise.all([
-      await invoke("mdq_mod_add", { publishedFileId: 2208354587 }).catch(
-        console.error
-      ),
-      await invoke("mdq_mod_add", { publishedFileId: 1623711988 }).catch(
-        console.error
-      ),
-      await invoke("mdq_mod_add", { publishedFileId: 2892071837 }).catch(
-        console.error
-      ),
-    ]).catch(console.error)
+    await invoke("steam_remove_mod_forcefully", {
+      publishedFileId: 3033180005,
+    }).catch((e) => {
+      console.error(e)
+    })
   }
 
   // useffect to listen to event
@@ -139,7 +147,16 @@ export function Test() {
           })
         }}
       >
-        BIG TEST
+        2 mods
+      </Button>
+      <Button
+        onClick={() => {
+          bigTest2().catch((e) => {
+            console.error(e)
+          })
+        }}
+      >
+        remove 2 mods
       </Button>
     </div>
   )

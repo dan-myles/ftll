@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { formatBytes } from "@/lib/utils"
 import { useModDownloadQueue } from "@/stores/mod-download-queue"
 import { useModListStore } from "@/stores/mod-list-store"
 import { Test } from "./-test"
@@ -67,6 +68,9 @@ function Index() {
                 <div>{mod.title}</div>
                 <div className="pl-4 text-gray-500">
                   {mod.published_file_id}
+                </div>
+                <div className="pl-4 text-gray-500">
+                  {formatBytes(mod.file_size)}
                 </div>
               </div>
               <div className="flex flex-row space-x-2 pr-2">
