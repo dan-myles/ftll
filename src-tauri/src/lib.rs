@@ -1,6 +1,7 @@
 use tauri::Manager;
 use window_vibrancy::apply_acrylic;
 
+mod dayz;
 mod query;
 mod steam;
 
@@ -26,6 +27,8 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
+            dayz::dayz_launch_vanilla,
+            dayz::dayz_launch_modded,
             steam::mdq_clear,
             steam::mdq_mod_add,
             steam::mdq_mod_remove,

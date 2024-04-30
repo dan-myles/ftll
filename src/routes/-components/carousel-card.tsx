@@ -1,6 +1,7 @@
 import { Info, Play } from "lucide-react"
 import { useEffect, useState } from "react"
 import { MoreInfo } from "@/components/more-info"
+import { ServerPlayValidator } from "@/components/server-play-validator"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -61,9 +62,18 @@ export function CarouselCard({ initServer }: { initServer: Server }) {
             </div>
           </CardContent>
           <div className="mt-[-10px] flex justify-between">
-            <Button variant="secondary" className="h-8">
-              <Play size={16} />
-            </Button>
+            <ServerPlayValidator server={server}>
+              <div
+                className="inline-flex h-8 w-10 items-center justify-center
+                  whitespace-nowrap rounded-md bg-secondary text-sm font-medium
+                  text-secondary-foreground shadow-sm transition-colors
+                  hover:bg-secondary/80 focus-visible:outline-none
+                  focus-visible:ring-1 focus-visible:ring-ring
+                  disabled:pointer-events-none disabled:opacity-50"
+              >
+                <Play size={16} />
+              </div>
+            </ServerPlayValidator>
             <div className="flex h-8">
               <MoreInfo initServer={server}>
                 <Info size={16} />

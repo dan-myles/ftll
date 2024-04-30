@@ -9,7 +9,7 @@ use tauri::{AppHandle, Manager};
 use tokio::sync::RwLock;
 use tokio::{task, time};
 
-mod client;
+pub mod client;
 
 // NOTE: We are using mainly RwLocks here because we dont need to be able to
 // write to most of them, all of the time, We need to be able to read from them most of the time.

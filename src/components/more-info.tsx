@@ -5,6 +5,7 @@ import {
   PlayIcon,
 } from "lucide-react"
 import { useEffect, useState } from "react"
+import { toast } from "sonner"
 import { HeartFilledIcon } from "@radix-ui/react-icons"
 import { RankGraph } from "@/components/server-rank-graph"
 import { Badge } from "@/components/ui/badge"
@@ -22,6 +23,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useFavoriteServer } from "@/hooks/useFavoriteServer"
 import { useUpdateServer } from "@/hooks/useUpdateServer"
 import { type Server } from "@/schemas/server-schema"
+import { ServerDownloadValidator } from "./server-download-validator"
 import { ServerPlayValidator } from "./server-play-validator"
 
 interface MoreInfoProps {
@@ -97,13 +99,24 @@ export function MoreInfo({
                   Play
                 </Button>
               </ServerPlayValidator>
-              <ServerPlayValidator server={server}>
+              <ServerDownloadValidator server={server}>
                 <Button className="mt-2 font-thin">
                   <FolderInputIcon className="mr-2 h-4 w-4" size={16} />
                   Download Mods
                 </Button>
-              </ServerPlayValidator>
-              <Button variant="destructive" className="mt-2 font-thin">
+              </ServerDownloadValidator>
+              <Button
+                variant="destructive"
+                className="mt-2 font-thin"
+                onClick={() => {
+                  toast.error(
+                    "This feature is not implemented yet! Sorry... 😖",
+                    {
+                      position: "bottom-center",
+                    }
+                  )
+                }}
+              >
                 <FolderCogIcon className="mr-2 h-4 w-4" size={16} />
                 Fix Mods
               </Button>

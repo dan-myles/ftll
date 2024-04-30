@@ -11,7 +11,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { type Server } from "@/schemas/server-schema"
 import { useModDownloadQueue } from "@/stores/mod-download-queue"
@@ -28,9 +27,28 @@ export function ServerDownloadValidator({
 }: ServerDownloadValidatorProps) {
   const [missingMods, setMissingMods] = useState<number[] | null>(null)
   const [open, setOpen] = useState(false)
+  const { pushMod } = useModDownloadQueue()
+  const navigate = useRouter().navigate
 
   const handleChange = (e: boolean) => {
     setOpen(e)
+  }
+
+  const handleDownload = async () => {
+    if (!server.modList) return
+    if (!missingMods) return
+
+    for (const mod of missingMods) {
+      invoke("mdq_mod_add", { publishedFileId: mod }).catch(console.error)
+
+      // Catch a name
+      let name = server.modList.find((m) => m.workshopId === mod)?.name
+      if (!name) name = "Unknown Mod"
+
+      pushMod({ workshopId: mod, name: name }).catch(console.error)
+    }
+
+    navigate({ to: "/mod-manager" }).catch(console.error)
   }
 
   const checkMissingMods = async () => {
@@ -61,28 +79,39 @@ export function ServerDownloadValidator({
   return (
     <>
       <AlertDialog open={open} onOpenChange={handleChange}>
-        <AlertDialogTrigger onClick={checkMissingMods}>
-          {children}
-        </AlertDialogTrigger>
+        <div onClick={checkMissingMods}>{children}</div>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="max-w-[450px] truncate">
-              {server.name}
-              <p
-                className="truncate text-sm font-normal
-                  text-secondary-foreground"
-              >
-                {server.addr.split(":")[0] + ":" + server.gamePort}
-              </p>
+              Uh oh! You're missing some mods! 😥
             </AlertDialogTitle>
             <AlertDialogDescription>
-              You are about to connect to this server! If you do not have the
-              mods for this server downloaded, we'll download them for you.
+              <div
+                className="max-w-fit truncate pb-2 text-sm font-normal
+                  text-secondary-foreground"
+              >
+                <div>{server.name}</div>
+                <div className="text-xs text-gray-500">
+                  {server.addr.split(":")[0] + ":" + server.gamePort}
+                </div>
+              </div>
+              <ScrollArea
+                className="max-h-[20vh] overflow-y-visible rounded-md border
+                  pb-2 pl-2 pt-1 text-accent-foreground"
+              >
+                {missingMods?.map((mod, idx) => (
+                  <div key={idx}>
+                    {server.modList?.find((m) => m.workshopId === mod)?.name}
+                  </div>
+                ))}
+              </ScrollArea>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction>Download</AlertDialogAction>
+            <AlertDialogAction onClick={handleDownload}>
+              Download
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

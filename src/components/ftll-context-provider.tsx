@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { type ReactNode } from "react"
+import { toast } from "sonner"
 import { invoke } from "@tauri-apps/api/core"
 import { listen } from "@tauri-apps/api/event"
 import { exit } from "@tauri-apps/plugin-process"
@@ -155,6 +156,21 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
       unlisten2.then((f) => f?.()).catch(console.error)
     }
   }, [isSteamInitialized, removeMod])
+
+  // Listen for DayZ shutdown
+  useEffect(() => {
+    if (!isSteamInitialized) return
+
+    const unlisten = listen("dayz_shutdown", () => {
+      toast.info("DayZ has shutdown!", {
+        position: "bottom-center",
+      })
+    }).catch(console.error)
+
+    return () => {
+      unlisten.then((f) => f?.()).catch(console.error)
+    }
+  }, [isSteamInitialized])
 
   return (
     <>

@@ -1,4 +1,5 @@
 import { type ReactNode, useState } from "react"
+import { toast } from "sonner"
 import { useRouter } from "@tanstack/react-router"
 import { invoke } from "@tauri-apps/api/core"
 import {
@@ -63,6 +64,21 @@ export function ServerPlayValidator({
       setIsMissingMods(true)
       setMissingMods(missingMods)
       return
+    }
+
+    const success = await invoke("dayz_launch_modded", { server: server }).catch(
+      console.error
+    )
+    if (success === null) {
+      const shortName =
+        server.name.length > 45
+          ? server.name.substring(0, 45) + "..."
+          : server.name
+
+      toast.success("Successfully loaded mods & launched DayZ", {
+        description: shortName,
+        position: "bottom-center",
+      })
     }
   }
 

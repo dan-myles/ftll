@@ -1,4 +1,9 @@
-import { CopyIcon, InfoIcon } from "lucide-react"
+import {
+  CopyIcon,
+  FolderCogIcon,
+  FolderInputIcon,
+  InfoIcon,
+} from "lucide-react"
 import { useContext } from "react"
 import { toast } from "sonner"
 import {
@@ -7,6 +12,7 @@ import {
   HeartIcon,
 } from "@radix-ui/react-icons"
 import { type Row } from "@tanstack/react-table"
+import { ServerDownloadValidator } from "@/components/server-download-validator"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,

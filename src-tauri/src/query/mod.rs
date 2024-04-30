@@ -528,14 +528,14 @@ pub struct Server {
     pub os: String,
     pub game_type: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub mod_list: Option<Vec<ModList>>,
+    pub mod_list: Option<Vec<Mod>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ping: Option<i64>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct ModList {
+pub struct Mod {
     pub workshop_id: i64,
     pub name: String,
 }
