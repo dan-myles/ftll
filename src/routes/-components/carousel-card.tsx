@@ -25,6 +25,8 @@ export function CarouselCard({ initServer }: { initServer: Server }) {
     }
   }, [newServer])
 
+  if (!server) return null
+
   return (
     <CarouselItem className="flex basis-1/3 flex-col pl-1">
       <div className="flex-grow p-1">

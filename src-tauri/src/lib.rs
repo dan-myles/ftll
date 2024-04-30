@@ -29,6 +29,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             dayz::dayz_launch_vanilla,
             dayz::dayz_launch_modded,
+            dayz::dayz_get_playerlist,
+            dayz::dayz_get_player_ban_status,
             steam::mdq_clear,
             steam::mdq_mod_add,
             steam::mdq_mod_remove,

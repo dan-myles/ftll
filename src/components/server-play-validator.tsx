@@ -14,6 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { type Server } from "@/schemas/server-schema"
+import { useCurrentServerStore } from "@/stores/current-server-store"
 import { useModDownloadQueue } from "@/stores/mod-download-queue"
 import { ScrollArea } from "./ui/scroll-area"
 
@@ -29,6 +30,7 @@ export function ServerPlayValidator({
   const [isMissingMods, setIsMissingMods] = useState(false)
   const [missingMods, setMissingMods] = useState<number[] | null>(null)
   const { pushMod } = useModDownloadQueue()
+  const { setServer } = useCurrentServerStore()
   const navigate = useRouter().navigate
 
   const handleChange = (e: boolean) => {
@@ -66,9 +68,10 @@ export function ServerPlayValidator({
       return
     }
 
-    const success = await invoke("dayz_launch_modded", { server: server }).catch(
-      console.error
-    )
+    const success = await invoke("dayz_launch_modded", {
+      server: server,
+    }).catch(console.error)
+
     if (success === null) {
       const shortName =
         server.name.length > 45
@@ -79,6 +82,8 @@ export function ServerPlayValidator({
         description: shortName,
         position: "bottom-center",
       })
+
+      setServer(server)
     }
   }
 

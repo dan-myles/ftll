@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { Button } from "@/components/ui/button"
+import { useCurrentServerStore } from "@/stores/current-server-store"
 import { useFavoriteServerStore } from "@/stores/favorite-server-store"
+import { CurrentServerInfo } from "./-components/current-server-info"
 import { ServerCarousel } from "./-components/server-carousel"
 
 export const Route = createFileRoute("/")({
@@ -7,14 +10,23 @@ export const Route = createFileRoute("/")({
 })
 
 function Index() {
-  const { serverList } = useFavoriteServerStore()
+  const { serverList, setServerList } = useFavoriteServerStore()
+  const { server: currentServer } = useCurrentServerStore()
 
   return (
     <div className="flex h-full flex-col">
       <div className="flex flex-grow flex-col space-y-2 p-4">
         <div className="h-full">
-          <p className="text-lg font-semibold">Server Information</p>
-          <div className="h-full">You are not connected to any server!</div>
+          {currentServer !== undefined ? (
+            <CurrentServerInfo server={currentServer} />
+          ) : (
+            <>
+              <p className="text-lg font-semibold">Server Information</p>
+              <div className="h-full text-gray-500">
+                You are not connected to any server!
+              </div>
+            </>
+          )}
         </div>
       </div>
       <div className="flex w-full flex-col items-center p-4">

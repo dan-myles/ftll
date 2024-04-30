@@ -73,6 +73,7 @@ export function MoreInfo({
           <DrawerTitle>{server.name}</DrawerTitle>
           <DrawerDescription>
             {server.addr.split(":")[0] + ":" + server.gamePort}
+            {" | " + server.steamId}
           </DrawerDescription>
         </DrawerHeader>
         {/* Main Content Div */}

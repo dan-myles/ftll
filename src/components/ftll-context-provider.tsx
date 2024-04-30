@@ -19,6 +19,8 @@ import {
 import { type ActiveDownloadProgressEvent } from "@/schemas/events/active-download-progress"
 import { type ModInfo } from "@/schemas/mod-info"
 import { type ServerList, serverListSchema } from "@/schemas/server-schema"
+import { useCurrentServerStore } from "@/stores/current-server-store"
+import { useFavoriteServerStore } from "@/stores/favorite-server-store"
 import { useModDownloadQueue } from "@/stores/mod-download-queue"
 import { useModListStore } from "@/stores/mod-list-store"
 import { useServerListStore } from "@/stores/server-list-store"
@@ -27,10 +29,16 @@ import { useUserInfoStore } from "@/stores/user-info-store"
 export function FTLLContextProvider({ children }: { children: ReactNode }) {
   const [isLoadingServers, setLoadingServers] = useState(false)
   const [isSteamInitialized, setSteamInitialized] = useState(true)
+  const {
+    serverList: favoriteServerList,
+    addServer: addFavoriteServer,
+    removeServerByAddr: removeFavoriteServer,
+  } = useFavoriteServerStore()
   const { setUserName, setSteamId, setAvi } = useUserInfoStore((state) => state)
-  const { addMod, modList } = useModListStore()
-  const { setServerList } = useServerListStore()
-  const { removeMod, downloadQueue } = useModDownloadQueue()
+  const { addMod } = useModListStore()
+  const { setServerList, serverList: masterServerList } = useServerListStore()
+  const { removeMod } = useModDownloadQueue()
+  const { clearServer } = useCurrentServerStore()
 
   useEffect(() => {
     const init = async () => {
@@ -165,12 +173,42 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
       toast.info("DayZ has shutdown!", {
         position: "bottom-center",
       })
+      clearServer()
     }).catch(console.error)
 
     return () => {
       unlisten.then((f) => f?.()).catch(console.error)
     }
-  }, [isSteamInitialized])
+  }, [isSteamInitialized, clearServer])
+
+  // Update favorites on server list change
+  // This is to make sure our favorites are up to date!
+  useEffect(() => {
+    const serversToRemove = []
+    const serversToAdd = []
+
+    for (const server of favoriteServerList) {
+      const idx = masterServerList.findIndex((s) => s.addr === server.addr)
+      const newServer = masterServerList[idx]
+
+      if (!newServer) {
+        continue
+      }
+
+      serversToRemove.push(server.addr)
+      serversToAdd.push(newServer)
+    }
+
+    for (const server of serversToRemove) {
+      removeFavoriteServer(server)
+    }
+
+    for (const server of serversToAdd) {
+      addFavoriteServer(server)
+    }
+
+    // eslint-disable-next-line
+  }, [])
 
   return (
     <>

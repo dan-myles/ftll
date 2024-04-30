@@ -10,6 +10,7 @@ interface FavoriteServerActions {
   setServerList: (serverList: ServerList) => void
   updateServer: (server: Server) => void
   removeServer: (server: Server) => void
+  removeServerByAddr: (addr: string) => void
   addServer: (server: Server) => void
 }
 
@@ -37,6 +38,12 @@ export const useFavoriteServerStore = create<
           const serverList = state.serverList.filter(
             (s) => s.addr !== server.addr
           )
+          return { serverList }
+        })
+      },
+      removeServerByAddr: (addr) => {
+        set((state) => {
+          const serverList = state.serverList.filter((s) => s.addr !== addr)
           return { serverList }
         })
       },
