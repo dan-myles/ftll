@@ -30,7 +30,7 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Install dependencies
+      - name: Install bun packages
         run: bun install
 
       - name: Install system packages (ubuntu only)
