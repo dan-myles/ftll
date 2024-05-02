@@ -15,7 +15,7 @@ jobs:
       matrix:
         include:
           - platform: 'self-hosted'
-            args: ''
+            args: '-b nsis updater'
 
     runs-on: ${{ matrix.platform }}
     steps:
