@@ -25,7 +25,7 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: setup node
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -35,16 +35,16 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Install bun packages
+      - name: Install Bun Packages
         run: bun install
 
-      - name: Install system packages (linux only)
-        if: matrix.platform == 'ubuntu-22.04'
+      - name: Install System Packages for Linux (Self-Hosted Only)
+        if: matrix.platform == 'self-hosted'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - name: Build and upload a GitHub release
+      - name: Build & Publish Github Release
         uses: tauri-apps/tauri-action@v0
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
