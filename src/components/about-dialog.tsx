@@ -59,14 +59,16 @@ export function AboutDialog() {
 
         <DialogTitle className="flex flex-col items-center gap-2 pt-2">
           <span className="flex gap-1 font-mono text-xs font-medium">
-            v{version}-alpha ({arch})
+            v{version} ({arch})
             <span className="font-sans font-medium text-gray-400">
               (
               <span
                 className="cursor-pointer text-blue-500"
                 onClick={() =>
                   // TODO: Figure out a way to get the exact tag for current version
-                  open("https://github.com/dan-myles/ftl-launcher/releases")
+                  open(
+                    "https://github.com/dan-myles/ftl-launcher/releases/latest"
+                  )
                 }
               >
                 release notes
