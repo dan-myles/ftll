@@ -140,12 +140,12 @@ pub async fn dayz_get_playerlist(server: Server) -> Result<Vec<Player>, String> 
     for user in server_steam_connection {
         let name = user.name();
         let nick_name = user.nick_name();
-        let avatar = user.small_avatar();
+        let avatar = user.medium_avatar();
         let steam_id = user.id().raw();
 
         let user = Player {
-            steam_id,
             name,
+            steam_id: steam_id.to_string(),
             nick_name: nick_name.unwrap_or("".to_string()),
             avatar: avatar.unwrap_or(Vec::new()),
             is_banned: false,
@@ -172,7 +172,7 @@ pub async fn dayz_get_player_ban_status(steam_id: u64) -> Result<bool, String> {
 
 #[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct Player {
-    steam_id: u64,
+    steam_id: String,
     name: String,
     nick_name: String,
     avatar: Vec<u8>,

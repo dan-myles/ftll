@@ -3,7 +3,6 @@ import { useEffect, useState } from "react"
 import { MoreInfo } from "@/components/more-info"
 import { ServerPlayValidator } from "@/components/server-play-validator"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,

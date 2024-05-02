@@ -29,11 +29,8 @@ import { useUserInfoStore } from "@/stores/user-info-store"
 export function FTLLContextProvider({ children }: { children: ReactNode }) {
   const [isLoadingServers, setLoadingServers] = useState(false)
   const [isSteamInitialized, setSteamInitialized] = useState(true)
-  const {
-    serverList: favoriteServerList,
-    addServer: addFavoriteServer,
-    removeServerByAddr: removeFavoriteServer,
-  } = useFavoriteServerStore()
+  const { updateServerList: updateFavoriteServerList } =
+    useFavoriteServerStore()
   const { setUserName, setSteamId, setAvi } = useUserInfoStore((state) => state)
   const { addMod } = useModListStore()
   const { setServerList, serverList: masterServerList } = useServerListStore()
@@ -184,31 +181,9 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
   // Update favorites on server list change
   // This is to make sure our favorites are up to date!
   useEffect(() => {
-    const serversToRemove = []
-    const serversToAdd = []
-
-    for (const server of favoriteServerList) {
-      const idx = masterServerList.findIndex((s) => s.addr === server.addr)
-      const newServer = masterServerList[idx]
-
-      if (!newServer) {
-        continue
-      }
-
-      serversToRemove.push(server.addr)
-      serversToAdd.push(newServer)
-    }
-
-    for (const server of serversToRemove) {
-      removeFavoriteServer(server)
-    }
-
-    for (const server of serversToAdd) {
-      addFavoriteServer(server)
-    }
-
+    updateFavoriteServerList(masterServerList)
     // eslint-disable-next-line
-  }, [])
+  }, [masterServerList])
 
   return (
     <>

@@ -22,6 +22,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useFavoriteServer } from "@/hooks/useFavoriteServer"
 import { useUpdateServer } from "@/hooks/useUpdateServer"
+import { cn } from "@/lib/utils"
 import { type Server } from "@/schemas/server-schema"
 import { ServerDownloadValidator } from "./server-download-validator"
 import { ServerPlayValidator } from "./server-play-validator"
@@ -132,22 +133,10 @@ export function MoreInfo({
               </div>
               <div className="flex flex-col text-sm">
                 {server.modList?.map((mod, idx) => {
-                  if (
-                    server.modList?.length &&
-                    idx === server.modList?.length - 1
-                  ) {
-                    return (
-                      <div key={mod.workshopId} className="p-2">
-                        <div>{mod.name}</div>
-                        <div>{mod.workshopId}</div>
-                      </div>
-                    )
-                  }
-
                   return (
                     <div
                       key={mod.workshopId}
-                      className="inline-flex border-b p-2"
+                      className={cn("inline-flex p-2", idx !== 0 && "border-t")}
                     >
                       <div>{mod.name}</div>
                       <div className="pl-2 text-muted-foreground">

@@ -29,12 +29,17 @@ export function ServerPlayValidator({
 }: ServerPlayValidatorProps) {
   const [isMissingMods, setIsMissingMods] = useState(false)
   const [missingMods, setMissingMods] = useState<number[] | null>(null)
+  const [open, setOpen] = useState(false)
   const { pushMod } = useModDownloadQueue()
   const { setServer } = useCurrentServerStore()
   const navigate = useRouter().navigate
 
   const handleChange = (e: boolean) => {
     setIsMissingMods(e)
+  }
+
+  const handleDialogChange = (e: boolean) => {
+    setOpen(e)
   }
 
   const handleDownload = async () => {
@@ -89,8 +94,8 @@ export function ServerPlayValidator({
 
   return (
     <>
-      <AlertDialog>
-        <AlertDialogTrigger>{children}</AlertDialogTrigger>
+      <AlertDialog open={open} onOpenChange={handleDialogChange}>
+        <div onClick={() => handleDialogChange(true)}>{children}</div>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="max-w-[450px] truncate">

@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { Button } from "@/components/ui/button"
 import { useCurrentServerStore } from "@/stores/current-server-store"
 import { useFavoriteServerStore } from "@/stores/favorite-server-store"
 import { CurrentServerInfo } from "./-components/current-server-info"
@@ -10,7 +9,7 @@ export const Route = createFileRoute("/")({
 })
 
 function Index() {
-  const { serverList, setServerList } = useFavoriteServerStore()
+  const { serverList } = useFavoriteServerStore()
   const { server: currentServer } = useCurrentServerStore()
 
   return (
@@ -18,7 +17,7 @@ function Index() {
       <div className="flex flex-grow flex-col space-y-2 p-4">
         <div className="h-full">
           {currentServer !== undefined ? (
-            <CurrentServerInfo server={currentServer} />
+            <CurrentServerInfo />
           ) : (
             <>
               <p className="text-lg font-semibold">Server Information</p>
