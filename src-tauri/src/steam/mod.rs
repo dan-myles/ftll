@@ -514,9 +514,31 @@ pub async fn steam_get_installed_mods(app_handle: AppHandle) -> Result<(), Strin
 
         let handle = app_handle.clone();
         extended_info.fetch(move |i| {
-            let query_result = i.unwrap().get(0).unwrap();
+            // Grab the mod info!
+            // Check for steam errors
+            let query_result = i;
+            match query_result {
+                Ok(_) => (),
+                Err(e) => {
+                    dbg!("Error fetching mod info: {}", e);
+                    return;
+                }
+            }
+            let query_result = query_result.unwrap();
+
+            // Check if found
+            let query_result = query_result.get(0);
+            match query_result {
+                Some(_) => (),
+                None => {
+                    dbg!("Error fetching mod info: No mod found!");
+                    return;
+                }
+            }
+            let query_result = query_result.unwrap();
             let size = get_size(&path).unwrap();
 
+            // Parse to struct
             let result = ModInfo {
                 published_file_id: query_result.published_file_id.0,
                 title: query_result.title,
@@ -537,6 +559,7 @@ pub async fn steam_get_installed_mods(app_handle: AppHandle) -> Result<(), Strin
                 num_children: query_result.num_children,
             };
 
+            // Emit the mod info!
             handle
                 .emit("steam_get_installed_mods_result", result)
                 .expect("Failed to emit query result");
@@ -719,7 +742,9 @@ pub async fn steam_mount_api() -> Result<(), String> {
     }
 
     // Mount API with DayZ app id
+    dbg!("Mounting Steamworks API...");
     let result = steamworks::Client::init_app(221100);
+    dbg!("Steamworks API mount attempted...");
 
     match result {
         Ok(client) => {
@@ -730,10 +755,12 @@ pub async fn steam_mount_api() -> Result<(), String> {
             unsafe {
                 client::STEAM_SINGLE = Some(single);
             }
+
+            dbg!("Steamworks API mounted successfully!");
             Ok(())
         }
         Err(e) => {
-            println!("Error initializing Steamworks: {}", e);
+            dbg!("Error initializing Steamworks: {}", e.to_string());
             Err(e.to_string())
         }
     }

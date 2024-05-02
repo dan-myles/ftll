@@ -1,9 +1,9 @@
 [package]
-name = "ftl-launcher"
-version = "0.1.2-alpha"
+name = "FTLL"
+version = "0.1.2-alpha.1"
 description = "A lightweight, open-source mod launcher for DayZ."
 authors = ["avvo-na"]
-license = ""
+license = "AGPLv3"
 repository = "https://github.com/avvo-na/ftl-launcher"
 edition = "2021"
 rust-version = "1.70"

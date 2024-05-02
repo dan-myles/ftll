@@ -433,15 +433,21 @@ pub async fn init_server_cache() -> Result<()> {
 async fn fetch_master_server_map() -> Result<()> {
     // Check if we are in dev mode
     let is_dev = dev();
+    dbg!("fetch_master_server_map() -> dev: {}", is_dev);
 
     // Set dev and prod URIs
     // This may be better in a config file
     let dev_uri = "http://localhost:8080";
-    let prod_uri = "https://api.ftl-launcher.com";
+    let prod_uri = "http://api.ftl-launcher.com";
     let endpoint = "/api/v1/GetMasterServerMap";
 
     match is_dev {
         true => {
+            println!(
+                "Fetching server map from dev... {}",
+                dev_uri.to_owned() + endpoint
+            );
+
             let data = reqwest::get(dev_uri.to_owned() + endpoint)
                 .await?
                 .json::<FTLAPIResponse>()
@@ -452,6 +458,11 @@ async fn fetch_master_server_map() -> Result<()> {
             Ok(())
         }
         false => {
+            println!(
+                "Fetching server map from prod... {}",
+                prod_uri.to_owned() + endpoint
+            );
+
             let data = reqwest::get(prod_uri.to_owned() + endpoint)
                 .await?
                 .json::<FTLAPIResponse>()

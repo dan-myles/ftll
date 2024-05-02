@@ -1,7 +1,7 @@
 {
-  "name": "ftl-launcher",
+  "name": "FTLL",
   "private": true,
-  "version": "0.1.2-alpha",
+  "version": "0.1.2-alpha.1",
   "type": "module",
   "scripts": {
     "dev": "vite",

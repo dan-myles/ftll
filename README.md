@@ -17,8 +17,8 @@
 <div align="center">
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/avvo-na/ftl-launcher)
-[![GitHub Issues](https://img.shields.io/github/issues/danlikestocode/embervim.svg?style=flat-square&label=Issues&color=d77982)](https://github.com/avvo-na/ftl-launcher/issues)
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/avvo-na/ftl-launcher/build.yml?label=Build)](https://github.com/avvo-na/ftl-launcher/commits/main/)
+[![GitHub Issues](https://img.shields.io/github/issues/avvo-na/ftl-launcher.svg?style=flat-square&label=Issues&color=d77982)](https://github.com/avvo-na/ftl-launcher/issues)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/avvo-na/ftl-launcher/build&release.yml?label=Build)](https://github.com/avvo-na/ftl-launcher/commits/main/)
 [![Discord](https://img.shields.io/discord/1232581330106322954?logo=discord&label=Discord)](https://discord.gg/xujqFZsEac)
 
 
@@ -26,10 +26,13 @@
 
 ## 🔍 Info
 
-### ⚠️ FTLL IS CURRENTLY IN ALPHA DEVELOPMENT ⚠️
-> This is an unfinished project, and although it is close to completion, we
-recommend that you do not use it currently! Come back soon for more updates,
-or visit our [website](https://ftl-launcher.com) for the latest.
+### ⚠️ FTLL IS CURRENTLY IN ALPHA ⚠️
+> FTLL is currently undergoing alpha development and builds are being actively tested. If you would
+like to help out with testing feel free to download and report any issues that you
+see [here](https://github.com/avvo-na/ftl-launcher/issues). Make sure to check that
+your issue doesn't already exist before making a new one! There are currently no working
+Linux builds but I'm looking to work on that soon. Check out our [website](https://ftl-launcher.com)
+for documentation and the latest news.
 
 FTLL is a simple and small mod launcher & manager for DayZ, built with Rust,
 [Tauri](https://tauri.app), React and modern tools. Completely open-source and
@@ -53,7 +56,37 @@ of distributions makes it a nightmare for a small developer.
 - And much more!
 
 ## ⚙️  Install
-Coming soon!
+
+### Windows
+- [Download](https://github.com/avvo-na/ftl-launcher/releases) the latest `x64-setup.exe`
+- Run the setup file & choose an install location
+- Done! Get the latest news [here](https://ftl-launcher.com)
+
+> If you run into any issues please feel free to join our [Discord](https://discord.gg/xujqFZsEac)
+### Linux
+- Coming soon!
+
+## 💻 Development
+
+### New Changes
+You can stay up to date with the latest in the development process right here on our github page!
+All of the latest builds will be pushed to the [main](https://github.com/avvo-na/ftl-launcher)
+branch and automatically released. Latest development changes & nightly builds will be pushed
+to the [next](https://github.com/avvo-na/tree/next) branch and tested there. Any new changes
+will be also available on our [website](https://ftl-launcher.com).
+
+### Contributing
+Contributions are very welcome. In addition to the main project, there is also our
+[documentation](https://www.ftl-launcher.com/docs/intro_getting-started) that is actively
+worked on. If you are unsure of a change that you want to make, talk to us on [Discord](https://discord.gg/xujqFZsEac)
+first, otherwise feel free to put in a pull request to the [next](https://github.com/avvo-na/tree/next)
+branch.
+
+Make sure to read our [contributors guide](https://www.ftl-launcher.com/docs/intro_contributing) first on how to
+get started building and developing!
 
 ## 📃 License
-Coming soon!
+FTLL is licensed with the `AGPLv3` license and can be found [here](https://github.com/avvo-na/ftl-launcher/blob/main/LICENSE)
+in the repository. This means that FTLL will always be open source, and any derivatives of FTLL will also
+have to be open source. This project is for the community and I want it to stay that way. If you're curious
+about the license go ahead and give it a read!
