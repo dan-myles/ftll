@@ -1,6 +1,6 @@
 {
   "productName": "FTLL",
-  "version": "0.1.2-alpha.1",
+  "version": "0.1.2-alpha.2",
   "identifier": "com.ftl-launcher.app",
   "build": {
     "frontendDist": "../dist",
@@ -28,7 +28,10 @@
   },
   "bundle": {
     "active": true,
-    "targets": "nsis",
+    "targets": [
+      "nsis",
+      "updater"
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",

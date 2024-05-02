@@ -72,15 +72,15 @@ of distributions makes it a nightmare for a small developer.
 You can stay up to date with the latest in the development process right here on our github page!
 All of the latest builds will be pushed to the [main](https://github.com/avvo-na/ftl-launcher)
 branch and automatically released. Latest development changes & nightly builds will be pushed
-to the [next](https://github.com/avvo-na/tree/next) branch and tested there. Any new changes
-will be also available on our [website](https://ftl-launcher.com).
+to the [nightly](https://github.com/avvo-na/ftl-launcher/tree/nightly) branch and tested there.
+Any new changes will be also available on our [website](https://ftl-launcher.com).
 
 ### Contributing
 Contributions are very welcome. In addition to the main project, there is also our
 [documentation](https://www.ftl-launcher.com/docs/intro_getting-started) that is actively
-worked on. If you are unsure of a change that you want to make, talk to us on [Discord](https://discord.gg/xujqFZsEac)
-first, otherwise feel free to put in a pull request to the [next](https://github.com/avvo-na/tree/next)
-branch.
+worked on. If you are unsure of a change that you want to make, talk to us on
+[Discord](https://discord.gg/xujqFZsEac) first, otherwise feel free to put
+in a pull request to the [nightly](https://github.com/avvo-na/ftl-launcher/tree/nightly) branch.
 
 Make sure to read our [contributors guide](https://www.ftl-launcher.com/docs/intro_contributing) first on how to
 get started building and developing!
