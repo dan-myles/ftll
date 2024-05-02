@@ -44,7 +44,7 @@ jobs:
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           tagName: v__VERSION__
           releaseName: "FTLL v__VERSION__"
@@ -57,4 +57,4 @@ jobs:
           releaseDraft: false
           prerelease: false
           includeUpdaterJson: true
-          tauriScript: bun
+          tauriScript: bun tauri
