@@ -3215,6 +3215,7 @@ dependencies = [
 [[package]]
 name = "steamworks"
 version = "0.11.0"
+source = "git+https://github.com/avvo-na/steamworks-rs.git?branch=ftll-main#65292414045c40463c8308b97743657a8923f9fb"
 dependencies = [
  "bitflags 1.3.2",
  "lazy_static",
@@ -3226,6 +3227,7 @@ dependencies = [
 [[package]]
 name = "steamworks-sys"
 version = "0.11.0"
+source = "git+https://github.com/avvo-na/steamworks-rs.git?branch=ftll-main#65292414045c40463c8308b97743657a8923f9fb"
 
 [[package]]
 name = "string_cache"
