@@ -13,16 +13,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [self-hosted]
+        include:
+          - platform: 'self-hosted'
+            args: ''
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v4
-        with:
-          lfs: true
-          fetch-depth: 0
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Install Rust
+      - name: Install Rust (Stable)
         uses: dtolnay/rust-toolchain@stable
 
       - name: Setup Node
@@ -59,9 +59,8 @@ jobs:
             See the assets to download and install this version.
 
             If you get a virus warning read this article: https://tauri.by.simon.hyll.nu/concepts/security/false_positives/.
-
-            Windows: Run `attrib -r ftll.msi:Zone.Identifier`.
           releaseDraft: false
           prerelease: false
           includeUpdaterJson: true
           tauriScript: bun tauri
+          args: ${{ matrix.args }}
