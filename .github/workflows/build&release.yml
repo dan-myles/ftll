@@ -48,7 +48,7 @@ jobs:
           echo "Installing deps (extra)"
           sudo apt-get update
           sudo apt-get install -y wget curl
-          wget https://raw.githubusercontent.com/actions/runner-images/main/images/linux/toolsets/toolset-2204.json
+          wget https://raw.githubusercontent.com/actions/runner-images/main/images/ubuntu/toolsets/toolset-2204.json
           APT_PACKAGES=`cat toolset-2204.json | jq -r '.apt | [.vital_packages[], .common_packages[], .cmd_packages[]] | del(.[] | select(. == "lib32z1")) | join(" ")'`
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends ${APT_PACKAGES}
