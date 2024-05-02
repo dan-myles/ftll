@@ -57,3 +57,4 @@ jobs:
           releaseDraft: false
           prerelease: false
           includeUpdaterJson: true
+          tauriScript: bun
