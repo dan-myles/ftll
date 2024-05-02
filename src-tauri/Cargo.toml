@@ -1,6 +1,6 @@
 [package]
 name = "ftl-launcher"
-version = "0.1.1"
+version = "0.1.2"
 description = "A lightweight, open-source mod launcher for DayZ."
 authors = ["avvo-na"]
 license = ""
