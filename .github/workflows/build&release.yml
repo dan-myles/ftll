@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest]
+        platform: [self-hosted]
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -42,7 +42,7 @@ jobs:
       - name: Build and upload a GitHub release
         uses: tauri-apps/tauri-action@v0
         env:
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
