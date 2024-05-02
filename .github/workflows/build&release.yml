@@ -46,7 +46,7 @@ jobs:
           echo "Installing deps (libgtk)"
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
           echo "Installing deps (opensll)"
-          sudo apt install -y openssl
+          sudo apt-get install -y libssl-dev
 
       - name: Build & Publish Github Release
         uses: tauri-apps/tauri-action@v0
