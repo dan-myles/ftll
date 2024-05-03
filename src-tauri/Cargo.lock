@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "FTLL"
-version = "0.1.2-alpha.2"
+version = "0.1.2-alpha.3"
 dependencies = [
  "a2s",
  "anyhow",
