@@ -16,6 +16,8 @@ jobs:
         include:
           - platform: 'self-hosted'
             args: '--target x86_64-pc-windows-msvc'
+          - platform: 'windows-latest'
+            args: ''
 
     runs-on: ${{ matrix.platform }}
     steps:
