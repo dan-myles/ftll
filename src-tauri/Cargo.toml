@@ -1,7 +1,7 @@
 [package]
 name = "FTLL"
-version = "0.1.2-alpha.4"
-description = "A lightweight, open-source mod launcher for DayZ."
+version = "0.1.2-alpha.5"
+description = "FTLL"
 authors = ["avvo-na"]
 license = "AGPLv3"
 repository = "https://github.com/avvo-na/ftl-launcher"
@@ -37,4 +37,6 @@ steamworks = { git = "https://github.com/avvo-na/steamworks-rs.git", branch = "f
 anyhow = "1.0.82"
 tauri-plugin-process = "2.0.0-beta.3"
 fs_extra = "1.3.0"
+tauri-plugin-updater = "2.0.0-beta.5"
+tauri-plugin-dialog = "2.0.0-beta.7"
 

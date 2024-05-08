@@ -1,7 +1,7 @@
 {
   "name": "FTLL",
   "private": true,
-  "version": "0.1.2-alpha.4",
+  "version": "0.1.2-alpha.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -45,9 +45,11 @@
     "@tanstack/react-router": "^1.28.1",
     "@tanstack/react-table": "^8.16.0",
     "@tauri-apps/api": "^2.0.0-beta.8",
+    "@tauri-apps/plugin-dialog": "^2.0.0-beta.3",
     "@tauri-apps/plugin-os": "^2.0.0-beta.2",
     "@tauri-apps/plugin-process": "^2.0.0-beta.2",
     "@tauri-apps/plugin-shell": "^2.0.0-beta.2",
+    "@tauri-apps/plugin-updater": "^2.0.0-beta.3",
     "axios": "^1.6.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",

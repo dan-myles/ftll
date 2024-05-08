@@ -2,6 +2,7 @@ use tauri::Manager;
 use window_vibrancy::apply_acrylic;
 
 mod dayz;
+mod ftll;
 mod query;
 mod steam;
 
@@ -26,6 +27,8 @@ pub fn run() {
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             dayz::dayz_launch_vanilla,
             dayz::dayz_launch_modded,
@@ -55,6 +58,7 @@ pub fn run() {
             query::update_server_info_semaphore,
             query::destroy_server_info_semaphore,
             query::fetch,
+            ftll::check_for_updates,
         ])
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();

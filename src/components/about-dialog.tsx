@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react"
 import { UpdateIcon } from "@radix-ui/react-icons"
+import { FTLLUpdateButton } from "./ftll-update-button"
 import { Icons } from "./icons"
 import { Logo } from "./logo"
 import { Button } from "./ui/button"
@@ -102,14 +103,7 @@ export function AboutDialog() {
           />
         </div>
 
-        <Button
-          type="submit"
-          variant="outline"
-          className="h-7 gap-1"
-          onClick={() => setUpdateText("You have the latest version.")}
-        >
-          <UpdateIcon /> Check for Updates
-        </Button>
+        <FTLLUpdateButton />
       </DialogFooter>
     </DialogContent>
   )
