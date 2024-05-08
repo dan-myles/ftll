@@ -708,8 +708,7 @@ pub async fn steam_start_daemon() -> Result<(), String> {
             // Time to sleep before trying again
             time::sleep(Duration::from_millis(50)).await;
 
-            // If we currently don't have a client, retry!
-            if !client::has_client().await {
+            if !client::get_client().await.is_none() {
                 continue;
             }
 
