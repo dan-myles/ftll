@@ -1,6 +1,6 @@
 [package]
 name = "FTLL"
-version = "0.1.4-alpha"
+version = "0.0.0"
 description = "FTLL"
 authors = ["avvo-na"]
 license = "AGPLv3"

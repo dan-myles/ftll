@@ -1,7 +1,7 @@
+use tauri::async_runtime;
 use tauri::AppHandle;
 use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
 use tauri_plugin_updater::UpdaterExt;
-use tokio::task;
 
 #[tauri::command]
 pub async fn check_for_updates(app: AppHandle) {
@@ -32,7 +32,7 @@ pub async fn check_for_updates(app: AppHandle) {
                 return;
             }
 
-            task::spawn(async move {
+            async_runtime::spawn(async move {
                 if let Err(e) = update.download_and_install(|_, _| {}, || {}).await {
                     println!("Error installing new update: {:?}", e);
                     app.dialog().message(
