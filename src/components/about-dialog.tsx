@@ -103,7 +103,7 @@ export function AboutDialog() {
           />
         </div>
 
-        <FTLLUpdateButton />
+        <FTLLUpdateButton setUpdateText={setUpdateText} />
       </DialogFooter>
     </DialogContent>
   )
