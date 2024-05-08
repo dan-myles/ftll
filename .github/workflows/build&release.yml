@@ -58,7 +58,7 @@ jobs:
             See the assets to download and install this version.
 
             If you get a virus warning read this article: https://tauri.by.simon.hyll.nu/concepts/security/false_positives/.
-          releaseDraft: false
+          releaseDraft: true
           prerelease: false
           includeUpdaterJson: true
           tauriScript: bun tauri
