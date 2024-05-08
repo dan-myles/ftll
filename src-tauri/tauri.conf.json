@@ -1,6 +1,6 @@
 {
   "productName": "FTLL",
-  "version": "0.1.5-alpha",
+  "version": "0.1.6-alpha",
   "identifier": "com.ftl-launcher.app",
   "build": {
     "frontendDist": "../dist",

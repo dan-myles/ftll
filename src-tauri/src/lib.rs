@@ -2,9 +2,9 @@ use tauri::Manager;
 use window_vibrancy::apply_acrylic;
 
 mod dayz;
-mod ftll;
 mod query;
 mod steam;
+mod updater;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -58,7 +58,7 @@ pub fn run() {
             query::update_server_info_semaphore,
             query::destroy_server_info_semaphore,
             query::fetch,
-            ftll::check_for_updates,
+            updater::check_for_updates,
         ])
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();

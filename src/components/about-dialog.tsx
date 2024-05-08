@@ -1,9 +1,7 @@
 import { useCallback, useState } from "react"
-import { UpdateIcon } from "@radix-ui/react-icons"
 import { FTLLUpdateButton } from "./ftll-update-button"
 import { Icons } from "./icons"
 import { Logo } from "./logo"
-import { Button } from "./ui/button"
 import {
   DialogContent,
   DialogDescription,
@@ -66,10 +64,9 @@ export function AboutDialog() {
               <span
                 className="cursor-pointer text-blue-500"
                 onClick={() =>
-                  // TODO: Figure out a way to get the exact tag for current version
                   open(
-                    "https://github.com/dan-myles/ftl-launcher/releases/latest"
-                  )
+                    `https://github.com/avvo-na/ftl-launcher/releases/tag/v${version}`
+                  ).catch(console.error)
                 }
               >
                 release notes

@@ -4,13 +4,13 @@ use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
 use tauri_plugin_updater::UpdaterExt;
 
 #[tauri::command]
-pub async fn check_for_updates(app: AppHandle) {
+pub async fn check_for_updates(app: AppHandle) -> String {
     let update = match app.updater().unwrap().check().await {
         Ok(Some(update)) => update,
-        Ok(None) => return,
+        Ok(None) => return "You're on the latest version!".to_string(),
         Err(e) => {
-            println!("Failed to check for updates: {:?}", e);
-            return;
+            dbg!("Failed to check for updates: {:?}", e);
+            return "Failed to check for updates".to_string();
         }
     };
     let cur_ver = &update.current_version;
@@ -42,4 +42,6 @@ pub async fn check_for_updates(app: AppHandle) {
                 }
             });
         });
+
+    return "There is an update available!".to_string();
 }
