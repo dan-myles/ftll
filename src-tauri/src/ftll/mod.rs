@@ -18,9 +18,8 @@ pub async fn check_for_updates(app: AppHandle) {
 
     let mut msg = String::new();
     msg.extend([
-        &format!("FTLL {new_ver} is now available! (Current Version: {cur_ver})\n\n"),
-        "Would you like to install it now?\n\n",
-        "Release notes can be found at ftl-launcher.com",
+        &format!("FTLL {new_ver} is now available!\n(Current Version: {cur_ver})\n\n"),
+        "Would you like to install it now?",
     ]);
 
     app.dialog()
