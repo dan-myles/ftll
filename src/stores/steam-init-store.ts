@@ -1,22 +1,22 @@
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 
-interface SteamState {
+interface SteamInitState {
   isSteamReady: boolean
 }
 
-interface SteamActions {
+interface SteamInitActions {
   setIsSteamReady: (isSteamReady: boolean) => void
 }
 
-export const useSteamStore = create<SteamState & SteamActions>()(
+export const useSteamInitStore = create<SteamInitState & SteamInitActions>()(
   persist(
     (set) => ({
       isSteamReady: false,
       setIsSteamReady: (isSteamReady) => set({ isSteamReady }),
     }),
     {
-      name: "queue-storage",
+      name: "steam-init-storage",
       storage: createJSONStorage(() => sessionStorage),
     }
   )

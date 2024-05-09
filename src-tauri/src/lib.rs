@@ -1,4 +1,6 @@
+use crate::dayz::DayzShutdownEvent;
 use crate::steam::ActiveDownloadProgressEvent;
+use crate::steam::ModInfoFoundEvent;
 use tauri::Manager;
 use window_vibrancy::apply_acrylic;
 
@@ -57,7 +59,11 @@ pub fn run() {
                 query::fetch,
                 updater::check_for_updates,
             ])
-            .events(tauri_specta::collect_events![ActiveDownloadProgressEvent]);
+            .events(tauri_specta::collect_events![
+                ActiveDownloadProgressEvent,
+                DayzShutdownEvent,
+                ModInfoFoundEvent
+            ]);
 
         #[cfg(debug_assertions)] // <- Only export on non-release builds
         let builder = builder.path("../src/tauri-bindings.ts");

@@ -3,7 +3,8 @@ use crate::steam::client;
 use anyhow::Result;
 use reqwest;
 use std::process::Command;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
+use tauri_specta::Event;
 use tokio::task;
 
 #[tauri::command]
@@ -44,8 +45,8 @@ pub async fn dayz_launch_vanilla(server: Server32, app_handle: AppHandle) -> Res
             .status()
             .expect("Failed to start DayZ");
 
-        handle
-            .emit("dayz_shutdown", ())
+        DayzShutdownEvent {}
+            .emit(&handle)
             .expect("Failed to emit dayz_shutdown");
     });
 
@@ -111,8 +112,8 @@ pub async fn dayz_launch_modded(server: Server32, app_handle: AppHandle) -> Resu
             .status()
             .expect("Failed to start DayZ");
 
-        handle
-            .emit("dayz_shutdown", ())
+        DayzShutdownEvent {}
+            .emit(&handle)
             .expect("Failed to emit dayz_shutdown");
     });
 
@@ -184,3 +185,6 @@ pub struct Player {
     avatar: Vec<u8>,
     is_banned: bool,
 }
+
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, specta::Type, tauri_specta::Event)]
+pub struct DayzShutdownEvent;

@@ -5,7 +5,7 @@ use std::collections::VecDeque;
 use std::fs;
 use std::sync::Arc;
 use std::time::Duration;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 use tauri_specta::Event;
 use tokio::sync::RwLock;
 use tokio::{task, time};
@@ -22,6 +22,7 @@ lazy_static! {
 }
 
 /// Clears the mod download queue.
+/// TODO: don't clear currently downloading mod
 #[tauri::command]
 #[specta::specta]
 pub async fn mdq_clear() -> Result<(), String> {
@@ -72,6 +73,7 @@ pub async fn mdq_add_mod(published_file_id: String) -> Result<(), String> {
 }
 
 /// Removes a mod from the download queue.
+/// TODO: don't clear currently downloading mod
 #[tauri::command]
 #[specta::specta]
 pub async fn mdq_remove_mod(published_file_id: String) -> Result<(), String> {
@@ -489,6 +491,7 @@ pub async fn steam_get_installed_mods(app_handle: AppHandle) -> Result<(), Strin
     // Get the installed mods
     let ugc = client.ugc();
     let subscribed_items = ugc.subscribed_items();
+
     for item in subscribed_items {
         let extended_info = ugc.query_item(item).map_err(|e| e.to_string())?;
 
@@ -525,8 +528,13 @@ pub async fn steam_get_installed_mods(app_handle: AppHandle) -> Result<(), Strin
             let query_result = query_result.unwrap();
             let size = get_size(&path).unwrap();
 
-            // Parse to struct
-            let result = ModInfo {
+            println!(
+                "steam_get_installed_mods: Found mod: {}",
+                query_result.title
+            );
+
+            // Emit the mod info!
+            ModInfoFoundEvent {
                 published_file_id: query_result.published_file_id.0.to_string(),
                 title: query_result.title,
                 description: query_result.description,
@@ -544,12 +552,9 @@ pub async fn steam_get_installed_mods(app_handle: AppHandle) -> Result<(), Strin
                 num_downvotes: query_result.num_downvotes,
                 score: query_result.score,
                 num_children: query_result.num_children,
-            };
-
-            // Emit the mod info!
-            handle
-                .emit("steam_get_installed_mods_result", result)
-                .expect("Failed to emit query result");
+            }
+            .emit(&handle)
+            .expect("Failed to emit query result");
         });
     }
 
@@ -582,7 +587,7 @@ pub async fn steam_get_mod_info(
     extended_info.fetch(move |i| {
         let query_result = i.unwrap().get(0).unwrap();
 
-        let result = ModInfo {
+        ModInfoFoundEvent {
             published_file_id: query_result.published_file_id.0.to_string(),
             title: query_result.title,
             description: query_result.description,
@@ -600,11 +605,9 @@ pub async fn steam_get_mod_info(
             num_downvotes: query_result.num_downvotes,
             score: query_result.score,
             num_children: query_result.num_children,
-        };
-
-        app_handle
-            .emit("steam_get_mod_info_result", result)
-            .expect("Failed to emit query result");
+        }
+        .emit(&app_handle)
+        .expect("Failed to emit query result");
     });
 
     Ok(())
@@ -680,7 +683,7 @@ pub async fn steam_start_daemon() -> Result<(), String> {
             // Time to sleep before trying again
             time::sleep(Duration::from_millis(50)).await;
 
-            if !client::get_client().await.is_none() {
+            if client::get_client().await.is_none() {
                 continue;
             }
 
@@ -777,14 +780,15 @@ pub async fn steam_unmount_api() -> Result<(), String> {
         Ok(_) => {}
     }
 
+    // Naughty! 🤭
     steamworks::Client::shutdown();
 
     Ok(())
 }
 
 /// Structure of the Steamworks Installed Mod Info
-#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, specta::Type)]
-pub struct ModInfo {
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, specta::Type, tauri_specta::Event)]
+pub struct ModInfoFoundEvent {
     published_file_id: String,
     title: String,
     description: String,

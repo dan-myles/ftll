@@ -10,8 +10,8 @@ interface ModDownloadQueueState {
 interface ModDownloadQueueActions {
   pushFix: (mod: Mod32, force: boolean) => Promise<void>
   pushMod: (mod: Mod32) => Promise<void>
-  removeMod: (workshopId: string) => void
-  clearQueue: () => void
+  removeMod: (workshopId: string) => Promise<void>
+  clearQueue: () => Promise<void>
 }
 
 export const useModDownloadQueue = create<
@@ -63,7 +63,12 @@ export const useModDownloadQueue = create<
 
         return Promise.resolve()
       },
-      removeMod: (workshopId) => {
+      // TODO: check if mod is being downloaded
+      removeMod: async (workshopId) => {
+        commands.mdqRemoveMod(workshopId).catch((e) => {
+          return Promise.reject(e)
+        })
+
         set((state) => {
           return {
             downloadQueue: state.downloadQueue.filter(
@@ -73,7 +78,19 @@ export const useModDownloadQueue = create<
         })
       },
       // This does not remove the mods from the queue, just clears the UI representation
-      clearQueue: () => set({ downloadQueue: [] }),
+      clearQueue: async () => {
+        await commands.mdqClear().catch((e) => {
+          return Promise.reject(e)
+        })
+
+        // Return all but the first element
+        // We cannot remove the first element because it is being downloaded
+        set((state) => {
+          return {
+            downloadQueue: state.downloadQueue.slice(0, 1),
+          }
+        })
+      },
     }),
     {
       name: "queue-storage",
