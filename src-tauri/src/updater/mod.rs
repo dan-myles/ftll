@@ -4,6 +4,7 @@ use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
 use tauri_plugin_updater::UpdaterExt;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn check_for_updates(app: AppHandle) -> String {
     let update = match app.updater().unwrap().check().await {
         Ok(Some(update)) => update,

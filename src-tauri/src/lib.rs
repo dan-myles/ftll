@@ -44,6 +44,7 @@ pub fn run() {
             steam::steam_start_daemon,
             steam::steam_mount_api,
             steam::steam_unmount_api,
+            updater::check_for_updates,
         ]);
 
         #[cfg(debug_assertions)] // <- Only export on non-release builds
