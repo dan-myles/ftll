@@ -1,22 +1,27 @@
 import { useCallback, useEffect, useState } from "react"
-import { invoke } from "@tauri-apps/api/core"
 import { SteamPFPMedium } from "@/components/steam-pfp-medium"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { type PlayerList } from "@/schemas/player-list-schema"
 import { useCurrentServerStore } from "@/stores/current-server-store"
+import { type Player, commands } from "@/tauri-bindings"
 
 export function CurrentServerInfo() {
   const { server } = useCurrentServerStore()
-  const [playerList, setPlayerList] = useState<PlayerList>([])
+  const [playerList, setPlayerList] = useState<Player[]>([])
 
   // Grab the player list from the server
   useEffect(() => {
     const getPlayerList = async () => {
-      const list = await invoke<PlayerList>("dayz_get_playerlist", {
-        server: server,
-      })
-      console.log(list)
-      setPlayerList(list)
+      // Check if the server is set
+      if (!server) return
+
+      // Grab the list
+      const list = await commands.dayzGetPlayerlist(server)
+      if (list.status === "error") {
+        console.error(list.error)
+        return
+      }
+
+      setPlayerList(list.data)
     }
 
     getPlayerList().catch(console.error)
