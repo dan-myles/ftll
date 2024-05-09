@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { useServerListStore } from "@/stores/server-list-store"
-import { useSteamStore } from "@/stores/steam-init-store"
+import { useSteamInitStore } from "@/stores/steam-init-store"
 import { commands } from "@/tauri-bindings"
 
 export function useServerList() {
   const [isLoadingServers, setIsLoadingServers] = useState(false)
   const { setServerList } = useServerListStore()
-  const { isSteamReady } = useSteamStore()
+  const { isSteamReady } = useSteamInitStore()
 
   useEffect(() => {
     async function getServerList() {

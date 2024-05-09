@@ -1,9 +1,9 @@
 import { useEffect } from "react"
-import { useSteamStore } from "@/stores/steam-init-store"
+import { useSteamInitStore } from "@/stores/steam-init-store"
 import { commands } from "@/tauri-bindings"
 
 export function useSteamworks() {
-  const { isSteamReady, setIsSteamReady } = useSteamStore()
+  const { isSteamReady, setIsSteamReady } = useSteamInitStore()
 
   useEffect(() => {
     async function initSteamworks() {

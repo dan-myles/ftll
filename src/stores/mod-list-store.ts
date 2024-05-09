@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
-import { type ModInfo } from "@/schemas/mod-info"
+import { type ModInfoFoundEvent as ModInfo } from "@/tauri-bindings"
 
 interface ModListState {
   modList: ModInfo[]
@@ -9,7 +9,7 @@ interface ModListState {
 interface ModListActions {
   setModList: (modList: ModInfo[]) => void
   addMod: (mod: ModInfo) => void
-  removeMod: (id: number) => void
+  removeMod: (id: string) => void
 }
 
 export const useModListStore = create<ModListState & ModListActions>()(

@@ -52,6 +52,7 @@ function Index() {
 
   return (
     <div className="flex h-full flex-col space-y-2 p-4">
+      <Button onClick={() => console.log(modList)}>test</Button>
       {downloadQueue.length > 0 && (
         <div className="pb-8">
           <p className="mb-2 max-w-fit text-lg font-semibold">Pending Mods</p>

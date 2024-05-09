@@ -41,6 +41,7 @@ try {
 },
 /**
  * Clears the mod download queue.
+ * TODO: don't clear currently downloading mod
  */
 async mdqClear() : Promise<Result<null, string>> {
 try {
@@ -63,6 +64,7 @@ try {
 },
 /**
  * Removes a mod from the download queue.
+ * TODO: don't clear currently downloading mod
  */
 async mdqRemoveMod(publishedFileId: string) : Promise<Result<null, string>> {
 try {
@@ -341,9 +343,13 @@ return await TAURI_INVOKE("check_for_updates");
 }
 
 export const events = __makeEvents__<{
-activeDownloadProgressEvent: ActiveDownloadProgressEvent
+activeDownloadProgressEvent: ActiveDownloadProgressEvent,
+dayzShutdownEvent: DayzShutdownEvent,
+modInfoFoundEvent: ModInfoFoundEvent
 }>({
-activeDownloadProgressEvent: "active-download-progress-event"
+activeDownloadProgressEvent: "active-download-progress-event",
+dayzShutdownEvent: "dayz-shutdown-event",
+modInfoFoundEvent: "mod-info-found-event"
 })
 
 /** user-defined types **/
@@ -352,10 +358,15 @@ activeDownloadProgressEvent: "active-download-progress-event"
  * Event for Active Download Progress
  */
 export type ActiveDownloadProgressEvent = { published_file_id: string; bytes_downloaded: string; bytes_total: string; percentage_downloaded: string }
+export type DayzShutdownEvent = null
 /**
  * 32 Bit Mod Data Structure (JS can't handle i64)
  */
 export type Mod32 = { workshop_id: string; name: string }
+/**
+ * Structure of the Steamworks Installed Mod Info
+ */
+export type ModInfoFoundEvent = { published_file_id: string; title: string; description: string; owner_steam_id: string; time_created: number; time_updated: number; time_added_to_user_list: number; banned: boolean; accepted_for_use: boolean; tags: string[]; tags_truncated: boolean; file_size: number; url: string; num_upvotes: number; num_downvotes: number; score: number; num_children: number }
 export type Player = { steam_id: string; name: string; nick_name: string; avatar: number[]; is_banned: boolean }
 /**
  * 32 Bit Server Data Structure (JS can't handle i64)
