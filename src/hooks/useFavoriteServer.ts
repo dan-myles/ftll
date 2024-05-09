@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
-import { type Server } from "@/schemas/server-schema"
 import { useFavoriteServerStore } from "@/stores/favorite-server-store"
+import { type Server32 } from "@/tauri-bindings"
 
-export function useFavoriteServer(s: Server) {
+export function useFavoriteServer(s: Server32) {
   const [isFavorite, setFavorite] = useState(false)
   const { addServer, removeServer, serverList } = useFavoriteServerStore()
 

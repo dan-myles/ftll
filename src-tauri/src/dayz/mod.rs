@@ -1,13 +1,15 @@
-use crate::query::Server;
+use crate::query::Server32;
 use crate::steam::client;
 use anyhow::Result;
 use reqwest;
 use std::process::Command;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
+use tauri_specta::Event;
 use tokio::task;
 
 #[tauri::command]
-pub async fn dayz_launch_vanilla(server: Server, app_handle: AppHandle) -> Result<(), String> {
+#[specta::specta]
+pub async fn dayz_launch_vanilla(server: Server32, app_handle: AppHandle) -> Result<(), String> {
     // Grab the steam client
     let client = client::get_client().await;
     if client.is_none() {
@@ -43,8 +45,8 @@ pub async fn dayz_launch_vanilla(server: Server, app_handle: AppHandle) -> Resul
             .status()
             .expect("Failed to start DayZ");
 
-        handle
-            .emit("dayz_shutdown", ())
+        DayzShutdownEvent {}
+            .emit(&handle)
             .expect("Failed to emit dayz_shutdown");
     });
 
@@ -52,7 +54,8 @@ pub async fn dayz_launch_vanilla(server: Server, app_handle: AppHandle) -> Resul
 }
 
 #[tauri::command]
-pub async fn dayz_launch_modded(server: Server, app_handle: AppHandle) -> Result<(), String> {
+#[specta::specta]
+pub async fn dayz_launch_modded(server: Server32, app_handle: AppHandle) -> Result<(), String> {
     // Grab the steam client
     let client = client::get_client().await;
     if client.is_none() {
@@ -78,7 +81,7 @@ pub async fn dayz_launch_modded(server: Server, app_handle: AppHandle) -> Result
     let ugc = client.ugc();
     let mut mod_paths: Vec<String> = Vec::new();
     for dayz_mod in mod_list {
-        let mod_id = steamworks::PublishedFileId(dayz_mod.workshop_id as u64);
+        let mod_id = steamworks::PublishedFileId(dayz_mod.workshop_id.parse().unwrap());
         let path = ugc.item_install_info(mod_id);
         if path.is_none() {
             return Err("Failed to get mod path".to_string());
@@ -109,16 +112,18 @@ pub async fn dayz_launch_modded(server: Server, app_handle: AppHandle) -> Result
             .status()
             .expect("Failed to start DayZ");
 
-        handle
-            .emit("dayz_shutdown", ())
+        DayzShutdownEvent {}
+            .emit(&handle)
             .expect("Failed to emit dayz_shutdown");
     });
 
     Ok(())
 }
 
+/// Gets the player list from a DayZ server. User to be actively connected to the server.
 #[tauri::command]
-pub async fn dayz_get_playerlist(server: Server) -> Result<Vec<Player>, String> {
+#[specta::specta]
+pub async fn dayz_get_playerlist(server: Server32) -> Result<Vec<Player>, String> {
     // Grab the steam client
     let client = client::get_client().await;
     if client.is_none() {
@@ -157,8 +162,10 @@ pub async fn dayz_get_playerlist(server: Server) -> Result<Vec<Player>, String> 
     Ok(users)
 }
 
+/// Querys the steam community page of a player to see if they have a game ban.
 #[tauri::command]
-pub async fn dayz_get_player_ban_status(steam_id: u64) -> Result<bool, String> {
+#[specta::specta]
+pub async fn dayz_get_player_ban_status(steam_id: String) -> Result<bool, String> {
     let is_banned = reqwest::get(format!("https://steamcommunity.com/profiles/{}", steam_id))
         .await
         .map_err(|e| e.to_string())?
@@ -170,7 +177,7 @@ pub async fn dayz_get_player_ban_status(steam_id: u64) -> Result<bool, String> {
     Ok(is_banned)
 }
 
-#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, specta::Type)]
 pub struct Player {
     steam_id: String,
     name: String,
@@ -178,3 +185,6 @@ pub struct Player {
     avatar: Vec<u8>,
     is_banned: bool,
 }
+
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, specta::Type, tauri_specta::Event)]
+pub struct DayzShutdownEvent;

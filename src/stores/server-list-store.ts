@@ -5,15 +5,14 @@ import {
   createJSONStorage,
   persist,
 } from "zustand/middleware"
-import type { Server, ServerList } from "@/schemas/server-schema"
+import type { Server32 } from "@/tauri-bindings"
 
 interface ServerListState {
-  serverList: ServerList
+  serverList: Server32[]
 }
 
 interface ServerListActions {
-  setServerList: (serverList: ServerList) => void
-  updateServer: (server: Server) => void
+  setServerList: (serverList: Server32[]) => void
 }
 
 const serverStorage: StateStorage = {
@@ -35,19 +34,7 @@ export const useServerListStore = create<ServerListState & ServerListActions>()(
   persist(
     (set) => ({
       serverList: [],
-      setServerList: (newServerList) => {
-        set({ serverList: newServerList })
-      },
-      updateServer: (server) => {
-        set((state) => {
-          const serverList = [...state.serverList]
-          const index = serverList.findIndex((s) => s.addr === server.addr)
-          if (index !== -1) {
-            serverList[index] = server
-          }
-          return { serverList }
-        })
-      },
+      setServerList: (newServerList) => set({ serverList: newServerList }),
     }),
     {
       name: "server-storage",

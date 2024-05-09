@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { type Row } from "@tanstack/react-table"
-import { serverSchema } from "@/schemas/server-schema"
+import { type Server32 } from "@/tauri-bindings"
 import { UpdatedServerContext } from "../row"
 
 interface PlayersViewProps<TData> {
@@ -9,23 +9,25 @@ interface PlayersViewProps<TData> {
 
 export function PlayersView<TData>({ row }: PlayersViewProps<TData>) {
   const updatedServer = useContext(UpdatedServerContext)
-  const server = serverSchema.parse(row.original)
+  const server = row.original as Server32
 
   return (
     <div className="">
       {updatedServer &&
         updatedServer.ping === 99999 &&
-        "0" + "/" + server.maxPlayers}
+        "0" + "/" + server.max_players}
 
       {updatedServer &&
         updatedServer.ping !== 99999 &&
-        updatedServer.players + "/" + updatedServer.maxPlayers}
+        updatedServer.players + "/" + updatedServer.max_players}
 
-      {!updatedServer && server.ping === 99999 && "0" + "/" + server.maxPlayers}
+      {!updatedServer &&
+        server.ping === 99999 &&
+        "0" + "/" + server.max_players}
 
       {!updatedServer &&
         server.ping !== 99999 &&
-        server.players + "/" + server.maxPlayers}
+        server.players + "/" + server.max_players}
     </div>
   )
 }

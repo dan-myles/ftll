@@ -1,17 +1,17 @@
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
-import { invoke } from "@tauri-apps/api/core"
-import { type Mod } from "@/schemas/server-schema"
+import { type Mod32 } from "@/tauri-bindings"
+import { commands } from "@/tauri-bindings"
 
 interface ModDownloadQueueState {
-  downloadQueue: Mod[]
+  downloadQueue: Mod32[]
 }
 
 interface ModDownloadQueueActions {
-  pushFix: (mod: Mod, force: boolean) => Promise<void>
-  pushMod: (mod: Mod) => Promise<void>
-  removeMod: (workshopId: number) => void
-  clearQueue: () => void
+  pushFix: (mod: Mod32, force: boolean) => Promise<void>
+  pushMod: (mod: Mod32) => Promise<void>
+  removeMod: (workshopId: string) => Promise<void>
+  clearQueue: () => Promise<void>
 }
 
 export const useModDownloadQueue = create<
@@ -22,19 +22,17 @@ export const useModDownloadQueue = create<
       downloadQueue: [],
       pushFix: async (mod, force) => {
         if (!force) {
-          await invoke("steam_fix_mod", {
-            publishedFileId: mod.workshopId,
-          }).catch(console.error)
+          await commands.steamFixMod(mod.workshop_id).catch(console.error)
           return Promise.resolve()
         }
 
-        await invoke("steam_fix_mod_forcefully", {
-          publishedFileId: mod.workshopId,
-        }).catch(console.error)
+        await commands
+          .steamFixModForcefully(mod.workshop_id)
+          .catch(console.error)
 
         set((state) => {
           if (
-            state.downloadQueue.some((m) => m.workshopId === mod.workshopId)
+            state.downloadQueue.some((m) => m.workshop_id === mod.workshop_id)
           ) {
             return state
           }
@@ -47,15 +45,13 @@ export const useModDownloadQueue = create<
         return Promise.resolve()
       },
       pushMod: async (mod) => {
-        await invoke("mdq_mod_add", { publishedFileId: mod.workshopId }).catch(
-          (e) => {
-            return Promise.reject(e)
-          }
-        )
+        commands.mdqAddMod(mod.workshop_id).catch((e) => {
+          return Promise.reject(e)
+        })
 
         set((state) => {
           if (
-            state.downloadQueue.some((m) => m.workshopId === mod.workshopId)
+            state.downloadQueue.some((m) => m.workshop_id === mod.workshop_id)
           ) {
             return state
           }
@@ -67,17 +63,34 @@ export const useModDownloadQueue = create<
 
         return Promise.resolve()
       },
-      removeMod: (workshopId) => {
+      // TODO: check if mod is being downloaded
+      removeMod: async (workshopId) => {
+        commands.mdqRemoveMod(workshopId).catch((e) => {
+          return Promise.reject(e)
+        })
+
         set((state) => {
           return {
             downloadQueue: state.downloadQueue.filter(
-              (m) => m.workshopId !== workshopId
+              (m) => m.workshop_id !== workshopId
             ),
           }
         })
       },
       // This does not remove the mods from the queue, just clears the UI representation
-      clearQueue: () => set({ downloadQueue: [] }),
+      clearQueue: async () => {
+        await commands.mdqClear().catch((e) => {
+          return Promise.reject(e)
+        })
+
+        // Return all but the first element
+        // We cannot remove the first element because it is being downloaded
+        set((state) => {
+          return {
+            downloadQueue: state.downloadQueue.slice(0, 1),
+          }
+        })
+      },
     }),
     {
       name: "queue-storage",

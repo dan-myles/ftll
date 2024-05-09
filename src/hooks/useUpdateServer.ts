@@ -1,19 +1,23 @@
 import { useEffect, useState } from "react"
 import { invoke } from "@tauri-apps/api/core"
-import { type Server } from "@/schemas/server-schema"
+import { type Server32, commands } from "@/tauri-bindings"
 
-export function useUpdateServer(s: Server) {
-  const [server, setServer] = useState<Server>()
+export function useUpdateServer(s: Server32) {
+  const [server, setServer] = useState<Server32>()
 
   // Normally we would use Tanstack Query here but the ping data changes
   // too frequently to be useful for caching. The cache limit is 5MB and
   // over time the cache would grow to be too large.
   useEffect(() => {
     const update = async () => {
-      const updatedServer = await invoke<Server>("get_server_info", {
-        server: s,
-      })
-      setServer(updatedServer)
+      const updated = await commands.getServerInfo(s)
+
+      if (updated.status === "error") {
+        console.error(updated.error)
+        return
+      }
+
+      setServer(updated.data)
     }
 
     let delayBeforeUpdate: NodeJS.Timeout

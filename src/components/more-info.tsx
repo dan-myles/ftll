@@ -23,12 +23,12 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useFavoriteServer } from "@/hooks/useFavoriteServer"
 import { useUpdateServer } from "@/hooks/useUpdateServer"
 import { cn } from "@/lib/utils"
-import { type Server } from "@/schemas/server-schema"
+import { type Server32 } from "@/tauri-bindings"
 import { ServerDownloadValidator } from "./server-download-validator"
 import { ServerPlayValidator } from "./server-play-validator"
 
 interface MoreInfoProps {
-  initServer: Server
+  initServer: Server32
   open?: boolean
   onClose?: () => void
   children?: React.ReactNode
@@ -41,7 +41,7 @@ export function MoreInfo({
   children,
 }: MoreInfoProps) {
   const { isFavorite, handleFavorited } = useFavoriteServer(initServer)
-  const [server, setServer] = useState<Server>(initServer)
+  const [server, setServer] = useState<Server32>(initServer)
   const [mounted, setMounted] = useState(false)
   const newServer = useUpdateServer(initServer)
 
@@ -73,8 +73,8 @@ export function MoreInfo({
         <DrawerHeader>
           <DrawerTitle>{server.name}</DrawerTitle>
           <DrawerDescription>
-            {server.addr.split(":")[0] + ":" + server.gamePort}
-            {" | " + server.steamId}
+            {server.addr.split(":")[0] + ":" + server.game_port}
+            {" | " + server.steam_id}
           </DrawerDescription>
         </DrawerHeader>
         {/* Main Content Div */}
@@ -132,20 +132,20 @@ export function MoreInfo({
                 </Badge>
               </div>
               <div className="flex flex-col text-sm">
-                {server.modList?.map((mod, idx) => {
+                {server.mod_list?.map((mod, idx) => {
                   return (
                     <div
-                      key={mod.workshopId}
+                      key={mod.workshop_id}
                       className={cn("inline-flex p-2", idx !== 0 && "border-t")}
                     >
                       <div>{mod.name}</div>
                       <div className="pl-2 text-muted-foreground">
-                        {mod.workshopId}
+                        {mod.workshop_id}
                       </div>
                     </div>
                   )
                 })}
-                {!server.modList && (
+                {!server.mod_list && (
                   <div className="p-2 font-thin">No mods installed</div>
                 )}
               </div>
@@ -171,7 +171,7 @@ export function MoreInfo({
                     Game Address
                   </Badge>
                   <span className="text-sm font-thin">
-                    {server.addr.split(":")[0] + ":" + server.gamePort}
+                    {server.addr.split(":")[0] + ":" + server.game_port}
                   </span>
                 </div>
                 <div className="mt-1">
@@ -179,7 +179,7 @@ export function MoreInfo({
                     Players
                   </Badge>
                   <span className="text-sm font-thin">
-                    {server.players + "/" + server.maxPlayers}
+                    {server.players + "/" + server.max_players}
                   </span>
                 </div>
                 <div className="mt-1">
@@ -204,13 +204,13 @@ export function MoreInfo({
                   <Badge variant="outline" className="mr-1 border-none text-sm">
                     Steam ID
                   </Badge>
-                  <span className="text-sm font-thin">{server.steamId}</span>
+                  <span className="text-sm font-thin">{server.steam_id}</span>
                 </div>
                 <div className="mt-1">
                   <Badge variant="outline" className="border-none text-sm">
                     Tags
                   </Badge>
-                  {server.gameType.split(",").map((tag, idx) => {
+                  {server.game_type.split(",").map((tag, idx) => {
                     return (
                       <Badge
                         key={idx}

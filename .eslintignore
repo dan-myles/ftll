@@ -12,3 +12,4 @@ src/components/ui-ace/*
 tailwind.config.ts
 src-tauri/
 vite.config.ts
+src/tauri-bindings.d.ts

@@ -17,38 +17,29 @@ use tokio::sync::Mutex;
 use tokio::sync::RwLock;
 use tokio::sync::Semaphore;
 
-/*
-* Global Variables
-* --------------------------
-* SERVER_MAP: where we store response from FTL API
-* MAX_UPDATES_SEMAPHORE: semaphore to limit concurrent server queries from frontend
-* We wrap this semaphore in a RwLock to allow destruction of the semaphore
-* and re-creation of the semaphore with a different limit. Or just to clear
-* the waiting list of permits.
-*/
 lazy_static! {
+    /// We store the server_map here, this is a HashMap<String, Server>
+    /// where the key is the server's QUERY IP ADDRESS.
     static ref SERVER_MAP: Arc<Mutex<HashMap<String, Server>>> =
         Arc::new(Mutex::new(HashMap::new()));
+
+    /// We store the max updates here, this is a RwLock<usize>
+    /// where the value is the max number of concurrent server queries.
     static ref MAX_UPDATES: Arc<RwLock<usize>> = Arc::new(RwLock::new(10));
+
+    /// A semaphore to limit concurrent server queries from the frontend.
     static ref MAX_UPDATES_SEMAPHORE: Arc<RwLock<Semaphore>> =
         Arc::new(RwLock::new(Semaphore::new(10)));
 }
 
-/**
-* function: get_server_list
-* --------------------------
-* This function is the only function that is exposed to the Tauri frontend.
-* Takes care of checking for cache, and refreshing that cache. Or if it
-* doesn't exist, we download a new server_map, and query each server in the map.
-* This function will only ever be called once, every application launch.
-* During runtime, the frontend will cache the server list via IndexedDB.
-* --------------------------
-* TODO: Handle errors here in this top level function.
-* We can either return them as a Result (not sure if tauri supports this)
-* or we can emit an event to the frontend indicating some cache error.
-*/
+/// This function is the only function that is exposed to the Tauri frontend.
+/// Takes care of checking for cache, and refreshing that cache. Or if it
+/// doesn't exist, we download a new server_map, and query each server in the map.
+/// This function will only ever be called once, every application launch.
+/// During runtime, the frontend will cache the server list via IndexedDB.
 #[tauri::command]
-pub async fn get_server_list() -> Result<Vec<Server>, String> {
+#[specta::specta]
+pub async fn get_server_list() -> Result<Vec<Server32>, String> {
     // Try to grab base directories
     let server_list_path = BaseDirs::new()
         .ok_or("ERROR: Could not find base directories!")?
@@ -68,16 +59,18 @@ pub async fn get_server_list() -> Result<Vec<Server>, String> {
     let server_list: Vec<Server> = server_map_locked.values().cloned().collect();
     println!("get_server_list(): Returning server list...");
 
+    // Convert Server to Server32
+    let server_list: Vec<Server32> = server_list
+        .into_iter()
+        .map(|server| server.into())
+        .collect();
     return Ok(server_list);
 }
 
-/**
-* function: fetch
-* --------------------------
-* This function is used to fetch data from a URI.
-* We do this here to avoid CORS issues.
-*/
+/// This function is used to fetch data from a URI.
+/// We do this here to avoid CORS issues.
 #[tauri::command]
+#[specta::specta]
 pub async fn fetch(uri: String) -> Result<String, String> {
     let response = reqwest::get(&uri).await;
     match response {
@@ -91,16 +84,12 @@ pub async fn fetch(uri: String) -> Result<String, String> {
     }
 }
 
-/**
-* function: destroy_server_info_semaphore
-* --------------------------
-* This function is called to destroy the server info semaphore.
-* We do this to clear the waiting list of permits, or to change the limit.
-* --------------------------
-* NOTE: Eventually we will want to let users pick how many servers to query at once.
-*/
+/// This function is called to destroy the server info semaphore.
+/// We do this to clear the waiting list of permits, or to change the limit.
+/// NOTE: Eventually we will want to let users pick how many servers to query at once.
 #[tauri::command]
-pub async fn destroy_server_info_semaphore() {
+#[specta::specta]
+pub async fn destroy_server_info_semaphore() -> Result<(), String> {
     let semaphore = MAX_UPDATES_SEMAPHORE.clone();
     let semaphore = semaphore.read().await;
     semaphore.close();
@@ -110,18 +99,16 @@ pub async fn destroy_server_info_semaphore() {
     let mut new_semaphore = new_semaphore.write().await;
     let max_updates = MAX_UPDATES.clone().read().await.clone();
     *new_semaphore = Semaphore::new(max_updates);
+
+    Ok(())
 }
 
-/**
-* function: update_server_info_semaphore
-* --------------------------
-* This function is called to destroy the server info semaphore.
-* We do this to clear the waiting list of permits, or to change the limit.
-* --------------------------
-* NOTE: Eventually we will want to let users pick how many servers to query at once.
-*/
+/// This function is called to destroy the server info semaphore.
+/// We do this to clear the waiting list of permits, or to change the limit.
+/// NOTE: Eventually we will want to let users pick how many servers to query at once.
 #[tauri::command]
-pub async fn update_server_info_semaphore(max_updates: usize) {
+#[specta::specta]
+pub async fn update_server_info_semaphore(max_updates: i32) -> Result<(), String> {
     let semaphore = MAX_UPDATES_SEMAPHORE.clone();
     let semaphore = semaphore.read().await;
     semaphore.close();
@@ -130,44 +117,39 @@ pub async fn update_server_info_semaphore(max_updates: usize) {
     let new_semaphore = MAX_UPDATES_SEMAPHORE.clone();
     let mut new_semaphore = new_semaphore.write().await;
     let mut _m = MAX_UPDATES.clone().write().await.clone();
-    _m = max_updates;
+    _m = max_updates as usize;
 
-    *new_semaphore = Semaphore::new(max_updates);
+    *new_semaphore = Semaphore::new(max_updates.try_into().unwrap());
+
+    Ok(())
 }
 
-/**
-* function: get_server_info
-* --------------------------
-* This function is called to get server information.
-* We query the server and return the server information.
-* This may return an error if the server is unreachable.
-* --------------------------
-* TODO : Add error handling to unwraps, what if we cant get a new client?
-*/
+/// This function is called to get server information.
+/// We query the server and return the server information.
+/// `@param: server` - The server to query.
+/// TODO : Add error handling to unwraps, what if we cant get a new client?
 #[tauri::command]
-pub async fn get_server_info(server: Server) -> Result<Server, String> {
+#[specta::specta]
+pub async fn get_server_info(server: Server32) -> Result<Server32, String> {
+    let server: Server = server.into();
     let semaphore = MAX_UPDATES_SEMAPHORE.clone();
     let semaphore = semaphore.read().await;
     let permit = semaphore.acquire().await;
 
     if permit.is_err() {
         println!("⚠️ Failed to acquire permit for: {}", server.name);
-        return Ok(server);
+        return Ok(server.into());
     }
 
     // Don't spawn servers! So lets sleep for a second.
     tokio::time::sleep(Duration::from_millis(1000)).await;
 
-    let a2s_client = A2SClient::new()
-        .await
-        .map_err(|_| "ERROR: Failed to create A2SClient")?;
+    let a2s_client = A2SClient::new().await.map_err(|e| e.to_string())?;
 
     let start = SystemTime::now();
     let response = a2s_client.info(server.addr.clone()).await;
     let end = SystemTime::now();
-    let duration = end
-        .duration_since(start)
-        .map_err(|_| "ERROR: Failed to get duration")?;
+    let duration = end.duration_since(start).map_err(|e| e.to_string())?;
 
     match response {
         Ok(info) => {
@@ -192,7 +174,8 @@ pub async fn get_server_info(server: Server) -> Result<Server, String> {
                 os: server.os,
                 game_type: server.game_type,
                 mod_list: server.mod_list,
-            });
+            }
+            .into());
         }
         Err(e) => {
             println!("Error getting server info: {}", e);
@@ -216,17 +199,14 @@ pub async fn get_server_info(server: Server) -> Result<Server, String> {
                 os: server.os,
                 game_type: server.game_type,
                 mod_list: server.mod_list,
-            });
+            }
+            .into());
         }
     }
 }
 
-/**
-* function: refresh_server_cache()
-* --------------------------
-* This function is called to refresh the server cache.
-* We skip all servers with marked as Some in the ping field, this means
-*/
+/// This function is called to refresh the server cache.
+/// We skip all servers with marked as Some in the ping field, this means
 pub async fn refresh_server_cache() -> Result<()> {
     let server_map_path = BaseDirs::new()
         .unwrap()
@@ -340,16 +320,11 @@ pub async fn refresh_server_cache() -> Result<()> {
     Ok(())
 }
 
-/**
-* function: first_app_launch
-* --------------------------
-* This function is called on the first launch of the application.
-* Here we are fetching the server_map and querying each server in the map.
-* We do this to update ping and other server information.
-* This function will trigger anytime the FTLL local cache is deleted.
-* --------------------------
-* TODO: Add error handling to unwraps
-*/
+/// This function is called on the first launch of the application.
+/// Here we are fetching the server_map and querying each server in the map.
+/// We do this to update ping and other server information.
+/// This function will trigger anytime the FTLL local cache is deleted.
+/// TODO: Add error handling to unwraps
 pub async fn init_server_cache() -> Result<()> {
     fetch_master_server_map().await?;
 
@@ -423,17 +398,13 @@ pub async fn init_server_cache() -> Result<()> {
     Ok(())
 }
 
-/**
-* function: fetch_master_server_map
-* --------------------------
-* This function is called to fetch the server_map from the FTL API.
-* The server_map is a HashMap<String, Server> where the key is the server's steamid.
-* Set to a static atomic reference, thread safe.
-*/
+/// This function is called to fetch the server_map from the FTL API.
+/// The server_map is a HashMap<String, Server> where the key is the server's steamid.
+/// Set to a static atomic reference, thread safe.
 async fn fetch_master_server_map() -> Result<()> {
     // Check if we are in dev mode
     let is_dev = dev();
-    dbg!("fetch_master_server_map() -> dev: {}", is_dev);
+    println!("is_dev: {}", is_dev);
 
     // Set dev and prod URIs
     // This may be better in a config file
@@ -475,15 +446,10 @@ async fn fetch_master_server_map() -> Result<()> {
     }
 }
 
-/**
-* function: init_appdata
-* --------------------------
-* This function is called on the first launch of the application.
-* Here we are creating the FTLL folder in the appdata directory.
-* This is where we will store the server_map.json and other application data.
-* --------------------------
-* TODO: Add error handling to unwraps
-*/
+/// This function is called on the first launch of the application.
+/// Here we are creating the FTLL folder in the appdata directory.
+/// This is where we will store the server_map.json and other application data.
+/// TODO: Add error handling to unwraps
 pub fn init_appdata() -> Result<()> {
     let base_dirs = BaseDirs::new().unwrap();
 
@@ -506,18 +472,18 @@ pub fn init_appdata() -> Result<()> {
 
     // Delete cache since we are launching application
     fs::remove_dir_all(idb)?;
+
     Ok(())
 }
 
-/**
-* Data Structure Definitions for FTLAPIResponse
-*/
+/// Data Structure FTLAPIResponse
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FTLAPIResponse {
     pub server_map: HashMap<String, Server>,
 }
 
+/// Server Data Structure
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Server {
@@ -544,9 +510,127 @@ pub struct Server {
     pub ping: Option<i64>,
 }
 
+/// Mod Data Structure
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Mod {
     pub workshop_id: i64,
     pub name: String,
+}
+
+/// 32 Bit Server Data Structure (JS can't handle i64)
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, specta::Type)]
+pub struct Server32 {
+    pub addr: String,
+    pub game_port: i32,
+    pub steam_id: String,
+    pub name: String,
+    pub app_id: String,
+    pub game_dir: String,
+    pub version: String,
+    pub product: String,
+    pub region: i32,
+    pub players: i32,
+    pub max_players: i32,
+    pub bots: i32,
+    pub map: String,
+    pub secure: bool,
+    pub dedicated: bool,
+    pub os: String,
+    pub game_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mod_list: Option<Vec<Mod32>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ping: Option<i32>,
+}
+
+/// 32 Bit Mod Data Structure (JS can't handle i64)
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, specta::Type)]
+pub struct Mod32 {
+    pub workshop_id: String,
+    pub name: String,
+}
+
+impl From<Server32> for Server {
+    fn from(server: Server32) -> Self {
+        Server {
+            addr: server.addr,
+            game_port: server.game_port as i64,
+            steam_id: server.steam_id,
+            name: server.name,
+            app_id: server.app_id.parse().unwrap(),
+            game_dir: server.game_dir,
+            version: server.version,
+            product: server.product,
+            region: server.region as i64,
+            players: server.players as i64,
+            max_players: server.max_players as i64,
+            bots: server.bots as i64,
+            map: server.map,
+            secure: server.secure,
+            dedicated: server.dedicated,
+            os: server.os,
+            game_type: server.game_type,
+            mod_list: server.mod_list.clone().map(|mods| {
+                mods.into_iter()
+                    .map(|mod32| Mod {
+                        workshop_id: mod32.workshop_id.parse().unwrap(),
+                        name: mod32.name,
+                    })
+                    .collect()
+            }),
+            ping: server.ping.map(|ping| ping as i64),
+        }
+    }
+}
+
+impl From<Mod32> for Mod {
+    fn from(mod32: Mod32) -> Self {
+        Mod {
+            workshop_id: mod32.workshop_id.parse().unwrap(),
+            name: mod32.name,
+        }
+    }
+}
+
+impl Into<Server32> for Server {
+    fn into(self) -> Server32 {
+        Server32 {
+            addr: self.addr,
+            game_port: self.game_port as i32,
+            steam_id: self.steam_id,
+            name: self.name,
+            app_id: self.app_id.to_string(),
+            game_dir: self.game_dir,
+            version: self.version,
+            product: self.product,
+            region: self.region as i32,
+            players: self.players as i32,
+            max_players: self.max_players as i32,
+            bots: self.bots as i32,
+            map: self.map,
+            secure: self.secure,
+            dedicated: self.dedicated,
+            os: self.os,
+            game_type: self.game_type,
+            mod_list: self.mod_list.clone().map(|mods| {
+                mods.into_iter()
+                    .map(|mod32| Mod32 {
+                        workshop_id: mod32.workshop_id.to_string(),
+                        name: mod32.name,
+                    })
+                    .collect()
+            }),
+            ping: self.ping.map(|ping| ping as i32),
+        }
+    }
+}
+
+impl Into<Mod32> for Mod {
+    fn into(self) -> Mod32 {
+        Mod32 {
+            workshop_id: self.workshop_id.to_string(),
+            name: self.name,
+        }
+    }
 }
