@@ -509,9 +509,7 @@ pub fn init_appdata() -> Result<()> {
     Ok(())
 }
 
-/**
-* Data Structure Definitions for FTLAPIResponse
-*/
+/// Data Structure Definitions for FTLAPIResponse
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FTLAPIResponse {
@@ -548,5 +546,38 @@ pub struct Server {
 #[serde(rename_all = "camelCase")]
 pub struct Mod {
     pub workshop_id: i64,
+    pub name: String,
+}
+
+/// Data Structures to return to the frontend
+/// JS cannot handle i64, so we convert to i32 where possible
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, specta::Type)]
+pub struct Server32 {
+    pub addr: String,
+    pub game_port: i32,
+    pub steam_id: String,
+    pub name: String,
+    pub app_id: String,
+    pub game_dir: String,
+    pub version: String,
+    pub product: String,
+    pub region: i32,
+    pub players: i32,
+    pub max_players: i32,
+    pub bots: i32,
+    pub map: String,
+    pub secure: bool,
+    pub dedicated: bool,
+    pub os: String,
+    pub game_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mod_list: Option<Vec<Mod32>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ping: Option<i32>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, specta::Type)]
+pub struct Mod32 {
+    pub workshop_id: String,
     pub name: String,
 }
