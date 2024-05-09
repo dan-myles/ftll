@@ -22,18 +22,9 @@ pub fn run() {
         }
     }
 
-    tauri::Builder::default()
-        .plugin(tauri_plugin_fs::init())
-        .plugin(tauri_plugin_os::init())
-        .plugin(tauri_plugin_shell::init())
-        .plugin(tauri_plugin_process::init())
-        .plugin(tauri_plugin_dialog::init())
-        .plugin(tauri_plugin_updater::Builder::new().build())
-        .invoke_handler(tauri::generate_handler![
-            dayz::dayz_launch_vanilla,
-            dayz::dayz_launch_modded,
-            dayz::dayz_get_playerlist,
-            dayz::dayz_get_player_ban_status,
+    let typesafe_handler = {
+        // Export typesafe bindings to the frontend (Typescript)
+        let builder = tauri_specta::ts::builder().commands(tauri_specta::collect_commands![
             steam::mdq_clear,
             steam::mdq_mod_add,
             steam::mdq_mod_remove,
@@ -53,13 +44,22 @@ pub fn run() {
             steam::steam_start_daemon,
             steam::steam_mount_api,
             steam::steam_unmount_api,
-            query::get_server_info,
-            query::get_server_list,
-            query::update_server_info_semaphore,
-            query::destroy_server_info_semaphore,
-            query::fetch,
-            updater::check_for_updates,
-        ])
+        ]);
+
+        #[cfg(debug_assertions)] // <- Only export on non-release builds
+        let builder = builder.path("../src/tauri-bindings.d.ts");
+
+        builder.build().unwrap()
+    };
+
+    tauri::Builder::default()
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .invoke_handler(typesafe_handler)
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
 
