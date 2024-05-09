@@ -17,19 +17,15 @@ use tokio::sync::Mutex;
 use tokio::sync::RwLock;
 use tokio::sync::Semaphore;
 
-/*
-* Global Variables
-* --------------------------
-* SERVER_MAP: where we store response from FTL API
-* MAX_UPDATES_SEMAPHORE: semaphore to limit concurrent server queries from frontend
-* We wrap this semaphore in a RwLock to allow destruction of the semaphore
-* and re-creation of the semaphore with a different limit. Or just to clear
-* the waiting list of permits.
-*/
 lazy_static! {
+    /// We store the server_map here, this is a HashMap<String, Server>
+    /// where the key is the server's QUERY IP ADDRESS.
     static ref SERVER_MAP: Arc<Mutex<HashMap<String, Server>>> =
         Arc::new(Mutex::new(HashMap::new()));
+    /// We store the max updates here, this is a RwLock<usize>
+    /// where the value is the max number of concurrent server queries.
     static ref MAX_UPDATES: Arc<RwLock<usize>> = Arc::new(RwLock::new(10));
+    /// A semaphore to limit concurrent server queries from the frontend.
     static ref MAX_UPDATES_SEMAPHORE: Arc<RwLock<Semaphore>> =
         Arc::new(RwLock::new(Semaphore::new(10)));
 }
