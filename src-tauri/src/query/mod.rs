@@ -91,7 +91,7 @@ pub async fn fetch(uri: String) -> Result<String, String> {
 /// NOTE: Eventually we will want to let users pick how many servers to query at once.
 #[tauri::command]
 #[specta::specta]
-pub async fn destroy_server_info_semaphore() {
+pub async fn destroy_server_info_semaphore() -> Result<(), String> {
     let semaphore = MAX_UPDATES_SEMAPHORE.clone();
     let semaphore = semaphore.read().await;
     semaphore.close();
@@ -101,6 +101,8 @@ pub async fn destroy_server_info_semaphore() {
     let mut new_semaphore = new_semaphore.write().await;
     let max_updates = MAX_UPDATES.clone().read().await.clone();
     *new_semaphore = Semaphore::new(max_updates);
+
+    Ok(())
 }
 
 /// This function is called to destroy the server info semaphore.
@@ -108,7 +110,7 @@ pub async fn destroy_server_info_semaphore() {
 /// NOTE: Eventually we will want to let users pick how many servers to query at once.
 #[tauri::command]
 #[specta::specta]
-pub async fn update_server_info_semaphore(max_updates: usize) {
+pub async fn update_server_info_semaphore(max_updates: i32) -> Result<(), String> {
     let semaphore = MAX_UPDATES_SEMAPHORE.clone();
     let semaphore = semaphore.read().await;
     semaphore.close();
@@ -117,9 +119,11 @@ pub async fn update_server_info_semaphore(max_updates: usize) {
     let new_semaphore = MAX_UPDATES_SEMAPHORE.clone();
     let mut new_semaphore = new_semaphore.write().await;
     let mut _m = MAX_UPDATES.clone().write().await.clone();
-    _m = max_updates;
+    _m = max_updates as usize;
 
-    *new_semaphore = Semaphore::new(max_updates);
+    *new_semaphore = Semaphore::new(max_updates.try_into().unwrap());
+
+    Ok(())
 }
 
 /// This function is called to get server information.
@@ -402,7 +406,7 @@ pub async fn init_server_cache() -> Result<()> {
 async fn fetch_master_server_map() -> Result<()> {
     // Check if we are in dev mode
     let is_dev = dev();
-    dbg!("fetch_master_server_map() -> dev: {}", is_dev);
+    println!("is_dev: {}", is_dev);
 
     // Set dev and prod URIs
     // This may be better in a config file
