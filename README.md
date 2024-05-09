@@ -85,8 +85,3 @@ in a pull request to the [nightly](https://github.com/avvo-na/ftl-launcher/tree/
 Make sure to read our [contributors guide](https://www.ftl-launcher.com/docs/intro_contributing) first on how to
 get started building and developing!
 
-## 📃 License
-FTLL is licensed with the `AGPLv3` license and can be found [here](https://github.com/avvo-na/ftl-launcher/blob/main/LICENSE)
-in the repository. This means that FTLL will always be open source, and any derivatives of FTLL will also
-have to be open source. This project is for the community and I want it to stay that way. If you're curious
-about the license go ahead and give it a read!
