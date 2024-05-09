@@ -23,44 +23,13 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <AlertDialog open={isLoadingServers}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Give me a moment... 🔎</AlertDialogTitle>
-            <AlertDialogDescription>
-              I&apos;m importing some new servers for you! Hold on a second and
-              I&apos;ll be done before you can say
-              &ldquo;supercalafragilisticexpialidocious&ldquo;!
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="flex w-full justify-center">
-            <div className="">
-              <img src={zombieUrl} alt="zombie" />
-            </div>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
-      <AlertDialog open={!isSteamReady}>
+      <AlertDialog open={!isSteamReady || !hasInfo}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Uh oh... 😭</AlertDialogTitle>
             <AlertDialogDescription>
               It looks like Steam isn&apos;t running, or your client is
               out-of-date! Please start Steam and try again.
-              {!hasInfo && (
-                <p>
-                  If you don&apos;t have a Steam account, you can create one{" "}
-                  <a
-                    href="https://store.steampowered.com/join/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-blue-500"
-                  >
-                    here
-                  </a>
-                  .
-                </p>
-              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="flex w-full justify-center">
@@ -76,6 +45,23 @@ export function FTLLContextProvider({ children }: { children: ReactNode }) {
               Retry
             </AlertDialogAction>
           </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={isLoadingServers}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Give me a moment... 🔎</AlertDialogTitle>
+            <AlertDialogDescription>
+              I&apos;m importing some new servers for you! Hold on a second and
+              I&apos;ll be done before you can say
+              &ldquo;supercalafragilisticexpialidocious&ldquo;!
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex w-full justify-center">
+            <div className="">
+              <img src={zombieUrl} alt="zombie" />
+            </div>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
       {children}

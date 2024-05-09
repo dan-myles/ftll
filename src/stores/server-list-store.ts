@@ -13,7 +13,6 @@ interface ServerListState {
 
 interface ServerListActions {
   setServerList: (serverList: Server32[]) => void
-  updateServer: (server: Server32) => void
 }
 
 const serverStorage: StateStorage = {
@@ -36,16 +35,6 @@ export const useServerListStore = create<ServerListState & ServerListActions>()(
     (set) => ({
       serverList: [],
       setServerList: (newServerList) => set({ serverList: newServerList }),
-      updateServer: (server) => {
-        set((state) => {
-          const serverList = [...state.serverList]
-          const index = serverList.findIndex((s) => s.addr === server.addr)
-          if (index !== -1) {
-            serverList[index] = server
-          }
-          return { serverList }
-        })
-      },
     }),
     {
       name: "server-storage",
