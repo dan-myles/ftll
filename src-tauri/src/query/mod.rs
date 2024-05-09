@@ -34,21 +34,14 @@ lazy_static! {
         Arc::new(RwLock::new(Semaphore::new(10)));
 }
 
-/**
-* function: get_server_list
-* --------------------------
-* This function is the only function that is exposed to the Tauri frontend.
-* Takes care of checking for cache, and refreshing that cache. Or if it
-* doesn't exist, we download a new server_map, and query each server in the map.
-* This function will only ever be called once, every application launch.
-* During runtime, the frontend will cache the server list via IndexedDB.
-* --------------------------
-* TODO: Handle errors here in this top level function.
-* We can either return them as a Result (not sure if tauri supports this)
-* or we can emit an event to the frontend indicating some cache error.
-*/
+/// This function is the only function that is exposed to the Tauri frontend.
+/// Takes care of checking for cache, and refreshing that cache. Or if it
+/// doesn't exist, we download a new server_map, and query each server in the map.
+/// This function will only ever be called once, every application launch.
+/// During runtime, the frontend will cache the server list via IndexedDB.
 #[tauri::command]
-pub async fn get_server_list() -> Result<Vec<Server>, String> {
+#[specta::specta]
+pub async fn get_server_list() -> Result<Vec<Server32>, String> {
     // Try to grab base directories
     let server_list_path = BaseDirs::new()
         .ok_or("ERROR: Could not find base directories!")?
@@ -68,16 +61,18 @@ pub async fn get_server_list() -> Result<Vec<Server>, String> {
     let server_list: Vec<Server> = server_map_locked.values().cloned().collect();
     println!("get_server_list(): Returning server list...");
 
+    // Convert Server to Server32
+    let server_list: Vec<Server32> = server_list
+        .into_iter()
+        .map(|server| server.into())
+        .collect();
     return Ok(server_list);
 }
 
-/**
-* function: fetch
-* --------------------------
-* This function is used to fetch data from a URI.
-* We do this here to avoid CORS issues.
-*/
+/// This function is used to fetch data from a URI.
+/// We do this here to avoid CORS issues.
 #[tauri::command]
+#[specta::specta]
 pub async fn fetch(uri: String) -> Result<String, String> {
     let response = reqwest::get(&uri).await;
     match response {
@@ -91,15 +86,11 @@ pub async fn fetch(uri: String) -> Result<String, String> {
     }
 }
 
-/**
-* function: destroy_server_info_semaphore
-* --------------------------
-* This function is called to destroy the server info semaphore.
-* We do this to clear the waiting list of permits, or to change the limit.
-* --------------------------
-* NOTE: Eventually we will want to let users pick how many servers to query at once.
-*/
+/// This function is called to destroy the server info semaphore.
+/// We do this to clear the waiting list of permits, or to change the limit.
+/// NOTE: Eventually we will want to let users pick how many servers to query at once.
 #[tauri::command]
+#[specta::specta]
 pub async fn destroy_server_info_semaphore() {
     let semaphore = MAX_UPDATES_SEMAPHORE.clone();
     let semaphore = semaphore.read().await;
@@ -112,15 +103,11 @@ pub async fn destroy_server_info_semaphore() {
     *new_semaphore = Semaphore::new(max_updates);
 }
 
-/**
-* function: update_server_info_semaphore
-* --------------------------
-* This function is called to destroy the server info semaphore.
-* We do this to clear the waiting list of permits, or to change the limit.
-* --------------------------
-* NOTE: Eventually we will want to let users pick how many servers to query at once.
-*/
+/// This function is called to destroy the server info semaphore.
+/// We do this to clear the waiting list of permits, or to change the limit.
+/// NOTE: Eventually we will want to let users pick how many servers to query at once.
 #[tauri::command]
+#[specta::specta]
 pub async fn update_server_info_semaphore(max_updates: usize) {
     let semaphore = MAX_UPDATES_SEMAPHORE.clone();
     let semaphore = semaphore.read().await;
@@ -140,7 +127,8 @@ pub async fn update_server_info_semaphore(max_updates: usize) {
 /// `@param: server` - The server to query.
 /// TODO : Add error handling to unwraps, what if we cant get a new client?
 #[tauri::command]
-pub async fn get_server_info(server: Server32) -> Result<Server, String> {
+#[specta::specta]
+pub async fn get_server_info(server: Server32) -> Result<Server32, String> {
     let server: Server = server.into();
     let semaphore = MAX_UPDATES_SEMAPHORE.clone();
     let semaphore = semaphore.read().await;
@@ -148,7 +136,7 @@ pub async fn get_server_info(server: Server32) -> Result<Server, String> {
 
     if permit.is_err() {
         println!("⚠️ Failed to acquire permit for: {}", server.name);
-        return Ok(server);
+        return Ok(server.into());
     }
 
     // Don't spawn servers! So lets sleep for a second.
@@ -184,7 +172,8 @@ pub async fn get_server_info(server: Server32) -> Result<Server, String> {
                 os: server.os,
                 game_type: server.game_type,
                 mod_list: server.mod_list,
-            });
+            }
+            .into());
         }
         Err(e) => {
             println!("Error getting server info: {}", e);
@@ -208,7 +197,8 @@ pub async fn get_server_info(server: Server32) -> Result<Server, String> {
                 os: server.os,
                 game_type: server.game_type,
                 mod_list: server.mod_list,
-            });
+            }
+            .into());
         }
     }
 }
