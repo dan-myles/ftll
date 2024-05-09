@@ -19,7 +19,7 @@ export function UserToolTip() {
     }
 
     loadAvi()
-  })
+  }, [user.avi])
 
   return (
     <>

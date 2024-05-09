@@ -57,7 +57,7 @@ pub fn run() {
         ]);
 
         #[cfg(debug_assertions)] // <- Only export on non-release builds
-        let builder = builder.path("../src/tauri-bindings.d.ts");
+        let builder = builder.path("../src/tauri-bindings.ts");
 
         builder.build().unwrap()
     };
