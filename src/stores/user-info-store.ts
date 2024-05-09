@@ -4,7 +4,7 @@ import { createJSONStorage, persist } from "zustand/middleware"
 type User = {
   name?: string
   steamId?: string
-  avi?: Uint8Array
+  avi?: number[]
 }
 
 interface UserInfoState {
@@ -14,7 +14,7 @@ interface UserInfoState {
 interface UserInfoActions {
   setUserName: (name: string) => void
   setSteamId: (steamId: string) => void
-  setAvi: (avi: Uint8Array) => void
+  setAvi: (avi: number[]) => void
 }
 
 export const useUserInfoStore = create<UserInfoState & UserInfoActions>()(
