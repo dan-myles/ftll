@@ -33,7 +33,7 @@ pub async fn mdq_clear() -> Result<(), String> {
 /// Adds a mod to the download queue.
 #[tauri::command]
 #[specta::specta]
-pub async fn mdq_mod_add(published_file_id: String) -> Result<(), String> {
+pub async fn mdq_add_mod(published_file_id: String) -> Result<(), String> {
     let published_file_id = published_file_id
         .parse::<u64>()
         .map_err(|e| e.to_string())?;
@@ -73,7 +73,7 @@ pub async fn mdq_mod_add(published_file_id: String) -> Result<(), String> {
 /// Removes a mod from the download queue.
 #[tauri::command]
 #[specta::specta]
-pub async fn mdq_mod_remove(published_file_id: String) -> Result<(), String> {
+pub async fn mdq_remove_mod(published_file_id: String) -> Result<(), String> {
     let published_file_id = published_file_id
         .parse::<u64>()
         .map_err(|e| e.to_string())?;
@@ -91,7 +91,7 @@ pub async fn mdq_mod_remove(published_file_id: String) -> Result<(), String> {
 /// Returns the progress of an active mod download. Will error if there is no active download.
 #[tauri::command]
 #[specta::specta]
-pub async fn mdq_active_download_progress() -> Result<[String; 2], String> {
+pub async fn mdq_get_active_download_progress() -> Result<[String; 2], String> {
     // Grab the mod queue and drop it like its hot!
     // Don't carry those locks across awaits 😎
     let mod_queue_ref = MOD_DOWNLOAD_QUEUE.clone();
@@ -127,7 +127,7 @@ pub async fn mdq_active_download_progress() -> Result<[String; 2], String> {
 /// Returns the workshopId of an active mod download. Will error if there is no active download.
 #[tauri::command]
 #[specta::specta]
-pub async fn mdq_active_download_id() -> Result<String, String> {
+pub async fn mdq_get_active_download_id() -> Result<String, String> {
     let mod_queue_ref = MOD_DOWNLOAD_QUEUE.clone();
     let mod_queue = mod_queue_ref.read().await;
     let front = (*mod_queue).front();

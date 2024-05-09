@@ -26,10 +26,10 @@ pub fn run() {
         // Export typesafe bindings to the frontend (Typescript)
         let builder = tauri_specta::ts::builder().commands(tauri_specta::collect_commands![
             steam::mdq_clear,
-            steam::mdq_mod_add,
-            steam::mdq_mod_remove,
-            steam::mdq_active_download_progress,
-            steam::mdq_active_download_id,
+            steam::mdq_add_mod,
+            steam::mdq_remove_mod,
+            steam::mdq_get_active_download_progress,
+            steam::mdq_get_active_download_id,
             steam::mdq_start_daemon,
             steam::steam_remove_mod,
             steam::steam_remove_mod_forcefully,
