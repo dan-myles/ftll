@@ -25,6 +25,10 @@ pub fn run() {
     let typesafe_handler = {
         // Export typesafe bindings to the frontend (Typescript)
         let builder = tauri_specta::ts::builder().commands(tauri_specta::collect_commands![
+            dayz::dayz_launch_vanilla,
+            dayz::dayz_launch_modded,
+            dayz::dayz_get_playerlist,
+            dayz::dayz_get_player_ban_status,
             steam::mdq_clear,
             steam::mdq_add_mod,
             steam::mdq_remove_mod,
