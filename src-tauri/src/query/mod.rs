@@ -135,17 +135,13 @@ pub async fn update_server_info_semaphore(max_updates: usize) {
     *new_semaphore = Semaphore::new(max_updates);
 }
 
-/**
-* function: get_server_info
-* --------------------------
-* This function is called to get server information.
-* We query the server and return the server information.
-* This may return an error if the server is unreachable.
-* --------------------------
-* TODO : Add error handling to unwraps, what if we cant get a new client?
-*/
+/// This function is called to get server information.
+/// We query the server and return the server information.
+/// `@param: server` - The server to query.
+/// TODO : Add error handling to unwraps, what if we cant get a new client?
 #[tauri::command]
-pub async fn get_server_info(server: Server) -> Result<Server, String> {
+pub async fn get_server_info(server: Server32) -> Result<Server, String> {
+    let server: Server = server.into();
     let semaphore = MAX_UPDATES_SEMAPHORE.clone();
     let semaphore = semaphore.read().await;
     let permit = semaphore.acquire().await;
@@ -158,16 +154,12 @@ pub async fn get_server_info(server: Server) -> Result<Server, String> {
     // Don't spawn servers! So lets sleep for a second.
     tokio::time::sleep(Duration::from_millis(1000)).await;
 
-    let a2s_client = A2SClient::new()
-        .await
-        .map_err(|_| "ERROR: Failed to create A2SClient")?;
+    let a2s_client = A2SClient::new().await.map_err(|e| e.to_string())?;
 
     let start = SystemTime::now();
     let response = a2s_client.info(server.addr.clone()).await;
     let end = SystemTime::now();
-    let duration = end
-        .duration_since(start)
-        .map_err(|_| "ERROR: Failed to get duration")?;
+    let duration = end.duration_since(start).map_err(|e| e.to_string())?;
 
     match response {
         Ok(info) => {
@@ -221,12 +213,8 @@ pub async fn get_server_info(server: Server) -> Result<Server, String> {
     }
 }
 
-/**
-* function: refresh_server_cache()
-* --------------------------
-* This function is called to refresh the server cache.
-* We skip all servers with marked as Some in the ping field, this means
-*/
+/// This function is called to refresh the server cache.
+/// We skip all servers with marked as Some in the ping field, this means
 pub async fn refresh_server_cache() -> Result<()> {
     let server_map_path = BaseDirs::new()
         .unwrap()
@@ -340,16 +328,11 @@ pub async fn refresh_server_cache() -> Result<()> {
     Ok(())
 }
 
-/**
-* function: first_app_launch
-* --------------------------
-* This function is called on the first launch of the application.
-* Here we are fetching the server_map and querying each server in the map.
-* We do this to update ping and other server information.
-* This function will trigger anytime the FTLL local cache is deleted.
-* --------------------------
-* TODO: Add error handling to unwraps
-*/
+/// This function is called on the first launch of the application.
+/// Here we are fetching the server_map and querying each server in the map.
+/// We do this to update ping and other server information.
+/// This function will trigger anytime the FTLL local cache is deleted.
+/// TODO: Add error handling to unwraps
 pub async fn init_server_cache() -> Result<()> {
     fetch_master_server_map().await?;
 
@@ -423,13 +406,9 @@ pub async fn init_server_cache() -> Result<()> {
     Ok(())
 }
 
-/**
-* function: fetch_master_server_map
-* --------------------------
-* This function is called to fetch the server_map from the FTL API.
-* The server_map is a HashMap<String, Server> where the key is the server's steamid.
-* Set to a static atomic reference, thread safe.
-*/
+/// This function is called to fetch the server_map from the FTL API.
+/// The server_map is a HashMap<String, Server> where the key is the server's steamid.
+/// Set to a static atomic reference, thread safe.
 async fn fetch_master_server_map() -> Result<()> {
     // Check if we are in dev mode
     let is_dev = dev();
@@ -475,15 +454,10 @@ async fn fetch_master_server_map() -> Result<()> {
     }
 }
 
-/**
-* function: init_appdata
-* --------------------------
-* This function is called on the first launch of the application.
-* Here we are creating the FTLL folder in the appdata directory.
-* This is where we will store the server_map.json and other application data.
-* --------------------------
-* TODO: Add error handling to unwraps
-*/
+/// This function is called on the first launch of the application.
+/// Here we are creating the FTLL folder in the appdata directory.
+/// This is where we will store the server_map.json and other application data.
+/// TODO: Add error handling to unwraps
 pub fn init_appdata() -> Result<()> {
     let base_dirs = BaseDirs::new().unwrap();
 
@@ -506,16 +480,18 @@ pub fn init_appdata() -> Result<()> {
 
     // Delete cache since we are launching application
     fs::remove_dir_all(idb)?;
+
     Ok(())
 }
 
-/// Data Structure Definitions for FTLAPIResponse
+/// Data Structure FTLAPIResponse
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FTLAPIResponse {
     pub server_map: HashMap<String, Server>,
 }
 
+/// Server Data Structure
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Server {
@@ -542,6 +518,7 @@ pub struct Server {
     pub ping: Option<i64>,
 }
 
+/// Mod Data Structure
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Mod {
@@ -549,8 +526,7 @@ pub struct Mod {
     pub name: String,
 }
 
-/// Data Structures to return to the frontend
-/// JS cannot handle i64, so we convert to i32 where possible
+/// 32 Bit Server Data Structure (JS can't handle i64)
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, specta::Type)]
 pub struct Server32 {
     pub addr: String,
@@ -576,8 +552,93 @@ pub struct Server32 {
     pub ping: Option<i32>,
 }
 
+/// 32 Bit Mod Data Structure (JS can't handle i64)
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, specta::Type)]
 pub struct Mod32 {
     pub workshop_id: String,
     pub name: String,
+}
+
+impl From<Server32> for Server {
+    fn from(server: Server32) -> Self {
+        Server {
+            addr: server.addr,
+            game_port: server.game_port as i64,
+            steam_id: server.steam_id,
+            name: server.name,
+            app_id: server.app_id.parse().unwrap(),
+            game_dir: server.game_dir,
+            version: server.version,
+            product: server.product,
+            region: server.region as i64,
+            players: server.players as i64,
+            max_players: server.max_players as i64,
+            bots: server.bots as i64,
+            map: server.map,
+            secure: server.secure,
+            dedicated: server.dedicated,
+            os: server.os,
+            game_type: server.game_type,
+            mod_list: server.mod_list.clone().map(|mods| {
+                mods.into_iter()
+                    .map(|mod32| Mod {
+                        workshop_id: mod32.workshop_id.parse().unwrap(),
+                        name: mod32.name,
+                    })
+                    .collect()
+            }),
+            ping: server.ping.map(|ping| ping as i64),
+        }
+    }
+}
+
+impl From<Mod32> for Mod {
+    fn from(mod32: Mod32) -> Self {
+        Mod {
+            workshop_id: mod32.workshop_id.parse().unwrap(),
+            name: mod32.name,
+        }
+    }
+}
+
+impl Into<Server32> for Server {
+    fn into(self) -> Server32 {
+        Server32 {
+            addr: self.addr,
+            game_port: self.game_port as i32,
+            steam_id: self.steam_id,
+            name: self.name,
+            app_id: self.app_id.to_string(),
+            game_dir: self.game_dir,
+            version: self.version,
+            product: self.product,
+            region: self.region as i32,
+            players: self.players as i32,
+            max_players: self.max_players as i32,
+            bots: self.bots as i32,
+            map: self.map,
+            secure: self.secure,
+            dedicated: self.dedicated,
+            os: self.os,
+            game_type: self.game_type,
+            mod_list: self.mod_list.clone().map(|mods| {
+                mods.into_iter()
+                    .map(|mod32| Mod32 {
+                        workshop_id: mod32.workshop_id.to_string(),
+                        name: mod32.name,
+                    })
+                    .collect()
+            }),
+            ping: self.ping.map(|ping| ping as i32),
+        }
+    }
+}
+
+impl Into<Mod32> for Mod {
+    fn into(self) -> Mod32 {
+        Mod32 {
+            workshop_id: self.workshop_id.to_string(),
+            name: self.name,
+        }
+    }
 }
