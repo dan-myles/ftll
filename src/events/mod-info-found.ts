@@ -6,10 +6,8 @@ import { events } from "@/tauri-bindings"
 // We can't cant request the list and await a response
 // We have to listen for a callback event instead
 export function listen() {
-  console.log("Listening for mod info found events")
   events.modInfoFoundEvent
     .listen((event) => {
-      console.log({ event })
       useModListStore.getState().addMod(event.payload)
     })
     .catch(console.error)

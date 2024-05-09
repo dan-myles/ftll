@@ -1,7 +1,6 @@
 import { FileWarning, Hammer, OctagonX, Trash2 } from "lucide-react"
 import { DotsHorizontalIcon } from "@radix-ui/react-icons"
 import { createFileRoute } from "@tanstack/react-router"
-import { invoke } from "@tauri-apps/api/core"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,9 +12,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { formatBytes } from "@/lib/utils"
-import { type ModInfo } from "@/schemas/mod-info"
 import { useModDownloadQueue } from "@/stores/mod-download-queue"
 import { useModListStore } from "@/stores/mod-list-store"
+import { commands } from "@/tauri-bindings"
 import { PendingMod } from "./-components/pending-mod"
 
 export const Route = createFileRoute("/mod-manager/")({
@@ -23,36 +22,11 @@ export const Route = createFileRoute("/mod-manager/")({
 })
 
 function Index() {
-  const { modList, removeMod } = useModListStore()
+  const { modList } = useModListStore()
   const { downloadQueue, pushFix } = useModDownloadQueue()
-
-  const remove = (id: number) => {
-    invoke("steam_remove_mod", { publishedFileId: id }).catch(console.error)
-  }
-
-  const forceRemove = (id: number) => {
-    invoke("steam_remove_mod_forcefully", { publishedFileId: id }).catch(
-      console.error
-    )
-  }
-
-  const fix = (mod: ModInfo) => {
-    pushFix(
-      { workshopId: mod.published_file_id, name: mod.title },
-      false
-    ).catch(console.error)
-  }
-
-  const forceFix = (mod: ModInfo) => {
-    pushFix({ workshopId: mod.published_file_id, name: mod.title }, true).catch(
-      console.error
-    )
-    removeMod(mod.published_file_id)
-  }
 
   return (
     <div className="flex h-full flex-col space-y-2 p-4">
-      <Button onClick={() => console.log(modList)}>test</Button>
       {downloadQueue.length > 0 && (
         <div className="pb-8">
           <p className="mb-2 max-w-fit text-lg font-semibold">Pending Mods</p>
@@ -60,7 +34,7 @@ function Index() {
             <div className="flex h-full flex-grow flex-col">
               {downloadQueue.map((mod, idx) => (
                 <PendingMod
-                  key={mod.workshopId}
+                  key={mod.workshop_id}
                   mod={mod}
                   className={idx === 0 ? "" : " border-t"}
                 />
@@ -116,23 +90,51 @@ function Index() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-[160px]">
-                      <DropdownMenuItem onClick={() => fix(mod)}>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          pushFix(
+                            {
+                              workshop_id: mod.published_file_id,
+                              name: mod.title,
+                            },
+                            false
+                          ).catch(console.error)
+                        }}
+                      >
                         <Hammer size={16} className="mr-2" />
                         Fix
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => forceFix(mod)}>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          pushFix(
+                            {
+                              workshop_id: mod.published_file_id,
+                              name: mod.title,
+                            },
+                            true
+                          ).catch(console.error)
+                        }}
+                      >
                         <FileWarning size={16} className="mr-2" />
                         Force Fix
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        onClick={() => remove(mod.published_file_id)}
+                        onClick={() => {
+                          commands
+                            .steamRemoveMod(mod.published_file_id)
+                            .catch(console.error)
+                        }}
                       >
                         <Trash2 size={16} className="mr-2" />
                         Remove
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => forceRemove(mod.published_file_id)}
+                        onClick={() => {
+                          commands
+                            .steamRemoveModForcefully(mod.published_file_id)
+                            .catch(console.error)
+                        }}
                       >
                         <OctagonX size={16} className="mr-2" />
                         Force Remove
