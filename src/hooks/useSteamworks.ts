@@ -7,6 +7,8 @@ export function useSteamworks() {
 
   useEffect(() => {
     async function initSteamworks() {
+      if (isSteamReady) return
+
       const ready = await commands.steamMountApi()
       if (ready.status === "error") {
         console.error(ready.error)
@@ -32,7 +34,7 @@ export function useSteamworks() {
     }
 
     initSteamworks().catch(console.error)
-  }, [setIsSteamReady])
+  }, [isSteamReady, setIsSteamReady])
 
   return { isSteamReady }
 }

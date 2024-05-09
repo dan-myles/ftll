@@ -4,7 +4,9 @@ import { useUserInfoStore } from "@/stores/user-info-store"
 import { commands } from "@/tauri-bindings"
 
 export function useUserInfo() {
-  const [hasInfo, setInfo] = useState(false)
+  // We assume the user has info until we know otherwise
+  // This prevents too many dialogs from popping up on refresh
+  const [hasInfo, setInfo] = useState(true)
   const { isSteamReady } = useSteamStore()
   const { setUserName, setSteamId, setAvi } = useUserInfoStore()
 

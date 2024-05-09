@@ -10,6 +10,8 @@ export function useServerList() {
 
   useEffect(() => {
     async function getServerList() {
+      if (!isSteamReady) return
+
       // Persist the store and check if it has hydrated
       await useServerListStore.persist.rehydrate()
       if (!useServerListStore.persist.hasHydrated()) return

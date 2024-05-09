@@ -6,6 +6,7 @@ use std::fs;
 use std::sync::Arc;
 use std::time::Duration;
 use tauri::{AppHandle, Manager};
+use tauri_specta::Event;
 use tokio::sync::RwLock;
 use tokio::{task, time};
 
@@ -196,16 +197,15 @@ pub async fn mdq_start_daemon(app_handle: AppHandle) -> Result<(), String> {
 
                 // Emit an extra event to let the frontend know the mod is installed
                 // Just in case the frontend is waiting for the download to finish
-                let event = ActiveDownloadProgressEvent {
+                ActiveDownloadProgressEvent {
                     published_file_id: front.to_string(),
                     bytes_downloaded: 0.to_string(),
                     bytes_total: 0.to_string(),
                     percentage_downloaded: 100.0.to_string(),
-                };
+                }
+                .emit(&handle)
+                .expect("Failed to emit event!");
 
-                handle
-                    .emit("mdq_active_download_progress", event)
-                    .expect("Failed to emit event!");
                 continue;
             }
 
@@ -221,21 +221,21 @@ pub async fn mdq_start_daemon(app_handle: AppHandle) -> Result<(), String> {
                 let bytes_total = download_info.unwrap().1;
                 let percentage_downloaded = bytes_downloaded as f64 / bytes_total as f64 * 100.0;
 
-                let event = ActiveDownloadProgressEvent {
-                    published_file_id: front.to_string(),
-                    bytes_downloaded: bytes_downloaded.to_string(),
-                    bytes_total: bytes_total.to_string(),
-                    percentage_downloaded: percentage_downloaded.to_string(),
-                };
-
                 println!(
                     "mdq_daemon: {} is downloading... {:.1}% ({}/{})",
                     front, percentage_downloaded, bytes_downloaded, bytes_total
                 );
 
-                handle
-                    .emit("mdq_active_download_progress", event)
-                    .expect("Failed to emit event!");
+                // Emit the download progress
+                ActiveDownloadProgressEvent {
+                    published_file_id: front.to_string(),
+                    bytes_downloaded: bytes_downloaded.to_string(),
+                    bytes_total: bytes_total.to_string(),
+                    percentage_downloaded: percentage_downloaded.to_string(),
+                }
+                .emit(&handle)
+                .expect("Failed to emit event!");
+
                 continue;
             }
 
@@ -418,22 +418,19 @@ pub async fn steam_fix_mod_forcefully(
             let bytes_downloaded = download_info.0;
             let bytes_total = download_info.1;
             let percentage_downloaded = bytes_downloaded as f64 / bytes_total as f64 * 100.0;
-            let event = ActiveDownloadProgressEvent {
-                published_file_id: published_file_id.to_string(),
-                bytes_downloaded: bytes_downloaded.to_string(),
-                bytes_total: bytes_total.to_string(),
-                percentage_downloaded: percentage_downloaded.to_string(),
-            };
-
             println!(
                 "steam_fix_mod_forcefully: {} is downloading... {}% ({}/{})",
                 published_file_id, percentage_downloaded, bytes_downloaded, bytes_total
             );
 
-            // Emit the event
-            handle
-                .emit("steam_fix_mod_forcefully_progress", event)
-                .expect("Failed to emit progress event");
+            ActiveDownloadProgressEvent {
+                published_file_id: published_file_id.to_string(),
+                bytes_downloaded: bytes_downloaded.to_string(),
+                bytes_total: bytes_total.to_string(),
+                percentage_downloaded: percentage_downloaded.to_string(),
+            }
+            .emit(&handle)
+            .expect("Failed to emit event!");
 
             // Make sure we're done
             if percentage_downloaded >= 100.0 {
@@ -787,7 +784,7 @@ pub async fn steam_unmount_api() -> Result<(), String> {
 
 /// Structure of the Steamworks Installed Mod Info
 #[derive(Debug, Clone, serde::Deserialize, serde::Serialize, specta::Type)]
-struct ModInfo {
+pub struct ModInfo {
     published_file_id: String,
     title: String,
     description: String,
@@ -808,8 +805,8 @@ struct ModInfo {
 }
 
 /// Event for Active Download Progress
-#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, specta::Type)]
-struct ActiveDownloadProgressEvent {
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, specta::Type, tauri_specta::Event)]
+pub struct ActiveDownloadProgressEvent {
     published_file_id: String,
     bytes_downloaded: String,
     bytes_total: String,
