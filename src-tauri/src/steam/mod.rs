@@ -451,7 +451,7 @@ pub async fn steam_fix_mod_forcefully(
 
 /// Queries the Steamworks API for a list of mods that are missing from the server.
 /// Must be given an array of mod ids to check against.
-/// Returns a list of mod ids that are missing.
+/// Returns an array of mod ids that are missing.
 #[tauri::command]
 #[specta::specta]
 pub async fn steam_get_missing_mods_for_server(
