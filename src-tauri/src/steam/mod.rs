@@ -87,7 +87,8 @@ pub async fn mdq_remove_mod(published_file_id: String) -> Result<(), String> {
         (*mod_queue).retain(|&x| x != published_file_id);
         Ok(())
     } else {
-        Err("Mod not found in download queue!".to_string())
+        println!("mdq_remove_mod: Mod not found in queue, theres nothing to remove!");
+        Ok(())
     }
 }
 
@@ -526,12 +527,12 @@ pub async fn steam_get_installed_mods(app_handle: AppHandle) -> Result<(), Strin
                 }
             }
             let query_result = query_result.unwrap();
-            let size = get_size(&path).unwrap();
-
-            println!(
-                "steam_get_installed_mods: Found mod: {}",
-                query_result.title
-            );
+            let size = get_size(&path);
+            if size.is_err() {
+                dbg!("Error fetching mod size: {}", size.err());
+                return;
+            }
+            let size = size.unwrap();
 
             // Emit the mod info!
             ModInfoFoundEvent {
