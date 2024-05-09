@@ -340,10 +340,18 @@ return await TAURI_INVOKE("check_for_updates");
 }
 }
 
-
+export const events = __makeEvents__<{
+activeDownloadProgressEvent: ActiveDownloadProgressEvent
+}>({
+activeDownloadProgressEvent: "active-download-progress-event"
+})
 
 /** user-defined types **/
 
+/**
+ * Event for Active Download Progress
+ */
+export type ActiveDownloadProgressEvent = { published_file_id: string; bytes_downloaded: string; bytes_total: string; percentage_downloaded: string }
 /**
  * 32 Bit Mod Data Structure (JS can't handle i64)
  */
