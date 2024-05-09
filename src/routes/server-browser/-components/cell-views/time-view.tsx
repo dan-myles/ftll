@@ -1,7 +1,7 @@
 import { useContext } from "react"
 import { type Row } from "@tanstack/react-table"
 import { toTwelveHourTime } from "@/lib/convert-time"
-import { type Server, serverSchema } from "@/schemas/server-schema"
+import { type Server32 } from "@/tauri-bindings"
 import { UpdatedServerContext } from "../row"
 
 interface TimeViewProps<TData> {
@@ -9,11 +9,11 @@ interface TimeViewProps<TData> {
 }
 
 export function TimeView<TData>({ row }: TimeViewProps<TData>) {
-  const server = serverSchema.parse(row.original)
+  const server = row.original as Server32
   const updatedServer = useContext(UpdatedServerContext)
 
-  function formatTime(server: Server) {
-    const gameTypeSplit = server.gameType.split(",")
+  function formatTime(server: Server32) {
+    const gameTypeSplit = server.game_type.split(",")
     const gameTime = gameTypeSplit.at(gameTypeSplit.length - 1)!
     // eslint-disable-next-line
     const formattedTime = toTwelveHourTime(gameTime) as string

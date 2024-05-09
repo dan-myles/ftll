@@ -1,15 +1,16 @@
 import { HeartFilledIcon, HeartIcon } from "@radix-ui/react-icons"
 import { type Row } from "@tanstack/react-table"
 import { useFavoriteServer } from "@/hooks/useFavoriteServer"
-import { serverSchema } from "@/schemas/server-schema"
+import { type Server32 } from "@/tauri-bindings"
 
 interface FavrotieViewProps<TData> {
   row: Row<TData>
 }
 
 export function FavoriteView<TData>({ row }: FavrotieViewProps<TData>) {
-  const server = serverSchema.parse(row.original)
-  const { isFavorite, handleFavorited } = useFavoriteServer(server)
+  const { isFavorite, handleFavorited } = useFavoriteServer(
+    row.original as Server32
+  )
 
   return (
     <div className="">

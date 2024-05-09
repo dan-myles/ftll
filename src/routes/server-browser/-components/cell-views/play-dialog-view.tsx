@@ -1,14 +1,14 @@
 import { PlayIcon } from "lucide-react"
 import { type Row } from "@tanstack/react-table"
 import { ServerPlayValidator } from "@/components/server-play-validator"
-import { serverSchema } from "@/schemas/server-schema"
+import { type Server32 } from "@/tauri-bindings"
 
 interface PlayDialogViewProps<TData> {
   row: Row<TData>
 }
 
 export function PlayDialogView<TData>({ row }: PlayDialogViewProps<TData>) {
-  const server = serverSchema.parse(row.original)
+  const server = row.original as Server32
 
   return (
     <ServerPlayValidator server={server}>

@@ -1,28 +1,15 @@
 import { type Row } from "@tanstack/react-table"
-import { serverSchema } from "@/schemas/server-schema"
+import { type Server32 } from "@/tauri-bindings"
 
 interface NameViewProps<TData> {
   row: Row<TData>
 }
 
 export function NameView<TData>({ row }: NameViewProps<TData>) {
-  const server = serverSchema.parse(row.original)
+  const server = row.original as Server32
 
   // Theres gotta be a better way to do this 💀
-  if (!server.modList) {
-    return (
-      <div className="flex flex-col">
-        <div
-          className="truncate font-medium md:max-w-[350px] lg:max-w-[600px]
-            xl:max-w-[850px]"
-        >
-          {server.name}
-        </div>
-      </div>
-    )
-  }
-
-  if (server.modList.at(0)?.workshopId === 0) {
+  if (!server.mod_list) {
     return (
       <div className="flex flex-col">
         <div
@@ -46,9 +33,9 @@ export function NameView<TData>({ row }: NameViewProps<TData>) {
         {server.name}
       </div>
       <div className="truncate text-gray-500">
-        {server.modList.map((mod) => {
+        {server.mod_list.map((mod) => {
           return (
-            <span key={mod.workshopId} className="text-gray-500">
+            <span key={mod.workshop_id} className="text-gray-500">
               {mod.name} |{" "}
             </span>
           )
