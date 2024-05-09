@@ -12,9 +12,9 @@ import {
 import { CarouselItem } from "@/components/ui/carousel"
 import { maps } from "@/data/map-filter-data"
 import { useUpdateServer } from "@/hooks/useUpdateServer"
-import { type Server } from "@/schemas/server-schema"
+import { type Server32 } from "@/tauri-bindings"
 
-export function CarouselCard({ initServer }: { initServer: Server }) {
+export function CarouselCard({ initServer }: { initServer: Server32 }) {
   const [server, setServer] = useState(initServer)
   const newServer = useUpdateServer(server)
 
@@ -32,7 +32,7 @@ export function CarouselCard({ initServer }: { initServer: Server }) {
         <Card className="h-full p-4">
           <CardTitle className="truncate">{server.name}</CardTitle>
           <CardDescription className="truncate text-xs">
-            {server.addr.split(":")[0] + ":" + server.gamePort}
+            {server.addr.split(":")[0] + ":" + server.game_port}
           </CardDescription>
           <CardContent
             className="ml-[-25px] mt-[-10px] flex flex-col space-y-2 p-6 text-sm"
@@ -48,7 +48,7 @@ export function CarouselCard({ initServer }: { initServer: Server }) {
             <div className="flex space-x-2">
               <Badge variant="secondary">Players</Badge>
               <Badge variant="outline">
-                {server.players + "/" + server.maxPlayers}
+                {server.players + "/" + server.max_players}
               </Badge>
             </div>
             <div className="flex space-x-2">

@@ -1,13 +1,13 @@
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
-import type { Server } from "@/schemas/server-schema"
+import { type Server32 } from "@/tauri-bindings"
 
 interface ConnectedServerState {
-  connectedServer: Server | undefined
+  connectedServer: Server32 | undefined
 }
 
 interface ConnectedServerActions {
-  setConnectedServer: (server: Server) => void
+  setConnectedServer: (server: Server32) => void
   clearConnectedServer: () => void
 }
 
