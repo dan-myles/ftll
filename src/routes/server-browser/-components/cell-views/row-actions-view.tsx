@@ -1,9 +1,4 @@
-import {
-  CopyIcon,
-  FolderCogIcon,
-  FolderInputIcon,
-  InfoIcon,
-} from "lucide-react"
+import { CopyIcon, InfoIcon } from "lucide-react"
 import { useContext } from "react"
 import { toast } from "sonner"
 import {
@@ -12,7 +7,6 @@ import {
   HeartIcon,
 } from "@radix-ui/react-icons"
 import { type Row } from "@tanstack/react-table"
-import { ServerDownloadValidator } from "@/components/server-download-validator"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -22,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useFavoriteServer } from "@/hooks/useFavoriteServer"
-import { type Server } from "@/schemas/server-schema"
+import { type Server32 } from "@/tauri-bindings"
 import { DrawerContext } from "../row"
 
 interface RowActionsViewProps<TData> {
@@ -32,13 +26,13 @@ interface RowActionsViewProps<TData> {
 export function RowActionsView<TData>({ row }: RowActionsViewProps<TData>) {
   const handleDrawerOpen = useContext(DrawerContext)
   const { isFavorite, handleFavorited } = useFavoriteServer(
-    row.original as Server
+    row.original as Server32
   )
 
   const handleCopy = () => {
-    const server = row.original as Server
+    const server = row.original as Server32
     const addr = server.addr.split(":")[0]
-    void navigator.clipboard.writeText(addr + ":" + server.gamePort)
+    void navigator.clipboard.writeText(addr + ":" + server.game_port)
     // trim the string to max 20 characters
     const shortName =
       server.name.length > 45

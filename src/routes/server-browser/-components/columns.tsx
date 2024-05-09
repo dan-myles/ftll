@@ -1,6 +1,6 @@
 import { HeartFilledIcon } from "@radix-ui/react-icons"
 import { type ColumnDef } from "@tanstack/react-table"
-import { type Server } from "@/schemas/server-schema"
+import { type Server32 } from "@/tauri-bindings"
 import { FavoriteView } from "./cell-views/favorite-view"
 import { MapView } from "./cell-views/map-view"
 import { NameView } from "./cell-views/name-view"
@@ -12,7 +12,7 @@ import { TimeView } from "./cell-views/time-view"
 import { ColumnHeader } from "./column-header"
 
 // I should really think about changing everything to match case on api
-export const columns: ColumnDef<Server>[] = [
+export const columns: ColumnDef<Server32>[] = [
   {
     id: "Favorited",
     header: () => <HeartFilledIcon className="ml-2 h-4 w-4" />,
@@ -66,7 +66,7 @@ export const columns: ColumnDef<Server>[] = [
     accessorKey: "modList",
     filterFn: (row, _id, value) => {
       return (
-        row.original.modList
+        row.original.mod_list
           // eslint-disable-next-line
           ?.map((mod) => mod.name.includes(value) ?? false)
           .includes(true) ?? false

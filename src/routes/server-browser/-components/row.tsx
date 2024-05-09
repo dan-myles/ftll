@@ -3,9 +3,11 @@ import { type Row } from "@tanstack/react-table"
 import { MoreInfo } from "@/components/more-info"
 import { useUpdateServer } from "@/hooks/useUpdateServer"
 import { cn } from "@/lib/utils"
-import { type Server, serverSchema } from "@/schemas/server-schema"
+import type { Server32 } from "@/tauri-bindings"
 
-export const UpdatedServerContext = createContext<Server | undefined>(undefined)
+export const UpdatedServerContext = createContext<Server32 | undefined>(
+  undefined
+)
 export const DrawerContext = createContext<() => void>(() => {
   return
 })
@@ -19,8 +21,7 @@ export function TableRow<TData>({ className, row, ...props }: RowProps<TData>) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const handleOpenDrawer = () => setDrawerOpen(true)
   const handleCloseDrawer = () => setDrawerOpen(false)
-  const server = serverSchema.parse(row.original)
-  const update = useUpdateServer(server)
+  const update = useUpdateServer(row.original as Server32)
 
   return (
     <UpdatedServerContext.Provider value={update}>
@@ -35,7 +36,7 @@ export function TableRow<TData>({ className, row, ...props }: RowProps<TData>) {
           {...props}
         ></tr>
         <MoreInfo
-          initServer={row.original as Server}
+          initServer={row.original as Server32}
           open={isDrawerOpen}
           onClose={handleCloseDrawer}
         />

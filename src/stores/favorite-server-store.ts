@@ -1,18 +1,18 @@
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
-import type { Server, ServerList } from "@/schemas/server-schema"
+import type { Server32 } from "@/tauri-bindings"
 
 interface FavoriteServerState {
-  serverList: ServerList
+  serverList: Server32[]
 }
 
 interface FavoriteServerActions {
-  setServerList: (serverList: ServerList) => void
-  updateServer: (server: Server) => void
-  removeServer: (server: Server) => void
+  setServerList: (serverList: Server32[]) => void
+  updateServer: (server: Server32) => void
+  removeServer: (server: Server32) => void
   removeServerByAddr: (addr: string) => void
-  addServer: (server: Server) => void
-  updateServerList: (master: ServerList) => void
+  addServer: (server: Server32) => void
+  updateServerList: (master: Server32[]) => void
 }
 
 export const useFavoriteServerStore = create<
