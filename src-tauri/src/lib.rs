@@ -44,6 +44,11 @@ pub fn run() {
             steam::steam_start_daemon,
             steam::steam_mount_api,
             steam::steam_unmount_api,
+            query::get_server_info,
+            query::get_server_list,
+            query::update_server_info_semaphore,
+            query::destroy_server_info_semaphore,
+            query::fetch,
             updater::check_for_updates,
         ]);
 
