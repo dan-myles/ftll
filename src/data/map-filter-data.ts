@@ -1,122 +1,122 @@
 export const maps = [
   {
-    value: "Alteria",
+    value: "alteria",
     label: "Alteria",
   },
   {
-    value: "Arsteinen",
+    value: "arsteinen",
     label: "Arsteinen",
   },
   {
-    value: "Banov",
+    value: "banov",
     label: "Banov",
   },
   {
-    value: "Barrington",
+    value: "barrington",
     label: "Barrington",
   },
   {
-    value: "Bearisland",
+    value: "bearisland",
     label: "Bear Island",
   },
   {
-    value: "Bitterroot",
+    value: "bitterroot",
     label: "Bitter Root",
   },
   {
-    value: "Chernarusplus",
+    value: "chernarusplus",
     label: "Chernarus+",
   },
   {
-    value: "Chernarusplusgloom",
+    value: "chernarusplusgloom",
     label: "Chernarus+ Gloom",
   },
   {
-    value: "Chiemsee",
+    value: "chiemsee",
     label: "Chiemsee",
   },
   {
-    value: "Deerisle",
+    value: "deerisle",
     label: "Deer Isle",
   },
   {
-    value: "Eden",
+    value: "eden",
     label: "Eden",
   },
   {
-    value: "Enoch",
+    value: "enoch",
     label: "Livonia",
   },
   {
-    value: "Esseker",
+    value: "esseker",
     label: "Esseker",
   },
   {
-    value: "Exclusionzone",
+    value: "exclusionzone",
     label: "Exclusion Zone",
   },
   {
-    value: "Exclusionzoneplus",
+    value: "exclusionzoneplus",
     label: "Exclusion Zone+",
   },
   {
-    value: "Iztek",
+    value: "iztek",
     label: "Iztek",
   },
   {
-    value: "Lux",
+    value: "lux",
     label: "Lux",
   },
   {
-    value: "Melkart",
+    value: "melkart",
     label: "Melkart",
   },
   {
-    value: "Namalsk",
+    value: "namalsk",
     label: "Namalsk",
   },
   {
-    value: "Nhchernobyl",
+    value: "nhchernobyl",
     label: "NH Chernobyl",
   },
   {
-    value: "Nyheim",
+    value: "nyheim",
     label: "Nyheim",
   },
   {
-    value: "Pripyat",
+    value: "pripyat",
     label: "Pripyat",
   },
   {
-    value: "Rostow",
+    value: "rostow",
     label: "Rostow",
   },
   {
-    value: "Sarov",
+    value: "sarov",
     label: "Sarov",
   },
   {
-    value: "Stuartisland",
+    value: "stuartisland",
     label: "Stuart Island",
   },
   {
-    value: "Takistanplus",
+    value: "takistanplus",
     label: "Takistan+",
   },
   {
-    value: "Thezone",
+    value: "thezone",
     label: "The Zone",
   },
   {
-    value: "Valning",
+    value: "valning",
     label: "Valning",
   },
   {
-    value: "Vela",
+    value: "vela",
     label: "Vela",
   },
   {
-    value: "Yiprit",
+    value: "yiprit",
     label: "Yiprit",
   },
 ]
