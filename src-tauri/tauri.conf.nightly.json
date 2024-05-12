@@ -1,6 +1,6 @@
 {
   "productName": "FTLL Nightly",
-  "version": "0.1.10-alpha-nightly",
+  "version": "0.1.11-alpha-nightly",
   "identifier": "com.ftl-launcher.app",
   "build": {
     "frontendDist": "../dist",
