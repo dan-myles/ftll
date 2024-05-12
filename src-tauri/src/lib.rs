@@ -18,8 +18,11 @@ pub fn run() {
     // front end do it so we can show a user friendly error message if it fails.
     // If init_appdata() fails, its a major problem
     let e = query::init_appdata();
-    if e.is_err() {
-        panic!("Error initializing appdata: {}", e.unwrap_err());
+    match e {
+        Ok(_) => {}
+        Err(e) => {
+            panic!("Error initializing appdata: {}", e);
+        }
     }
 
     let (typesafe_handler, register_typesafe_events) = {
