@@ -448,31 +448,39 @@ async fn fetch_master_server_map() -> Result<()> {
 }
 
 /// This function is called on the first launch of the application.
-/// Bust the IndexedDB cache to pull the latest server list from the API.
-/// Real cache is held in the appdata/FTLL/server_list.json file
+/// Here we are creating the FTLL folder in the appdata directory.
+/// This is where we will store the server_map.json and other application data.
 /// TODO: Add error handling to unwraps
 pub fn init_appdata() -> Result<()> {
     let base_dirs = BaseDirs::new().unwrap();
 
     // Now we need to bust indexeddb cache to pull it from our local cache
-    let cache_dir = base_dirs
-        .data_local_dir()
-        .join("com.ftl-launcher.stable")
-        .join("EBWebView/Default/IndexedDB");
-
-    if cache_dir.exists() {
-        fs::remove_dir_all(cache_dir)?;
+    let cache_dir = base_dirs.data_local_dir().join("com.ftl-launcher.stable");
+    if !cache_dir.exists() {
+        return Ok(());
     }
 
-    // Bust for nightly as well
-    let cache_dir = base_dirs
-        .data_local_dir()
-        .join("com.ftl-launcher.nightly")
-        .join("EBWebView/Default/IndexedDB");
-
-    if cache_dir.exists() {
-        fs::remove_dir_all(cache_dir)?;
+    let idb = cache_dir.join("EBWebView/Default/IndexedDB");
+    if !idb.exists() {
+        return Ok(());
     }
+
+    // Delete cache since we are launching application
+    fs::remove_dir_all(idb)?;
+
+    // Bust nightly as well
+    let cache_dir = base_dirs.data_local_dir().join("com.ftl-launcher.nightly");
+    if !cache_dir.exists() {
+        return Ok(());
+    }
+
+    let idb = cache_dir.join("EBWebView/Default/IndexedDB");
+    if !idb.exists() {
+        return Ok(());
+    }
+
+    // Delete cache since we are launching application
+    fs::remove_dir_all(idb)?;
 
     Ok(())
 }
