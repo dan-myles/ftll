@@ -1,0 +1,31 @@
+name: Lint & Format (Rust)
+
+on:
+  pull_request:
+    branches:
+      - main
+      - nightly
+  push:
+    branches:
+      - main
+      - nightly
+
+jobs:
+  run-scripts:
+    name: Run linters & formatters
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust (Stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install formatter
+        run: rustup component add rustfmt
+
+      - name: Check formatting
+        run: |
+          cd src-tauri
+          cargo fmt --check
