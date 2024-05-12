@@ -408,9 +408,12 @@ async fn fetch_master_server_map() -> Result<()> {
 
     // Set dev and prod URIs
     // This may be better in a config file
+    // NOTE: We are using the prod URI for now
+    // This is to get the latest server list from the API
+    // let dev_uri = "http://api.ftl-launcher.com";
     let dev_uri = "http://localhost:8080";
     let prod_uri = "http://api.ftl-launcher.com";
-    let endpoint = "/api/v1/GetMasterServerMap";
+    let endpoint = "/v1/dayz/servers";
 
     match is_dev {
         true => {
