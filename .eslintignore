@@ -13,3 +13,5 @@ tailwind.config.ts
 src-tauri/
 vite.config.ts
 src/tauri-bindings.d.ts
+postcss.config.js
+tailwind.config.js
