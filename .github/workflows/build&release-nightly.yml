@@ -1,0 +1,67 @@
+name: Build & Release
+
+on:
+  push:
+    branches:
+      - nightly
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ['self-hosted', 'Windows']
+            args: '--target x86_64-pc-windows-msvc --config src-tauri/tauri.conf.nightly.json'
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust (Stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install Bun Packages
+        run: bun install
+
+      - name: Install System Packages for Linux (Self-Hosted Only)
+        if: matrix.platform == 'linux'
+        run: |
+          echo "Updating packages"
+          sudo apt-get update
+          echo "Installing deps (libgtk)"
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev
+
+      - name: Build & Publish Github Release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: "v__VERSION__"
+          releaseBody: |
+            This is a nightly build of FTLL. Please use with caution!
+            No support will be offered for bugs & issues.
+
+            If you're a normal user, download a release build!
+          releaseDraft: false
+          prerelease: true
+          includeUpdaterJson: true
+          includeDebug: true
+          tauriScript: bun tauri
+          args: ${{ matrix.args }}

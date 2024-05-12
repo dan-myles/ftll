@@ -13,6 +13,8 @@ use std::time::Duration;
 use std::time::Instant;
 use std::time::SystemTime;
 use tauri::dev;
+use tauri::AppHandle;
+use tauri::Manager;
 use tokio::sync::Mutex;
 use tokio::sync::RwLock;
 use tokio::sync::Semaphore;
@@ -39,20 +41,24 @@ lazy_static! {
 /// During runtime, the frontend will cache the server list via IndexedDB.
 #[tauri::command]
 #[specta::specta]
-pub async fn get_server_list() -> Result<Vec<Server32>, String> {
+pub async fn get_server_list(app_handle: AppHandle) -> Result<Vec<Server32>, String> {
     // Try to grab base directories
-    let server_list_path = BaseDirs::new()
-        .ok_or("ERROR: Could not find base directories!")?
-        .data_dir()
-        .join("FTLL")
+    let server_map_path = app_handle
+        .path()
+        .app_cache_dir()
+        .or_else(|_| Err("ERROR: Could not find app cache dir!"))?
         .join("server_map.json");
 
-    if !server_list_path.exists() {
+    if !server_map_path.exists() {
         println!("Server list does not exist, fetching server list...");
-        init_server_cache().await.map_err(|e| e.to_string())?;
+        init_server_cache(app_handle)
+            .await
+            .map_err(|e| e.to_string())?;
     } else {
         println!("Server list exists, refreshing server list...");
-        refresh_server_cache().await.map_err(|e| e.to_string())?;
+        refresh_server_cache(app_handle)
+            .await
+            .map_err(|e| e.to_string())?;
     }
 
     let server_map_locked = SERVER_MAP.clone().lock_owned().await;
@@ -64,7 +70,7 @@ pub async fn get_server_list() -> Result<Vec<Server32>, String> {
         .into_iter()
         .map(|server| server.into())
         .collect();
-    return Ok(server_list);
+    Ok(server_list)
 }
 
 /// This function is used to fetch data from a URI.
@@ -207,12 +213,8 @@ pub async fn get_server_info(server: Server32) -> Result<Server32, String> {
 
 /// This function is called to refresh the server cache.
 /// We skip all servers with marked as Some in the ping field, this means
-pub async fn refresh_server_cache() -> Result<()> {
-    let server_map_path = BaseDirs::new()
-        .unwrap()
-        .data_dir()
-        .join("FTLL")
-        .join("server_map.json");
+pub async fn refresh_server_cache(app_handle: AppHandle) -> Result<()> {
+    let server_map_path = app_handle.path().app_cache_dir()?.join("server_map.json");
 
     // Grab local server_map
     let server_map_json_local = fs::read_to_string(server_map_path.clone())?;
@@ -325,7 +327,7 @@ pub async fn refresh_server_cache() -> Result<()> {
 /// We do this to update ping and other server information.
 /// This function will trigger anytime the FTLL local cache is deleted.
 /// TODO: Add error handling to unwraps
-pub async fn init_server_cache() -> Result<()> {
+pub async fn init_server_cache(app_handle: AppHandle) -> Result<()> {
     fetch_master_server_map().await?;
 
     // Create A2SClient, Semaphore, and Stream
@@ -381,11 +383,7 @@ pub async fn init_server_cache() -> Result<()> {
     println!("init_server_cache(): Finished querying!");
 
     // Find appdata/FTLL/server_list.json
-    let server_map_path = BaseDirs::new()
-        .unwrap()
-        .data_dir()
-        .join("FTLL")
-        .join("server_map.json");
+    let server_map_path = app_handle.path().app_cache_dir()?.join("server_map.json");
 
     // Delete server_map.json if it exists
     // This is mainly for debugging, as the json will not exist on first launch.
@@ -450,31 +448,31 @@ async fn fetch_master_server_map() -> Result<()> {
 }
 
 /// This function is called on the first launch of the application.
-/// Here we are creating the FTLL folder in the appdata directory.
-/// This is where we will store the server_map.json and other application data.
+/// Bust the IndexedDB cache to pull the latest server list from the API.
+/// Real cache is held in the appdata/FTLL/server_list.json file
 /// TODO: Add error handling to unwraps
 pub fn init_appdata() -> Result<()> {
     let base_dirs = BaseDirs::new().unwrap();
 
-    // Check if FTLL folder exists
-    let ftll_dir = base_dirs.data_dir().join("FTLL");
-    if !ftll_dir.exists() {
-        fs::create_dir(ftll_dir)?;
-    }
-
     // Now we need to bust indexeddb cache to pull it from our local cache
-    let cache_dir = base_dirs.data_local_dir().join("com.ftl-launcher.app");
-    if !cache_dir.exists() {
-        return Ok(());
+    let cache_dir = base_dirs
+        .data_local_dir()
+        .join("com.ftl-launcher.stable")
+        .join("EBWebView/Default/IndexedDB");
+
+    if cache_dir.exists() {
+        fs::remove_dir_all(cache_dir)?;
     }
 
-    let idb = cache_dir.join("EBWebView/Default/IndexedDB");
-    if !idb.exists() {
-        return Ok(());
-    }
+    // Bust for nightly as well
+    let cache_dir = base_dirs
+        .data_local_dir()
+        .join("com.ftl-launcher.nightly")
+        .join("EBWebView/Default/IndexedDB");
 
-    // Delete cache since we are launching application
-    fs::remove_dir_all(idb)?;
+    if cache_dir.exists() {
+        fs::remove_dir_all(cache_dir)?;
+    }
 
     Ok(())
 }
