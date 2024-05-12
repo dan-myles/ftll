@@ -55,9 +55,10 @@ jobs:
           tagName: v__VERSION__
           releaseName: "v__VERSION__"
           releaseBody: |
-            See the assets to download and install this version.
+            This is a nightly build of FTLL. Please use with caution!
+            No support will be offered for bugs & issues.
 
-            If you get a virus warning read this article: https://tauri.by.simon.hyll.nu/concepts/security/false_positives/.
+            If you're a normal user, download a release build!
           releaseDraft: false
           prerelease: true
           includeUpdaterJson: true
