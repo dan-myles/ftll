@@ -1,12 +1,12 @@
 {
   "productName": "FTLL Nightly",
-  "version": "0.2.0-alpha-nightly",
+  "version": "0.2.5-alpha-nightly",
   "identifier": "com.ftl-launcher.nightly",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
-    "beforeDevCommand": "bun run dev",
-    "beforeBuildCommand": "bun run build"
+    "beforeDevCommand": "pnpm run dev",
+    "beforeBuildCommand": "pnpm run build"
   },
   "app": {
     "windows": [

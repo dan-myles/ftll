@@ -1,12 +1,12 @@
 {
   "productName": "FTLL",
-  "version": "0.2.1-alpha",
+  "version": "0.2.6-alpha",
   "identifier": "com.ftl-launcher.stable",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
-    "beforeDevCommand": "bun run dev",
-    "beforeBuildCommand": "bun run build"
+    "beforeDevCommand": "pnpm run dev",
+    "beforeBuildCommand": "pnpm run build"
   },
   "app": {
     "windows": [

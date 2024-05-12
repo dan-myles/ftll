@@ -58,7 +58,7 @@ of distributions makes it a nightmare for a small developer.
 ## ⚙️  Install
 
 ### Windows
-- [Download](https://github.com/avvo-na/ftl-launcher/releases) the latest `x64-setup.exe`
+- [Download](https://github.com/avvo-na/ftl-launcher/releases/latest) the latest `x64-setup.exe`
 - Run the setup file & choose an install location
 - Done! Get the latest news [here](https://ftl-launcher.com)
 
