@@ -12,6 +12,6 @@ src/components/ui-ace/*
 tailwind.config.ts
 src-tauri/
 vite.config.ts
-src/tauri-bindings.d.ts
+src/tauri-bindings.ts
 postcss.config.js
 tailwind.config.js

@@ -1,0 +1,41 @@
+name: Lint & Format (Javascript)
+
+on:
+  pull_request:
+    branches:
+      - main
+      - nightly
+  push:
+    branches:
+      - main
+      - nightly
+
+jobs:
+  run-scripts:
+    name: Run linters & formatters
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run linter (eslint)
+        run: pnpm lint
+
+      - name: Run formatter (Prettier)
+        run: pnpm format
+
+

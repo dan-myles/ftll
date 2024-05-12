@@ -1,5 +1,5 @@
-var TWELVE_HOUR_REGEX = /(\d{1,2})\s*:?\s*(\d{0,2})\s*(a\.?m\.?|p\.?m\.?)/i
-var TWENTY_FOUR_HOUR_REGEX = /(\d{1,2})\s*:\s*(\d{1,2})/i
+const TWELVE_HOUR_REGEX = /(\d{1,2})\s*:?\s*(\d{0,2})\s*(a\.?m\.?|p\.?m\.?)/i
+const TWENTY_FOUR_HOUR_REGEX = /(\d{1,2})\s*:\s*(\d{1,2})/i
 
 function getPeriod(hour: string) {
   if (parseInt(hour) >= 12) {
@@ -16,7 +16,7 @@ function toTwelveHourTime(time: string) {
   // split at : and convert to number
   let hour: number | string = parseInt(match[1])
   let minute: number | string = parseInt(match[2])
-  let period = getPeriod(hour.toString())
+  const period = getPeriod(hour.toString())
 
   // if hour is greater than 12, subtract 12 and set period to pm
   if (hour > 12) {
