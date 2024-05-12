@@ -1,7 +1,7 @@
 {
   "productName": "FTLL",
   "version": "0.1.10-alpha",
-  "identifier": "com.ftl-launcher.app",
+  "identifier": "com.ftl-launcher.stable",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
