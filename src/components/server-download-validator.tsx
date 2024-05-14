@@ -1,7 +1,6 @@
 import { type ReactNode, useState } from "react"
 import { toast } from "sonner"
 import { useRouter } from "@tanstack/react-router"
-import { invoke } from "@tauri-apps/api/core"
 import {
   AlertDialog,
   AlertDialogAction,
