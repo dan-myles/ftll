@@ -15,6 +15,7 @@ import {
 import { useCurrentServerStore } from "@/stores/current-server-store"
 import { useModDownloadQueue } from "@/stores/mod-download-queue"
 import { type Server32 } from "@/tauri-bindings"
+import { commands } from "@/tauri-bindings"
 import { ScrollArea } from "./ui/scroll-area"
 
 interface ServerPlayValidatorProps {
@@ -27,7 +28,7 @@ export function ServerPlayValidator({
   children,
 }: ServerPlayValidatorProps) {
   const [isMissingMods, setIsMissingMods] = useState(false)
-  const [missingMods, setMissingMods] = useState<number[] | null>(null)
+  const [missingMods, setMissingMods] = useState<string[] | null>(null)
   const [open, setOpen] = useState(false)
   const { pushMod } = useModDownloadQueue()
   const { setServer } = useCurrentServerStore()
@@ -49,9 +50,7 @@ export function ServerPlayValidator({
       invoke("mdq_mod_add", { publishedFileId: mod }).catch(console.error)
 
       // Catch a name
-      let name = server.mod_list.find(
-        (m) => Number(m.workshop_id) === mod
-      )?.name
+      let name = server.mod_list.find((m) => m.workshop_id === mod)?.name
       if (!name) name = "Unknown Mod"
 
       pushMod({ workshop_id: String(mod), name: name }).catch(console.error)
@@ -63,34 +62,39 @@ export function ServerPlayValidator({
   const handlePlay = async () => {
     if (!server.mod_list) return
 
-    const missing = await invoke("steam_get_missing_mods_for_server", {
-      requiredMods: server.mod_list.map((mod) => mod.workshop_id),
-    }).catch(console.error)
-    const missingMods = missing as number[]
+    // const missing = await invoke("steam_get_missing_mods_for_server", {
+    //   requiredMods: server.mod_list.map((mod) => mod.workshop_id),
+    // }).catch(console.error)
+    //
 
-    if (missingMods.length > 0) {
+    const requiredMods = server.mod_list.map((mod) => mod.workshop_id)
+    const missing = await commands.steamGetMissingModsForServer(requiredMods)
+
+    if (missing.status === "error") return
+
+    if (missing.data.length > 0) {
       setIsMissingMods(true)
-      setMissingMods(missingMods)
+      setMissingMods(missing.data)
       return
     }
 
-    const success = await invoke("dayz_launch_modded", {
-      server: server,
-    }).catch(console.error)
-
-    if (success === null) {
-      const shortName =
-        server.name.length > 45
-          ? server.name.substring(0, 45) + "..."
-          : server.name
-
-      toast.success("Successfully loaded mods & launched DayZ", {
-        description: shortName,
-        position: "bottom-center",
-      })
-
-      setServer(server)
-    }
+    // const success = await invoke("dayz_launch_modded", {
+    //   server: server,
+    // }).catch(console.error)
+    //
+    // if (success === null) {
+    //   const shortName =
+    //     server.name.length > 45
+    //       ? server.name.substring(0, 45) + "..."
+    //       : server.name
+    //
+    //   toast.success("Successfully loaded mods & launched DayZ", {
+    //     description: shortName,
+    //     position: "bottom-center",
+    //   })
+    //
+    //   setServer(server)
+    // }
   }
 
   return (
@@ -141,11 +145,7 @@ export function ServerPlayValidator({
               >
                 {missingMods?.map((mod, idx) => (
                   <div key={idx}>
-                    {
-                      server.mod_list?.find(
-                        (m) => Number(m.workshop_id) === mod
-                      )?.name
-                    }
+                    {server.mod_list?.find((m) => m.workshop_id === mod)?.name}
                   </div>
                 ))}
               </ScrollArea>
