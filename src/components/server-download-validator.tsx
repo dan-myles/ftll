@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useModDownloadQueue } from "@/stores/mod-download-queue"
 import { type Server32 } from "@/tauri-bindings"
+import { commands } from "@/tauri-bindings"
 import { ScrollArea } from "./ui/scroll-area"
 
 interface ServerDownloadValidatorProps {
@@ -25,7 +26,7 @@ export function ServerDownloadValidator({
   server,
   children,
 }: ServerDownloadValidatorProps) {
-  const [missingMods, setMissingMods] = useState<number[] | null>(null)
+  const [missingMods, setMissingMods] = useState<string[]>([])
   const [open, setOpen] = useState(false)
   const { pushMod } = useModDownloadQueue()
   const navigate = useRouter().navigate
@@ -39,12 +40,11 @@ export function ServerDownloadValidator({
     if (!missingMods) return
 
     for (const mod of missingMods) {
-      invoke("mdq_mod_add", { publishedFileId: mod }).catch(console.error)
+      const res = await commands.mdqAddMod(mod)
+      if (res.status === "error") console.error(res.error)
 
       // Catch a name
-      let name = server.mod_list.find(
-        (m) => Number(m.workshop_id) === mod
-      )?.name
+      let name = server.mod_list.find((m) => m.workshop_id === mod)?.name
       if (!name) name = "Unknown Mod"
 
       pushMod({ workshop_id: String(mod), name: name }).catch(console.error)
@@ -56,14 +56,12 @@ export function ServerDownloadValidator({
   const checkMissingMods = async () => {
     if (!server.mod_list) return
 
-    const missing = await invoke("steam_get_missing_mods_for_server", {
-      requiredMods: server.mod_list.map((mod) => mod.workshop_id),
-    }).catch(console.error)
+    const requiredMods = server.mod_list.map((mod) => mod.workshop_id)
+    const missing = await commands.steamGetMissingModsForServer(requiredMods)
+    if (missing.status === "error") return
+    setMissingMods(missing.data)
 
-    const missingMods = missing as number[]
-    setMissingMods(missingMods)
-
-    if (missingMods.length > 0) {
+    if (missing.data.length > 0) {
       setOpen(true)
     } else {
       const shortName =
@@ -103,11 +101,7 @@ export function ServerDownloadValidator({
               >
                 {missingMods?.map((mod, idx) => (
                   <div key={idx}>
-                    {
-                      server.mod_list?.find(
-                        (m) => Number(m.workshop_id) === mod
-                      )?.name
-                    }
+                    {server.mod_list?.find((m) => m.workshop_id === mod)?.name}
                   </div>
                 ))}
               </ScrollArea>
