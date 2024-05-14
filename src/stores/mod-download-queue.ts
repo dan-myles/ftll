@@ -45,9 +45,10 @@ export const useModDownloadQueue = create<
         return Promise.resolve()
       },
       pushMod: async (mod) => {
-        commands.mdqAddMod(mod.workshop_id).catch((e) => {
+        const res = await commands.mdqAddMod(mod.workshop_id).catch((e) => {
           return Promise.reject(e)
         })
+        if (res.status === "error") return Promise.reject(res.error)
 
         set((state) => {
           if (

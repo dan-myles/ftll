@@ -46,8 +46,10 @@ export function ServerPlayValidator({
     if (!server.mod_list) return
     if (!missingMods) return
 
+    // push missing mods to download queue
     for (const mod of missingMods) {
-      invoke("mdq_mod_add", { publishedFileId: mod }).catch(console.error)
+      const res = await commands.mdqAddMod(mod)
+      if (res.status === "error") console.error(res.error)
 
       // Catch a name
       let name = server.mod_list.find((m) => m.workshop_id === mod)?.name
@@ -62,14 +64,8 @@ export function ServerPlayValidator({
   const handlePlay = async () => {
     if (!server.mod_list) return
 
-    // const missing = await invoke("steam_get_missing_mods_for_server", {
-    //   requiredMods: server.mod_list.map((mod) => mod.workshop_id),
-    // }).catch(console.error)
-    //
-
     const requiredMods = server.mod_list.map((mod) => mod.workshop_id)
     const missing = await commands.steamGetMissingModsForServer(requiredMods)
-
     if (missing.status === "error") return
 
     if (missing.data.length > 0) {
@@ -78,23 +74,20 @@ export function ServerPlayValidator({
       return
     }
 
-    // const success = await invoke("dayz_launch_modded", {
-    //   server: server,
-    // }).catch(console.error)
-    //
-    // if (success === null) {
-    //   const shortName =
-    //     server.name.length > 45
-    //       ? server.name.substring(0, 45) + "..."
-    //       : server.name
-    //
-    //   toast.success("Successfully loaded mods & launched DayZ", {
-    //     description: shortName,
-    //     position: "bottom-center",
-    //   })
-    //
-    //   setServer(server)
-    // }
+    const success = await commands.dayzLaunchModded(server)
+    if (success.status === "error") return
+
+    const shortName =
+      server.name.length > 45
+        ? server.name.substring(0, 45) + "..."
+        : server.name
+
+    toast.success("Successfully loaded mods & launched DayZ", {
+      description: shortName,
+      position: "bottom-center",
+    })
+
+    setServer(server)
   }
 
   return (
