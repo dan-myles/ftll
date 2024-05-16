@@ -47,14 +47,11 @@ export function ServerPlayValidator({
 
     // push missing mods to download queue
     for (const mod of missingMods) {
-      const res = await commands.mdqAddMod(mod)
-      if (res.status === "error") console.error(res.error)
-
       // Catch a name
       let name = server.mod_list.find((m) => m.workshop_id === mod)?.name
       if (!name) name = "Unknown Mod"
 
-      pushMod({ workshop_id: String(mod), name: name }).catch(console.error)
+      pushMod({ workshop_id: mod, name: name }).catch(console.error)
     }
 
     navigate({ to: "/mod-manager" }).catch(console.error)
