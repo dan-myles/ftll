@@ -65,7 +65,7 @@ function Root() {
                 </div>
               </main>
               <Toaster />
-              <ScreenIndicator />
+              <ScreenIndicator open />
               <TanStackRouterDevtools position="bottom-right" />
             </TooltipProvider>
           </FTLLContextProvider>
