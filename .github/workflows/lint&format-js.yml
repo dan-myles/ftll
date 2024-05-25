@@ -3,12 +3,10 @@ name: Lint & Format (Javascript)
 on:
   pull_request:
     branches:
-      - main
-      - nightly
+      - test
   push:
     branches:
-      - main
-      - nightly
+      - test
 
 jobs:
   run-scripts:

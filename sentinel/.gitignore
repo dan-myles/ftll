@@ -1,0 +1,9 @@
+# Ignoring Secrets
+.env
+.env.production
+.env.development
+
+# Build
+/build
+/out
+/dist
