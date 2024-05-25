@@ -27,6 +27,11 @@
 ## 🔍 Info
 
 ### ⚠️ FTLL IS CURRENTLY IN ALPHA ⚠️
+
+> FTLL is moving to a monorepo and may currently be experiencing issues
+with functionality. After this migration is completed development will continue
+in a singular repository.
+
 FTLL is a simple and small mod launcher & manager for DayZ, built with Rust,
 [Tauri](https://tauri.app), React and modern tools. Completely open-source and
 always will be. FTLL uses your systems native web-view to render a beautiful UI,
