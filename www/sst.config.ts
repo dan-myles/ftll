@@ -3,12 +3,13 @@
 export default $config({
   app(input) {
     return {
-      name: "www",
+      name: "ftl-web",
       removal: input?.stage === "production" ? "retain" : "remove",
       home: "aws",
-    };
+    }
   },
+
   async run() {
-    new sst.aws.Nextjs("MyWeb");
+    new sst.aws.Nextjs("FTLWeb")
   },
-});
+})
