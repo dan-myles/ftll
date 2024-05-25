@@ -108,12 +108,12 @@ export function Overlay() {
           </div>
         </div>
         <Image
-          src="/app-demo.png"
+          src="/previews/app-demo.png"
           alt="app demo"
           width={700}
           height={700}
           quality={100}
-          className="hidden md:block"
+          className="hidden h-auto w-auto md:block"
           priority
         />
       </div>
@@ -135,6 +135,8 @@ export function Overlay() {
                 alt="zombie"
                 width={125}
                 height={125}
+                className="h-auto w-auto"
+                unoptimized
               />
             </div>
           </div>
