@@ -6,7 +6,7 @@ on:
       - test
   push:
     branches:
-      - main
+      - test
 
 jobs:
   run-scripts:
