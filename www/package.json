@@ -1,6 +1,6 @@
 {
-  "name": "ftl-web",
-  "version": "0.1.0",
+  "name": "ftll-web",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -56,3 +56,4 @@
   },
   "packageManager": "pnpm@9.1.1"
 }
+
