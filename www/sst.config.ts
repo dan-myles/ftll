@@ -8,6 +8,7 @@ export default $config({
       providers: { cloudflare: true },
     }
   },
+
   async run() {
     new sst.aws.Nextjs("FTLWeb", {
       domain: {
