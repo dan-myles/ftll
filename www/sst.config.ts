@@ -6,9 +6,14 @@ export default $config({
       removal: input?.stage === "production" ? "retain" : "remove",
       home: "aws",
       providers: { cloudflare: true },
-    };
+    }
   },
   async run() {
-    new sst.aws.Nextjs("FTLWeb");
+    new sst.aws.Nextjs("FTLWeb", {
+      domain: {
+        name: "ftll.io",
+        dns: sst.cloudflare.dns(),
+      },
+    })
   },
-});
+})
