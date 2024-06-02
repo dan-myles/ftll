@@ -2,19 +2,13 @@
 export default $config({
   app(input) {
     return {
-      name: "ftll-web",
+      name: "ftll",
       removal: input?.stage === "production" ? "retain" : "remove",
       home: "aws",
       providers: { cloudflare: true },
-    }
+    };
   },
-
   async run() {
-    new sst.aws.Nextjs("FTLLWeb", {
-      domain: {
-        name: $app.stage === "prod" ? "ftll.io" : `${$app.stage}.ftll.io`,
-        dns: sst.cloudflare.dns(),
-      },
-    })
+    const infra = await import("./infra");
   },
-})
+});
