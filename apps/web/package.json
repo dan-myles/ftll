@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "next build",
-    "dev": "sst dev next dev",
+    "dev": "sst dev --stage dev next dev",
+    "dev:prod": "sst dev --stage prod next dev",
+    "refresh": "sst refresh --stage dev",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "lint": "next lint",

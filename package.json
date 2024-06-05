@@ -1,9 +1,12 @@
 {
+  "name": "ftll-monorepo",
   "private": true,
   "scripts": {
     "build": "turbo build",
     "clean": "turbo clean",
     "dev": "turbo dev",
+    "dev:web": "turbo dev --filter=web",
+    "dev:launcher": "turbo dev --filter=launcher",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo lint",
     "type-check": "turbo type-check"
@@ -24,4 +27,3 @@
     "sst": "ion"
   }
 }
-

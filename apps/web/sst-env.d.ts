@@ -7,6 +7,10 @@ declare module "sst" {
       type: "sst.aws.Nextjs"
       url: string
     }
+    ServerQueue: {
+      type: "sst.aws.Queue"
+      url: string
+    }
   }
 }
 export {}
