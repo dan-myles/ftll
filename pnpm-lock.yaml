@@ -316,6 +316,9 @@ importers:
       '@react-three/postprocessing':
         specifier: ^2.16.2
         version: 2.16.2(@react-three/fiber@8.16.8)(@types/three@0.164.1)(react@18.2.0)(three@0.164.1)
+      '@repo/ui':
+        specifier: '*'
+        version: link:../../packages/ui
       '@t3-oss/env-nextjs':
         specifier: ^0.10.1
         version: 0.10.1(typescript@5.4.5)(zod@3.23.8)
@@ -355,6 +358,9 @@ importers:
       tailwind-merge:
         specifier: ^2.3.0
         version: 2.3.0
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.4.3)
       three:
         specifier: ^0.164.1
         version: 0.164.1
