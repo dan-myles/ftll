@@ -3,10 +3,12 @@ name: Lint & Format (Rust)
 on:
   pull_request:
     branches:
-      - test
+      - main
+      - nightly
   push:
     branches:
-      - test
+      - main
+      - nightly
 
 jobs:
   run-scripts:

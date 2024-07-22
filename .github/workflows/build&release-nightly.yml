@@ -3,7 +3,7 @@ name: Build & Release
 on:
   push:
     branches:
-      - test
+      - nightly
 
 jobs:
   publish-tauri:
