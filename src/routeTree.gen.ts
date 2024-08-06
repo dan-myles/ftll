@@ -43,18 +43,30 @@ const ModManagerIndexRoute = ModManagerIndexImport.update({
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
     '/mod-manager/': {
+      id: '/mod-manager/'
+      path: '/mod-manager'
+      fullPath: '/mod-manager'
       preLoaderRoute: typeof ModManagerIndexImport
       parentRoute: typeof rootRoute
     }
     '/server-browser/': {
+      id: '/server-browser/'
+      path: '/server-browser'
+      fullPath: '/server-browser'
       preLoaderRoute: typeof ServerBrowserIndexImport
       parentRoute: typeof rootRoute
     }
     '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings'
       preLoaderRoute: typeof SettingsIndexImport
       parentRoute: typeof rootRoute
     }
@@ -63,11 +75,39 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([
+export const routeTree = rootRoute.addChildren({
   IndexRoute,
   ModManagerIndexRoute,
   ServerBrowserIndexRoute,
   SettingsIndexRoute,
-])
+})
 
 /* prettier-ignore-end */
+
+/* ROUTE_MANIFEST_START
+{
+  "routes": {
+    "__root__": {
+      "filePath": "__root.tsx",
+      "children": [
+        "/",
+        "/mod-manager/",
+        "/server-browser/",
+        "/settings/"
+      ]
+    },
+    "/": {
+      "filePath": "index.tsx"
+    },
+    "/mod-manager/": {
+      "filePath": "mod-manager/index.tsx"
+    },
+    "/server-browser/": {
+      "filePath": "server-browser/index.tsx"
+    },
+    "/settings/": {
+      "filePath": "settings/index.tsx"
+    }
+  }
+}
+ROUTE_MANIFEST_END */
