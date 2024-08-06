@@ -26,13 +26,10 @@
 
 ## 🔍 Info
 
-### ⚠️ FTLL IS CURRENTLY IN ALPHA ⚠️
-> FTLL is currently undergoing alpha development and builds are being actively tested. If you would
-like to help out with testing feel free to download and report any issues that you
-see [here](https://github.com/avvo-na/ftl-launcher/issues). Make sure to check that
-your issue doesn't already exist before making a new one! There are currently no working
-Linux builds but I'm looking to work on that soon. Check out our [website](https://ftl-launcher.com)
-for documentation and the latest news.
+### ⚠️ NOTICE ⚠️
+> FTLL is approaching a solid beta release, there is still a bit to be done to make
+sure that things will be running smoothly in the future. This mostly has to do with
+moving over to the full Tauri release, its in RC now, so hopefully soon! <3
 
 FTLL is a simple and small mod launcher & manager for DayZ, built with Rust,
 [Tauri](https://tauri.app), React and modern tools. Completely open-source and
@@ -58,9 +55,9 @@ of distributions makes it a nightmare for a small developer.
 ## ⚙️  Install
 
 ### Windows
-- [Download](https://github.com/avvo-na/ftl-launcher/releases/latest) the latest `x64-setup.exe`
+- [Download](https://github.com/avvo-na/ftll/releases/latest) the latest `x64-setup.exe`
 - Run the setup file & choose an install location
-- Done! Get the latest news [here](https://ftl-launcher.com)
+- Done! Get the latest news [here](https://ftll.io)
 
 > If you run into any issues please feel free to join our [Discord](https://discord.gg/xujqFZsEac)
 ### Linux
@@ -70,18 +67,13 @@ of distributions makes it a nightmare for a small developer.
 
 ### New Changes
 You can stay up to date with the latest in the development process right here on our github page!
-All of the latest builds will be pushed to the [main](https://github.com/avvo-na/ftl-launcher)
+All of the latest builds will be pushed to the [main](https://github.com/avvo-na/ftll)
 branch and automatically released. Latest development changes & nightly builds will be pushed
-to the [nightly](https://github.com/avvo-na/ftl-launcher/tree/nightly) branch and tested there.
-Any new changes will be also available on our [website](https://ftl-launcher.com).
+to the [nightly](https://github.com/avvo-na/ftll/tree/nightly) branch and tested there.
+Any new changes will be also available on our [website](https://ftll.io).
 
 ### Contributing
-Contributions are very welcome. In addition to the main project, there is also our
-[documentation](https://www.ftl-launcher.com/docs/intro_getting-started) that is actively
-worked on. If you are unsure of a change that you want to make, talk to us on
-[Discord](https://discord.gg/xujqFZsEac) first, otherwise feel free to put
-in a pull request to the [nightly](https://github.com/avvo-na/ftl-launcher/tree/nightly) branch.
-
-Make sure to read our [contributors guide](https://www.ftl-launcher.com/docs/intro_contributing) first on how to
-get started building and developing!
+Contributions are very welcome, currently I develop this on my own, just for my own
+enjoyment, however if you want to contribute feel free to open an issue first, or contact
+me on discord!
 
