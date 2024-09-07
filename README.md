@@ -27,9 +27,10 @@
 ## 🔍 Info
 
 ### ⚠️ NOTICE ⚠️
-> FTLL is approaching a solid beta release, there is still a bit to be done to make
-sure that things will be running smoothly in the future. This mostly has to do with
-moving over to the full Tauri release, its in RC now, so hopefully soon! <3
+> 9/7/2024: Hello! This project is in a really solid state however currently depends on
+Tauri, and that version is still in beta. On August 1st, 2024 the Tauri team wrote a post
+about a Tauri RC, so we are getting there! Once Tauri 2.0 comes out there will be a migration
+process and FTLL will move into beta.
 
 FTLL is a simple and small mod launcher & manager for DayZ, built with Rust,
 [Tauri](https://tauri.app), React and modern tools. Completely open-source and
