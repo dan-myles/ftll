@@ -26,7 +26,12 @@
 
 ## 🔍 Info
 
-### ⚠️ NOTICE ⚠️
+### ⚠️ NOTICES ⚠️
+> 9/14/2024: The dev server hosting the backend for this application was taken down by a DDOS
+attack... This server was not meant for production use as FTLL is still not publicly released.
+I love doing development in public, but I will have to take the dev server down for now until
+I have time to implement more extensive rate-limiting/compression & ip-banning etc etc. <3
+
 > 9/7/2024: Hello! This project is in a really solid state however currently depends on
 Tauri, and that version is still in beta. On August 1st, 2024 the Tauri team wrote a post
 about a Tauri RC, so we are getting there! Once Tauri 2.0 comes out there will be a migration
